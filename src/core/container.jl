@@ -80,25 +80,29 @@ function Base.consume(pc :: ParticleContainer)
   n = length(pc.vals)
 
   particles = collect(pc)
-  num_done = 0
-  for i=1:n
+  finished = zeros(Bool, n)
+  Threads.@threads for i=1:n
     p = pc.vals[i]
     score = consume(p)
     if isa(score, Real)
       increase_logweight(pc, i, Float64(score))
     elseif score == Val{:done}
-      num_done += 1
+      finished[i] = true
     else
       "[consume]: error in running particle filter."
     end
   end
 
+  num_done = sum(finished)
+  println(num_done)
   if num_done == length(pc)
+    println("length")
     res = Val{:done}
   elseif num_done != 0
     error("[consume]: mis-aligned execution traces, num_particles= $(n), num_done=$(num_done).")
   else
     # update incremental likelihoods
+    println("incremental")
     _, z2      = weights(pc)
     res = increase_logevidence(pc, z2 - z1)
     pc.n_consume += 1

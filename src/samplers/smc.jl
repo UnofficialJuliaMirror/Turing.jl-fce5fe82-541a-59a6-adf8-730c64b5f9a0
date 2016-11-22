@@ -45,6 +45,9 @@ function Base.run(spl::Sampler{SMC})
     end
   end
 
-  res = Chain(spl.particles)
+  println("done")
+
+
+  # res = Chain(spl.particles)
 
 end
