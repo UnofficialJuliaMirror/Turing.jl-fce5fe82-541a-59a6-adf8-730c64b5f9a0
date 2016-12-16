@@ -79,6 +79,7 @@ function Base.run(spl :: Union{Sampler{HMC}, Sampler{StochHMC}})
   # Run the model for the first time
   dprintln(2, "initialising...")
   find_logjoint(spl.model, spl.values)
+  spl.info[:curr_iter] += 1
 
   # Store the first predicts
   spl.samples[1].value = deepcopy(spl.predicts)
@@ -90,7 +91,6 @@ function Base.run(spl :: Union{Sampler{HMC}, Sampler{StochHMC}})
   # HMC steps
   for i = 2:n
     dprintln(2, "HMC stepping...")
-    spl.info[:curr_iter] = i
 
     dprintln(2, "recording old θ...")
     old_values = deepcopy(spl.values)
@@ -121,6 +121,8 @@ function Base.run(spl :: Union{Sampler{HMC}, Sampler{StochHMC}})
     else                            # rejected => store the previous predcits
       spl.values, spl.samples[i] = old_values, spl.samples[i - 1]
     end
+
+    spl.info[:curr_iter] += 1
   end
 
   accept_rate = accept_num / n    # calculate the accept rate
