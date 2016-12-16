@@ -27,8 +27,16 @@ immutable HMC <: InferenceAlgorithm
   lf_num    ::  Int64     # leapfrog step number
 end
 
-type HMCSampler{HMC} <: GradientSampler{HMC}
-  alg         :: HMC                          # the HMC algorithm info
+immutable StochHMC <: InferenceAlgorithm
+  n_samples ::  Int64     # number of samples
+  lf_size   ::  Float64   # leapfrog step size
+  lf_num    ::  Int64     # leapfrog step number
+  obs_farc  ::  Float64   # fraction of observations used for gradient
+  cor_rate  ::  Float64   # rate of correlation
+end
+
+type HMCSampler{T} <: GradientSampler{T}
+  alg         :: T                            # the HMC algorithm info
   model       :: Function                     # model function
   values      :: GradientInfo                 # container for variables
   dists       :: Dict{VarInfo, Distribution}  # variable to its distribution
@@ -50,7 +58,7 @@ type HMCSampler{HMC} <: GradientSampler{HMC}
   end
 end
 
-function Base.run(spl :: Sampler{HMC})
+function Base.run(spl :: Union{Sampler{HMC}, Sampler{StochHMC}})
   # Record the start time of HMC
   t_start = time()
 
@@ -106,7 +114,7 @@ function Base.run(spl :: Sampler{HMC})
   return Chain(0, spl.samples)    # wrap the result by Chain
 end
 
-function assume(spl :: HMCSampler{HMC}, dist :: Distribution, var :: VarInfo)
+function assume(spl :: Union{HMCSampler{HMC}, Sampler{StochHMC}}, dist :: Distribution, var :: VarInfo)
   # Step 1 - Generate or replay variable
   dprintln(2, "assuming...")
   if spl.first  # first time -> generate
@@ -142,7 +150,7 @@ function assume(spl :: HMCSampler{HMC}, dist :: Distribution, var :: VarInfo)
   return val
 end
 
-function observe(spl :: HMCSampler{HMC}, d :: Distribution, value)
+function observe(spl :: Union{HMCSampler{HMC}, Sampler{StochHMC}}, d :: Distribution, value)
   dprintln(2, "observing...")
   if length(value) == 1
     spl.values.logjoint += logpdf(d, Dual(value))
@@ -152,7 +160,7 @@ function observe(spl :: HMCSampler{HMC}, d :: Distribution, value)
   dprintln(2, "observe done")
 end
 
-function predict(spl :: HMCSampler{HMC}, name :: Symbol, value)
+function predict(spl :: Union{HMCSampler{HMC}, Sampler{StochHMC}}, name :: Symbol, value)
   dprintln(2, "predicting...")
   spl.predicts[name] = realpart(value)
   dprintln(2, "predict done")
@@ -160,5 +168,10 @@ end
 
 function sample(model :: Function, alg :: HMC)
   global sampler = HMCSampler{HMC}(alg, model);
+  run(sampler)
+end
+
+function sample(model :: Function, alg :: StochHMC)
+  global sampler = HMCSampler{StochHMC}(alg, model);
   run(sampler)
 end
