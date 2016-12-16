@@ -45,6 +45,7 @@ testcases = [
           "matrix_support",
           "constrained_bounded",
           "constrained_simplex",
+          "stochhmc",
 #       is.jl
           "importance_sampling",
 #       pgibbs.jl
