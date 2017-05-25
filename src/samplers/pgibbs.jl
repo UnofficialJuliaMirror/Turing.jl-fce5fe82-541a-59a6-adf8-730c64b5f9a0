@@ -73,8 +73,10 @@ step(model::Function, spl::Sampler{PG}, vi::VarInfo) = begin
 
   ## pick a particle to be retained.
   Ws, _ = weights(particles)
-  indx = rand(Categorical(Ws))
-
+  # println(Ws)
+  indx = randcat(Ws)
+  # println(indx)
+  # exit()
   push!(spl.info[:logevidence], particles.logE)
   particles[indx].vi
 end
