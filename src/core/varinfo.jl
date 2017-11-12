@@ -248,8 +248,9 @@ getidcs(vi::VarInfo, spl::Sampler) = begin
   if haskey(spl.info, :idcs) && (spl.info[:cache_updated] & CACHEIDCS) > 0
     spl.info[:idcs]
   else
-    spl.info[:cache_updated] = spl.info[:cache_updated] | CACHEIDCS
-    spl.info[:idcs] = filter(i ->
+    # spl.info[:cache_updated] = spl.info[:cache_updated] | CACHEIDCS
+    # spl.info[:idcs] = 
+    filter(i ->
       (vi.gids[i] == spl.alg.gid || vi.gids[i] == 0) && (isempty(spl.alg.space) || is_inside(vi.vns[i], spl.alg.space)),
       1:length(vi.gids)
     )
