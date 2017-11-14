@@ -7,7 +7,7 @@ function Distributions.rand(d::ExpTiltedSigma)
   a = d.a; l = d.l;
   g = (cos(a*pi/2))^(1/a)
   m = Int(max(1, round(l^a)))
-  S = zeros(Float64, m)
+  S = zeros(Real, m)
 
   for k in 1:m
     Sk = 0.0

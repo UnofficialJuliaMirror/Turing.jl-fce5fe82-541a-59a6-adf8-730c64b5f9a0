@@ -3,14 +3,14 @@
 #######################################
 
 immutable T_NIGP <: TotalMassDistribution
-    tau           ::  Float64
+    tau           ::  Real
 end
 
 Distributions.rand(d::T_NIGP) = rand(ExpTiltedSigma(0.5, d.tau))
 Distributions.logpdf{T<:Real}(d::T_NIGP, x::T) = 0
 
 immutable SBS_NIGP <: SizeBiasedSamplingDistribution
-    T_surplus     ::  Float64
+    T_surplus     ::  Real
 end
 
 Distributions.rand(d::SBS_NIGP) = begin
