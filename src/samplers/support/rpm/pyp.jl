@@ -2,7 +2,7 @@
 # Dirichlet Process #
 #####################
 
-immutable SBS_DP <: SizeBiasedSamplingDistribution
+immutable SBS_DP <: SizeBiasedDistribution
     alpha         ::  Real
     T_surplus     ::  Real
 end
@@ -14,7 +14,7 @@ Distributions.logpdf{T<:Real}(d::SBS_DP, x::T) = logpdf(Beta(1, d.alpha),x/d.T_s
 # Pitman-Yor Process #
 ######################
 
-immutable SBS_PYP <: SizeBiasedSamplingDistribution
+immutable SBS_PYP <: SizeBiasedDistribution
     alpha         ::  Real
     theta         ::  Real
     index         ::  Int

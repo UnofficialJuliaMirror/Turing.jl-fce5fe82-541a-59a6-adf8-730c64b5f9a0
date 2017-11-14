@@ -9,7 +9,7 @@ end
 Distributions.rand(d::T_NIGP) = rand(ExpTiltedSigma(0.5, d.tau))
 Distributions.logpdf{T<:Real}(d::T_NIGP, x::T) = 0
 
-immutable SBS_NIGP <: SizeBiasedSamplingDistribution
+immutable SBS_NIGP <: SizeBiasedDistribution
     T_surplus     ::  Real
 end
 
