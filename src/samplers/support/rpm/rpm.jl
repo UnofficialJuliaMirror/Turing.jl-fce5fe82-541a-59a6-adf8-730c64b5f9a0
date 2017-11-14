@@ -7,6 +7,8 @@ Distributions.maximum(d::SizeBiasedDistribution) = d.T_surplus
 Distributions.minimum(d::TotalMassDistribution) = 0.0
 Distributions.maximum(d::TotalMassDistribution) = Inf
 
+init(dist::SizeBiasedDistribution) = rand(dist)
+
 include("exptiltedsigma.jl")
 include("pyp.jl")
 include("ngip.jl")
