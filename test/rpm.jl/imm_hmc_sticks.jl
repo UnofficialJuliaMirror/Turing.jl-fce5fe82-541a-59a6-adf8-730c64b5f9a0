@@ -1,5 +1,5 @@
 using Turing
-using Turing: SBS_DP, SBS_PYP, T_NIGP, SBS_NIGP
+using Turing: SBS_DP, SBS_PYP, T_NIGP, SBS_NIGP, V_SBS_DP
 using Turing: realpart, CHUNKSIZE
 srand(100)
 
@@ -11,31 +11,28 @@ mu_0 = mean(data); sigma_0 = 1/sqrt(0.635); sigma_1 = sigma_0/15
   N = length(y)
   H = Normal(mu_0, sigma_0)
 
-  x = tzeros(Float64, N); J = tzeros(Float64, N); z = tzeros(Int, N)
+  x = Array{ForwardDiff.Dual{CHUNKSIZE, Float64}}(N);
+  z = Array{ForwardDiff.Dual{CHUNKSIZE, Int}}(N)
+  V = Array{ForwardDiff.Dual{CHUNKSIZE, Float64}}(N);
   k = 0
-  # T = 1
-  T ~ T_NIGP(1)
-  T_surplus = T
+  T = 1
+  T_surplus = Array{ForwardDiff.Dual{CHUNKSIZE, Float64}}(N);
+  T_surplus[1] = T
 
   for i in 1:N
-    ps = vcat(J[1:k]/T, T_surplus/T)
+    ps = vcat(T_surplus[1:k].*V[1:k]/T, T_surplus[k+1]/T)
     z[i] ~ Categorical(ps)
     if z[i] > k
       k = k + 1
-    #   J[k] ~ SBS_DP(10, T_surplus)
-    #   J[k] ~ SBS_PYP(0.5, 1, k, T_surplus)
-      J[k] ~ SBS_NIGP(T_surplus)
+      V[k] ~ V_SBS_DP(10)
       x[k] ~ H
-      T_surplus -= J[k]
+      T_surplus[k+1] = T_surplus[k] - V[k]*T_surplus[k]
     end
-    y[i] ~ Normal(x[z[i]], sigma_1)
+    y[i] ~ Normal(x[realpart(z[i])], sigma_1)
   end
 end
 
-sampler = SMC(50)
 permutation = randperm(length(data))
+model = infiniteMixture(data[permutation])
+sampler = HMC(100, 0.05, 5,:V,:x)
 results = sample(infiniteMixture(data[permutation]), sampler)
-
-# NOTE: Hardfix so that SMC works:
-# - Disable caching in getidcs(vi::VarInfo, spl::Sampler)
-# - Can't format samples via Chain(w, samples) in SMC

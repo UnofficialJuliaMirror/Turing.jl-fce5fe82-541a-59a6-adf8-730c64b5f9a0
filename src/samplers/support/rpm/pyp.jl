@@ -10,6 +10,13 @@ end
 Distributions.rand(d::SBS_DP) = d.T_surplus*rand(Beta(1, d.alpha))
 Distributions.logpdf{T<:Real}(d::SBS_DP, x::T) = logpdf(Beta(1, d.alpha),x/d.T_surplus)
 
+immutable V_SBS_DP <: StickSizeBiasedDistribution
+    alpha         ::  Real
+end
+
+Distributions.rand(d::V_SBS_DP) = rand(Beta(1, d.alpha))
+Distributions.logpdf{T<:Real}(d::V_SBS_DP, x::T) = logpdf(Beta(1, d.alpha),x)
+
 ######################
 # Pitman-Yor Process #
 ######################
