@@ -16,4 +16,4 @@ init(dist::SizeBiasedDistribution) = rand(dist)
 
 include("exptiltedsigma.jl")
 include("pyp.jl")
-include("ngip.jl")
+include("nigp.jl")
