@@ -14,6 +14,8 @@
 @inline dualpart(d::ForwardDiff.Dual)       = d.partials.values
 @inline dualpart(ds::Union{Array,SubArray}) = map(d -> dualpart(d), ds)
 
+Base.getindex{T<:Real}(ds::Array{T}, d::ForwardDiff.Dual) = ds[realpart(d)]
+
 # Base.promote_rule(D1::Type{Real}, D2::Type{ForwardDiff.Dual}) = D2
 
 #####################################################
