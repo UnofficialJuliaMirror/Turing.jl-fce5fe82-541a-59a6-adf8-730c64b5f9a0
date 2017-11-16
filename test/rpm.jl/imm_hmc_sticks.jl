@@ -11,12 +11,13 @@ mu_0 = mean(data); sigma_0 = 1/sqrt(0.635); sigma_1 = sigma_0/15
   N = length(y)
   H = Normal(mu_0, sigma_0)
 
-  x = Array{ForwardDiff.Dual{CHUNKSIZE, Float64}}(N);
-  z = Array{ForwardDiff.Dual{CHUNKSIZE, Int}}(N)
-  V = Array{ForwardDiff.Dual{CHUNKSIZE, Float64}}(N);
+  x = tzeros(ForwardDiff.Dual{CHUNKSIZE, Float64}, N);
+  z = tzeros(ForwardDiff.Dual{CHUNKSIZE, Int}, N)
+  V = tzeros(ForwardDiff.Dual{CHUNKSIZE, Float64}, N);
+
   k = 0
   T = 1
-  T_surplus = Array{ForwardDiff.Dual{CHUNKSIZE, Float64}}(N);
+  T_surplus = tzeros(ForwardDiff.Dual{CHUNKSIZE, Float64}, N);
   T_surplus[1] = T
 
   for i in 1:N
@@ -28,11 +29,12 @@ mu_0 = mean(data); sigma_0 = 1/sqrt(0.635); sigma_1 = sigma_0/15
       x[k] ~ H
       T_surplus[k+1] = T_surplus[k] - V[k]*T_surplus[k]
     end
-    y[i] ~ Normal(x[realpart(z[i])], sigma_1)
+    y[i] ~ Normal(x[z[i]], sigma_1)
   end
 end
 
 permutation = randperm(length(data))
 model = infiniteMixture(data[permutation])
-sampler = HMC(100, 0.05, 5,:V,:x)
+# vi = model()
+sampler = HMC(100, 0.03, 5,:V,:x)
 results = sample(infiniteMixture(data[permutation]), sampler)
