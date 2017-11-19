@@ -1,6 +1,6 @@
-immutable ExpTiltedSigma{T<:Real} <: ContinuousUnivariateDistribution
-    a::T
-    l::T
+immutable ExpTiltedSigma <: ContinuousUnivariateDistribution
+  a::Real
+  l::Real
 end
 
 function Distributions.rand(d::ExpTiltedSigma)

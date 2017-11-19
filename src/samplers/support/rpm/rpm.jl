@@ -1,6 +1,6 @@
-abstract StickSizeBiasedDistribution   <: ContinuousUnivariateDistribution
-abstract SizeBiasedDistribution   <: ContinuousUnivariateDistribution
-abstract TotalMassDistribution    <: ContinuousUnivariateDistribution
+abstract type StickSizeBiasedDistribution <: ContinuousUnivariateDistribution end
+abstract type SizeBiasedDistribution      <: ContinuousUnivariateDistribution end
+abstract type TotalMassDistribution       <: ContinuousUnivariateDistribution end
 
 Distributions.minimum(d::StickSizeBiasedDistribution) = 0.0
 Distributions.maximum(d::StickSizeBiasedDistribution) = 1.0
