@@ -6,8 +6,8 @@ using Base.Test
 # Compute posterior distribution over partitions
 
 # Model parameters
-data = [-2,-1.5,1.5,2]
-mu_0 = mean(data); sigma_0 = 2; sigma_1 = 0.5
+data = [-2,2,-1.5,1.5]
+mu_0 = mean(data); sigma_0 = 4; sigma_1 = 0.5
 tau0 = 1/sigma_0^2
 tau1 = 1/sigma_1^2
 
@@ -40,18 +40,27 @@ theta = 0.1
 end
 
 ### Compute empirical posterior distribution over partitions
-sampler = SMC(100)
-results = sample(py_mixture_model(data), sampler)
+sampler = SMC(1000)
+samples = sample(py_mixture_model(data), sampler) # not Chain type but samples
+
+# Check that there is no NaN value associated
+@test sum([sum(sample[:x][sample[:z]].== NaN)+sum(sample[:V][sample[:z]].== NaN) for sample in samples]) == 0
 
 # using Combinatorics; Partitions = collect(partitions(1:length(data)))
 Partitions = [[[1, 2, 3, 4]], [[1, 2, 3], [4]], [[1, 2, 4], [3]], [[1, 2], [3, 4]], [[1, 2], [3], [4]], [[1, 3, 4], [2]], [[1, 3], [2, 4]], [[1, 3], [2], [4]], [[1, 4], [2, 3]], [[1], [2, 3, 4]], [[1], [2, 3], [4]], [[1, 4], [2], [3]], [[1], [2, 4], [3]], [[1], [2], [3, 4]], [[1], [2], [3], [4]]]
 empirical_probs = zeros(length(Partitions))
 
-for sample in results
+sum_weights = sum([sample.weight for sample in samples])
+for sample in samples
   cluster = [find(sample[:z] .== c) for c in 1:maximum(sample[:z])]
   partition_idx = [i for i in 1:length(Partitions) if Partitions[i] == cluster][1]
-  empirical_probs[partition_idx] += 1*sample.weight
+  if sum_weights == 0
+    empirical_probs[partition_idx] += 1
+  else
+    empirical_probs[partition_idx] += sample.weight
+  end
 end
+if sum_weights == 0 empirical_probs /= length(samples) end
 
 ### Compute theoretical posterior distribution over partitions
 # cf Maria Lomeli's thesis, Section 2.7.4, page 46.
@@ -78,7 +87,8 @@ true_log_probs = [compute_log_joint(data, partition, tau0, tau1) for partition i
 true_probs = exp.(true_log_probs)
 true_probs /= sum(true_probs)
 
-######################### Chi-square test for categorical distributions
-score = length(results)*sum((empirical_probs - true_probs).^2 ./true_probs)
-println("Chi-square score: ", score)
-@test score >= 30 # The result is significant at p < 0.01.
+######################### Test of similarity between distributions
+# score = length(samples)*sum((empirical_probs - true_probs).^2 ./true_probs) # chi-square score
+score = sum((empirical_probs - true_probs).^2)
+println("L2 norm score: ", score)
+@test score < 0.05
