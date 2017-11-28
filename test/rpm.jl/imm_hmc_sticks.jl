@@ -11,17 +11,17 @@ mu_0 = mean(data); sigma_0 = 1/sqrt(0.635); sigma_1 = sigma_0/15
   N = length(y)
   H = Normal(mu_0, sigma_0)
 
-  x = tzeros(ForwardDiff.Dual{CHUNKSIZE, Float64}, N);
-  z = tzeros(ForwardDiff.Dual{CHUNKSIZE, Int}, N)
-  V = tzeros(ForwardDiff.Dual{CHUNKSIZE, Float64}, N);
+  x = tzeros(Real, N);
+  z = tzeros(Real, N)
+  V = tzeros(Real, N);
 
   k = 0
   T = 1
-  T_surplus = tzeros(ForwardDiff.Dual{CHUNKSIZE, Float64}, N);
+  T_surplus = tzeros(Real, N+1);
   T_surplus[1] = T
 
   for i in 1:N
-    ps = vcat(T_surplus[1:k].*V[1:k]/T, T_surplus[k+1]/T)
+    ps = Array{Real}(vcat(T_surplus[1:k].*V[1:k]/T, T_surplus[k+1]/T))
     z[i] ~ Categorical(ps)
     if z[i] > k
       k = k + 1
