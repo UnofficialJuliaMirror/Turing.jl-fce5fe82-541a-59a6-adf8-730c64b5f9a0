@@ -30,3 +30,12 @@ end
 
 Distributions.rand(d::SBS_PYP) = d.T_surplus*rand(Beta(1 - d.alpha, d.theta + d.index * d.alpha))
 Distributions.logpdf{T<:Real}(d::SBS_PYP, x::T) = logpdf(Beta(1 - d.alpha, d.theta + d.index * d.alpha),x/d.T_surplus)
+
+immutable V_SBS_PYP <: StickSizeBiasedDistribution
+    alpha         ::  Real
+    theta         ::  Real
+    index         ::  Int
+end
+
+Distributions.rand(d::V_SBS_PYP) = rand(Beta(1 - d.alpha, d.theta + d.index * d.alpha))
+Distributions.logpdf{T<:Real}(d::V_SBS_PYP, x::T) = logpdf(Beta(1 - d.alpha, d.theta + d.index * d.alpha),x)
