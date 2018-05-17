@@ -2,6 +2,7 @@
 # Master file for running all test cases #
 ##########################################
 
+using Revise
 using Turing; turnprogress(false)
 
 println("[runtests.jl] runtests.jl loaded")
@@ -13,46 +14,46 @@ testcases = Dict(
 # Turing.jl/
 #   src/
 #     core/
-        "ad.jl"        => ["ad1", "ad2", "ad3", "adr", "pass_dual_to_dists",],
-        "compiler.jl"  => ["assume", "observe", "predict", "sample",
-                           "beta_binomial", "noparam",
-                          #  "opt_param_of_dist",
-                          #  "explicit_ret",
-                           "new_grammar", "newinterface", "noreturn", "forbid_global",],
+        # "ad.jl"        => ["ad1", "ad2", "ad3", "adr", "pass_dual_to_dists",],
+        # "compiler.jl"  => ["assume", "observe", "predict", "sample",
+        #                    "beta_binomial", "noparam",
+        #                   #  "opt_param_of_dist",
+        #                   #  "explicit_ret",
+        #                    "new_grammar", "newinterface", "noreturn", "forbid_global",],
         "container.jl" => ["copy_particle_container",],
-        "varinfo.jl"   => ["replay", "test_varname", "varinfo", "orders", "is_inside", "flags",],
-        "io.jl"        => ["chain_utility", "save_resume_chain",],
+        # "varinfo.jl"   => ["replay", "test_varname", "varinfo", "orders", "is_inside", "flags",],
+        # "io.jl"        => ["chain_utility", "save_resume_chain",],
         "util.jl"      => ["util",],
 #     distributions/
         "transform.jl" => ["transform",],
 #     samplers/
 #       support/
-          "resample.jl" => ["resample", "particlecontainer",],
+          # "resample.jl" => ["resample", "particlecontainer",],
           "adapt.jl" => ["var_estimator",],
-        "sampler.jl" => ["vectorize_observe", "vec_assume", "vec_assume_mv",],
-        "gibbs.jl" => ["gibbs", "gibbs2", "gibbs_constructor",],
-        "nuts.jl"  => ["nuts_cons", "nuts",
-                      #  "nuts_geweke",
-                      ],
-        "hmcda.jl" => ["hmcda_cons", "hmcda",
-                      #  "hmcda_geweke",
-                      ],
-        "hmc.jl"   => ["multivariate_support", "matrix_support", "hmc_reverse_diff",
-                       "constrained_bounded", "constrained_simplex",],
-        "sghmc.jl" => ["sghmc_cons", "sghmc_cons",],
-        "sgld.jl"  => ["sgld_cons", "sgld_cons",],
-        "is.jl"    => ["importance_sampling",],
+        # "sampler.jl" => ["vectorize_observe", "vec_assume", "vec_assume_mv",],
+        # "gibbs.jl" => ["gibbs", "gibbs2", "gibbs_constructor",],
+        # "nuts.jl"  => ["nuts_cons", "nuts",
+        #               #  "nuts_geweke",
+        #               ],
+        # "hmcda.jl" => ["hmcda_cons", "hmcda",
+        #               #  "hmcda_geweke",
+        #               ],
+        # "hmc.jl"   => ["multivariate_support", "matrix_support", "hmc_reverse_diff",
+                       # "constrained_bounded", "constrained_simplex",],
+        # "sghmc.jl" => ["sghmc_cons", "sghmc_cons",],
+        # "sgld.jl"  => ["sgld_cons", "sgld_cons",],
+        # "is.jl"    => ["importance_sampling",],
         "mh.jl"    => ["mh_cons", "mh", "mh2",],
         # "pmmh.jl"  => ["pmmh_cons", "pmmh", "pmmh2",],
-        "pmmh.jl"  => ["pmmh_cons", "pmmh2",],
-        "ipmcmc.jl"=> ["ipmcmc_cons", "ipmcmc", "ipmcmc2",],
+        # "pmmh.jl"  => ["pmmh_cons", "pmmh2",],
+        # "ipmcmc.jl"=> ["ipmcmc_cons", "ipmcmc", "ipmcmc2",],
 #       pgibbs.jl
 #       sampler.jl
 #       smc.jl
 #     trace/
         "tarray.jl"   => ["tarray", "tarray2", "tarray3",],
         "taskcopy.jl" => ["clonetask",],
-        "trace.jl"    => ["trace",],
+        # "trace.jl"    => ["trace",],
 #   Turing.jl
       # "normal_loc",
       # "normal_mixture",
