@@ -137,6 +137,32 @@ dwarn(v::Int, args...)    = v < Turing.VERBOSITY ?
                             nothing
 derror(v::Int, args...)   = error("\r[Turing.ERROR]: ", mapreduce(string,*,args))
 
+###########
+# Logging #
+###########
+
+using Memento
+
+# Create the loggers.
+const LOGGER = getlogger(current_module())
+const LOGGER_MH = getlogger("$(current_module()).MH")
+
+# Register loggers at runtime so that folks can access the logger via
+# `get_logger(MyModule)`.
+function __init__()
+    Memento.register(LOGGER)
+    Memento.register(LOGGER_MH)
+end
+
+# Set the logging levels by default to "info" and attach a handler to the root logger.
+Memento.setlevel!(LOGGER, "info"; recursive=true)
+handler = DefaultHandler(
+    STDOUT,
+    DefaultFormatter(),
+    Dict{Symbol, Any}(:is_colorized => true)
+)
+LOGGER.handlers["console"] = handler
+
 ##################
 # Inference code #
 ##################
