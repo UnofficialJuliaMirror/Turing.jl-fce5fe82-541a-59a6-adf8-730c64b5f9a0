@@ -147,8 +147,7 @@ using Memento
 const LOGGER = getlogger(current_module())
 const LOGGER_MH = getlogger("$(current_module()).MH")
 
-# Register loggers at runtime so that folks can access the logger via
-# `get_logger(MyModule)`.
+# Register loggers at runtime so that folks can access the logger via `getlogger(Turing)`.
 function __init__()
     Memento.register(LOGGER)
     Memento.register(LOGGER_MH)
