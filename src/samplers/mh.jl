@@ -1,3 +1,6 @@
+const LOGGER_MH = getlogger("$(current_module()).MH")
+
+
 doc"""
     MH(n_iters::Int)
 
@@ -21,7 +24,7 @@ Example:
   return s, m
 end
 
-sample(gdemo([1.5, 2]), MH(1000, (:m, (x) -> Normal(x, 0.1)), :s)))
+sample(gdemo([1.5, 2]), MH(1000, (:m, (x) -> Normal(x, 0.1)), :s))
 ```
 """
 immutable MH <: InferenceAlgorithm
@@ -38,7 +41,9 @@ immutable MH <: InferenceAlgorithm
         if isa(element, Symbol)
           push!(new_space, element)
         else
-          @assert isa(element[1], Symbol) "[MH] ($element[1]) should be a Symbol. For proposal, use the syntax MH(N, (:m, (x) -> Normal(x, 0.1)))"
+          if !isa(element[1], Symbol)
+              error(LOGGER_MH, "($element[1]) should be a Symbol. For proposal, use the syntax MH(N, (:m, (x) -> Normal(x, 0.1)))")
+          end
           push!(new_space, element[1])
           proposals[element[1]] = element[2]
         end
@@ -50,13 +55,13 @@ immutable MH <: InferenceAlgorithm
 end
 
 Sampler(alg::MH) = begin
-  alg_str = "MH"
-
   # Sanity check for space
   if alg.gid == 0 && !isempty(alg.space)
-    @assert issubset(Turing._compiler_[:pvars], alg.space) "[$alg_str] symbols specified to samplers ($alg.space) doesn't cover the model parameters ($(Turing._compiler_[:pvars]))"
+    if !issubset(Turing._compiler_[:pvars], alg.space)
+        error(LOGGER_MH, "symbols specified to samplers ($alg.space) doesn't cover the model parameters ($(Turing._compiler_[:pvars]))")
+    end
     if Turing._compiler_[:pvars] != alg.space
-      warn("[$alg_str] extra parameters specified by samplers don't exist in model: $(setdiff(alg.space, Turing._compiler_[:pvars]))")
+      warn(LOGGER_MH, "extra parameters specified by samplers don't exist in model: $(setdiff(alg.space, Turing._compiler_[:pvars]))")
     end
   end
 
@@ -88,13 +93,13 @@ step(model::Function, spl::Sampler{MH}, vi::VarInfo, is_first::Bool) = begin
     old_θ = copy(vi[spl])
     old_logp = getlogp(vi)
 
-    dprintln(2, "Propose new parameters from proposals...")
+    debug(LOGGER_MH, "proposing new parameters")
     propose(model, spl, vi)
 
-    dprintln(2, "computing accept rate α...")
+    debug(LOGGER_MH, "computing acceptance rate")
     α = getlogp(vi) - old_logp + spl.info[:proposal_ratio]
 
-    dprintln(2, "decide wether to accept...")
+    debug(LOGGER_MH, "deciding whether to accept")
     if log(rand()) < α && !spl.info[:violating_support]  # accepted
       push!(spl.info[:accept_his], true)
     else                      # rejected
@@ -111,12 +116,12 @@ function sample(model::Function, alg::MH;
                 save_state=false,         # flag for state saving
                 resume_from=nothing,      # chain to continue
                 reuse_spl_n=0,            # flag for spl re-using
+                show_progress::Bool=true  # Show progress
                 )
 
   spl = reuse_spl_n > 0 ?
         resume_from.info[:spl] :
         Sampler(alg)
-  alg_str = "MH"
 
   # Initialization
   time_total = 0.0
@@ -137,11 +142,12 @@ function sample(model::Function, alg::MH;
     runmodel(model, vi, spl)
   end
 
-  # MH steps
-  if PROGRESS spl.info[:progress] = ProgressMeter.Progress(n, 1, "[$alg_str] Sampling...", 0) end
-  for i = 1:n
-    dprintln(2, "$alg_str stepping...")
+  # Initialise the progress bar.
+  if show_progress
+      p = ProgressMeter.Progress(n; dt=.5, desc="Sampling: ", color=:green)
+  end
 
+  for i = 1:n
     time_elapsed = @elapsed vi = step(model, spl, vi, i == 1)
     time_total += time_elapsed
 
@@ -152,13 +158,13 @@ function sample(model::Function, alg::MH;
     end
     samples[i].value[:elapsed] = time_elapsed
 
-    if PROGRESS ProgressMeter.next!(spl.info[:progress]) end
+    # Update the progress bar.
+    show_progress && next!(p)
   end
 
-  println("[$alg_str] Finished with")
-  println("  Running time        = $time_total;")
-  accept_rate = sum(spl.info[:accept_his]) / n  # calculate the accept rate
-  println("  Accept rate         = $accept_rate;")
+  info(LOGGER_MH, "running time: $time_total s")
+  accept_rate = sum(spl.info[:accept_his]) / n
+  info(LOGGER_MH, "acceptance rate: $accept_rate")
 
   if resume_from != nothing   # concat samples
     unshift!(samples, resume_from.value2...)
@@ -173,7 +179,7 @@ end
 
 assume(spl::Sampler{MH}, dist::Distribution, vn::VarName, vi::VarInfo) = begin
     if isempty(spl.alg.space) || vn.sym in spl.alg.space
-      if ~haskey(vi, vn) error("[MH] does not handle stochastic existence yet") end
+      if ~haskey(vi, vn) error(LOGGER_MH, "does not handle stochastic existence yet") end
       old_val = vi[vn]
 
       if vn.sym in keys(spl.alg.proposals) # Custom proposal for this parameter
@@ -217,7 +223,7 @@ assume(spl::Sampler{MH}, dist::Distribution, vn::VarName, vi::VarInfo) = begin
 end
 
 assume{D<:Distribution}(spl::Sampler{MH}, dists::Vector{D}, vn::VarName, var::Any, vi::VarInfo) =
-  error("[Turing] MH doesn't support vectorizing assume statement")
+  error(LOGGER_MH, "no support for vectorizing assume statement")
 
 observe(spl::Sampler{MH}, d::Distribution, value::Any, vi::VarInfo) =
   observe(nothing, d, value, vi)  # accumulate pdf of likelihood
