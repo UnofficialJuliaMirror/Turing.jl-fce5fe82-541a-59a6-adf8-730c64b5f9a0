@@ -6,7 +6,7 @@
 - `S::Int`: number of samples to take
 - `gid::Int`: a parameter IMPROVE THIS DOCUMENTATION.
 """
-struct MCMCSampler{T<:TransitionOperator} <: InferenceAlgorithm
+struct MCMCSampler{T<:MarkovTransitionOperator} <: InferenceAlgorithm
     trans::T
     S::Int
     gid::Int
@@ -15,28 +15,28 @@ struct MCMCSampler{T<:TransitionOperator} <: InferenceAlgorithm
 end
 
 """
-    step(model::Function, trans::TransitionOperator, vi::VarInfo)::VarInfo
+    step(model::Function, trans::MarkovTransitionOperator, vi::VarInfo)::VarInfo
 
 Perform a single sampling step on `model` using `trans`.
 
 # Arguments
 - `model::Function` - a `Turing` model
-- `trans::TransitionOperator` - a Metropolis-Hastings transition operator
+- `trans::MarkovTransitionOperator` - a Metropolis-Hastings transition operator
 - `vi::VarInfo` - the usual `VarInfo` object
 """
-function step(model::Function, trans::TransitionOperator, vi::VarInfo) end
+function step(model::Function, trans::MarkovTransitionOperator, vi::VarInfo) end
 
 """
-    initialize(model::Function, trans::TransitionOperator, vi::VarInfo)::VarInfo
+    initialize(model::Function, trans::MarkovTransitionOperator, vi::VarInfo)::VarInfo
 
 Perform the initialization of `model` specified by `trans`.
 
 # Arguments
 - `model::Function` - a `Turing` model
-- `trans::TransitionOperator` - a Metropolis-Hastings transition operator
+- `trans::MarkovTransitionOperator` - a Metropolis-Hastings transition operator
 - `vi::VarInfo` - the usual `VarInfo` object
 """
-function initialize(model::Function, trans::TransitionOperator, vi::VarInfo) end
+function initialize(model::Function, trans::MarkovTransitionOperator, vi::VarInfo) end
 
 # Retained for interop with old code.
 function Sampler(sampler::MCMCSampler)
@@ -103,7 +103,7 @@ function sample(
 
     spl.alg.gid == 0 && runmodel(model, vi, spl)
 
-    # Iterate `TransitionOperator`.
+    # Iterate `MarkovTransitionOperator`.
     if show_progress
         spl.info[:progress] = ProgressMeter.Progress(n, 1, "[$alg_str] Sampling...", 0)
     end
@@ -139,11 +139,11 @@ end
 ################## VarInfo-related crap. Should be able to be removed. #####################
 
 # NOTE: vi[vview] will just return what insdie vi (no transformations applied)
-Base.getindex(vi::VarInfo, trans::TransitionOperator) = getval(vi, getranges(vi, trans))
-function Base.setindex!(vi::VarInfo, val::Any, trans::TransitionOperator)
+Base.getindex(vi::VarInfo, trans::MarkovTransitionOperator) = getval(vi, getranges(vi, trans))
+function Base.setindex!(vi::VarInfo, val::Any, trans::MarkovTransitionOperator)
     return setval!(vi, val, getranges(vi, trans))
 end
-function getranges(vi::VarInfo, trans::TransitionOperator)
+function getranges(vi::VarInfo, trans::MarkovTransitionOperator)
     if :cache_updated ∉ keys(trans.info)
         trans.info[:cache_updated] = CACHERESET
     end

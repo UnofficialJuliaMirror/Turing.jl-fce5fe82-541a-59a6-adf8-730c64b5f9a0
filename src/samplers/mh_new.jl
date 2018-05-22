@@ -5,7 +5,7 @@
 - `proposals::Dict{Symbol, Any}`: proposal distributions for variables in space
 - `space::Set`: set of variables to be sampled
 """
-struct MH <: TransitionOperator
+struct MH <: MarkovTransitionOperator
     proposals::Dict{Symbol, Any}
     space::Set
     info::Dict{Symbol, Any}
