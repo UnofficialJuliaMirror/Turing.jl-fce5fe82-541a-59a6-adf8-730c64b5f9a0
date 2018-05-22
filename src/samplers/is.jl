@@ -3,6 +3,7 @@ doc"""
 
 Importance sampling algorithm object.
 
+# Fields
 - `n_particles` is the number of particles to use
 
 Usage:
@@ -26,37 +27,21 @@ end
 sample(gdemo([1.5, 2]), IS(1000))
 ```
 """
-immutable IS <: InferenceAlgorithm
-  n_particles ::  Int
+struct IS <: InferenceAlgorithm
+    n_particles::Int
 end
 
-Sampler(alg::IS) = begin
-  info = Dict{Symbol, Any}()
-  Sampler(alg, info)
+function sample(model::Function, alg::IS)
+    spl = Sampler(alg, Dict{Symbol, Any}())
+    samples = [Sample(model(VarInfo(), spl)) for _ in 1:alg.n_particles]
+    le = logsum(map(x->x[:lp], samples)) - log(n)
+    return Chain(exp.(le), samples)
 end
 
-sample(model::Function, alg::IS) = begin
-  spl = Sampler(alg);
-  samples = Array{Sample}(alg.n_particles)
-
-  n = spl.alg.n_particles
-  for i = 1:n
-    vi = model(VarInfo(), spl)
-    samples[i] = Sample(vi)
-  end
-
-  le = logsum(map(x->x[:lp], samples)) - log(n)
-
-  Chain(exp.(le), samples)
+function assume(spl::Sampler{IS}, dist::Distribution, vn::VarName, vi::VarInfo)
+    r = rand(dist)
+    push!(vi, vn, r, dist, 0)
+    return r, zero(Real)
 end
 
-assume(spl::Sampler{IS}, dist::Distribution, vn::VarName, vi::VarInfo) = begin
-  r = rand(dist)
-  push!(vi, vn, r, dist, 0)
-  r, zero(Real)
-end
-
-observe(spl::Sampler{IS}, dist::Distribution, value::Any, vi::VarInfo) = begin
-  # acclogp!(vi, logpdf(dist, value))
-  logpdf(dist, value)
-end
+observe(spl::Sampler{IS}, dist::Distribution, value, vi::VarInfo) = logpdf(dist, value)
