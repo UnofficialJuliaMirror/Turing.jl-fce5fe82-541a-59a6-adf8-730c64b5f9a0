@@ -8,12 +8,17 @@ include("support/hmc_core.jl")
 include("support/adapt.jl")
 include("support/init.jl")
 include("support/stan-interface.jl")
+
+# MCMC Implementations.
+include("new_sampler.jl")
+include("mh_new.jl")
+
 # include("hmcda.jl")
 # include("nuts.jl")
 # include("sghmc.jl")
 # include("sgld.jl")
 # include("hmc.jl")
-include("mh.jl")
+# include("mh.jl")
 # include("is.jl")
 # include("smc.jl")
 # include("pgibbs.jl")

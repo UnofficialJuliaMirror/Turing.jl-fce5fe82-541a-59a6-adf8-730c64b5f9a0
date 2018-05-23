@@ -66,7 +66,6 @@ Sampler(alg::MH) = begin
   end
 
   info = Dict{Symbol, Any}()
-  info[:accept_his] = []
   info[:total_eval_num] = 0
   info[:proposal_ratio] = 0.0
   info[:prior_prob] = 0.0

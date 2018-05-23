@@ -245,24 +245,24 @@ Base.show(io::IO, vi::VarInfo) = begin
 end
 
 # Add a new entry to VarInfo
-push!(vi::VarInfo, vn::VarName, r::Any, dist::Distributions.Distribution, gid::Int) = begin
+function push!(vi::VarInfo, vn::VarName, r::Any, dist::Distributions.Distribution, gid::Int)
 
-  @assert ~(vn in vns(vi)) "[push!] attempt to add an exisitng variable $(sym(vn)) ($(vn)) to VarInfo (keys=$(keys(vi))) with dist=$dist, gid=$gid"
+    @assert ~(vn in vns(vi)) "[push!] attempt to add an exisitng variable $(sym(vn)) ($(vn)) to VarInfo (keys=$(keys(vi))) with dist=$dist, gid=$gid"
 
-  val = vectorize(dist, r)
+    val = vectorize(dist, r)
 
-  vi.idcs[vn] = length(vi.idcs) + 1
-  push!(vi.vns, vn)
-  l = length(vi.vals); n = length(val)
-  push!(vi.ranges, l+1:l+n)
-  append!(vi.vals, val)
-  push!(vi.dists, dist)
-  push!(vi.gids, gid)
-  push!(vi.orders, vi.num_produce)
-  push!(vi.flags["del"], false)
-  push!(vi.flags["trans"], false)
+    vi.idcs[vn] = length(vi.idcs) + 1
+    push!(vi.vns, vn)
+    l = length(vi.vals); n = length(val)
+    push!(vi.ranges, l+1:l+n)
+    append!(vi.vals, val)
+    push!(vi.dists, dist)
+    push!(vi.gids, gid)
+    push!(vi.orders, vi.num_produce)
+    push!(vi.flags["del"], false)
+    push!(vi.flags["trans"], false)
 
-  vi
+    return vi
 end
 
 setorder!(vi::VarInfo, vn::VarName, index::Int) = begin
