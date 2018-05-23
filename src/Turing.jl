@@ -1,5 +1,21 @@
 module Turing
 
+######################
+# Initialise logging #
+######################
+
+using Memento
+
+# Create the top-level logger, and attach a handler.
+const LOGGER = getlogger(current_module())
+handler = DefaultHandler(
+    STDOUT,
+    DefaultFormatter(),
+    Dict{Symbol, Any}(:is_colorized => true)
+)
+LOGGER.handlers["console"] = handler
+
+
 ##############
 # Dependency #
 ########################################################################
@@ -137,31 +153,6 @@ dwarn(v::Int, args...)    = v < Turing.VERBOSITY ?
                             nothing
 derror(v::Int, args...)   = error("\r[Turing.ERROR]: ", mapreduce(string,*,args))
 
-###########
-# Logging #
-###########
-
-using Memento
-
-# Create the loggers.
-const LOGGER = getlogger(current_module())
-const LOGGER_MH = getlogger("$(current_module()).MH")
-
-# Register loggers at runtime so that folks can access the logger via `getlogger(Turing)`.
-function __init__()
-    Memento.register(LOGGER)
-    Memento.register(LOGGER_MH)
-end
-
-# Set the logging levels by default to "info" and attach a handler to the root logger.
-Memento.setlevel!(LOGGER, "info"; recursive=true)
-handler = DefaultHandler(
-    STDOUT,
-    DefaultFormatter(),
-    Dict{Symbol, Any}(:is_colorized => true)
-)
-LOGGER.handlers["console"] = handler
-
 ##################
 # Inference code #
 ##################
@@ -173,5 +164,18 @@ include("core/container.jl")    # particle container
 include("core/io.jl")           # I/O
 include("samplers/sampler.jl")  # samplers
 include("core/ad.jl")           # Automatic Differentiation
+
+
+####################
+# Finalise logging #
+####################
+
+# Register loggers at runtime so that folks can access the logger via `getlogger(Turing)`.
+function __init__()
+    Memento.register.(Memento.getchildren("$(current_module)"))
+end
+
+# Set the logging levels by default to "info".
+Memento.setlevel!(LOGGER, "info"; recursive=true)
 
 end
