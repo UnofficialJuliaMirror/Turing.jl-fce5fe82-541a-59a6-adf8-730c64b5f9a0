@@ -19,7 +19,7 @@ function _model(def::Expr)
     model_type = Expr(:type, false, type_signature, type_fields)
 
     # Generate logpdf by traversing body and playing around with the ~ - terms.
-    
+
 
     return model_type
 end
@@ -37,8 +37,38 @@ end
 @model function foo(X::AbstractMatrix{T}, σw::T, σn::Real) where T<:Real
     w ~ Normal(0, σw)
     f = X * w
-    y ~ Normal(f, σn)
+    return f, w
 end
+
+
+@model function model_f(X, σw)
+    w ~ Normal(0, σw)
+    f = X * w
+    return f
+end
+
+@model function noise_model(f, σn)
+    y ~ Normal(f, σn)
+    return y
+end
+
+@model function lr(X, σw, σn)
+    f ~ model_f(X, σw)
+    y ~ noise_model(f, σn)
+    return y
+end
+
+# @model function blr(X)
+#     σw ~ Gamma...
+#     σn ~ Gamma...
+#     return lr(X, σw, σn)
+# end
+
+logpdf(blr(X, σw, σn), y)
+
+dag(blr, X, σw, σn)
+
+noise_model ∘ foo
 
 bar = :(function foo(X::AbstractMatrix{T}, σw::T, σn::Real) where T<:Real
     w ~ Normal(0, σw)
