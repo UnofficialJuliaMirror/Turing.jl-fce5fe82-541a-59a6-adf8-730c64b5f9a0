@@ -1,7 +1,10 @@
+using MacroTools
 using MacroTools: splitdef, postwalk
+using Distributions
 
 # Remove type information from function arguments obtained using `MacroTools.splitdef`
 detype_args(args::Vector) = map(x->x isa Expr ? x.args[1] : x, args)
+dearg_types(args::Vector) = map(x->x isa Expr ? x.args[2] : :Any, args)
 
 """
     _model(def::Expr)
@@ -12,10 +15,12 @@ function _model(def::Expr)
 
     # Split up the definition using MacroTools.
     def_dict = splitdef(def)
+    @assert length(def_dict[:kwargs]) === 0
     name, typed_args, body = def_dict[:name], def_dict[:args], def_dict[:body]
+    args, arg_types = detype_args(typed_args), dearg_types(typed_args)
 
-    # Get arguments with types removed.
-    args = detype_args(typed_args)
+    wheres = def_dict[:whereparams]
+    wheres_vals = map(x->x isa Expr ? x.args[1] : x, wheres)
 
     # Get the names of all of the things treated as random variables.
     rv_names = []
@@ -24,21 +29,30 @@ function _model(def::Expr)
         return x
     end
 
-    # Explicitly disallow some things that we don't currently handle.
-    length(def_dict[:kwargs]) != 0 && throw(error("Don't support kwargs at the minute."))
-
     # Generate some symbols.
     foo_name, l, type_name = gensym(), gensym(), gensym()
 
-    # THIS IMPLEMENTATION IS SHIT. NEEDS TO BE IMPROVED. Currently allows fields of a
-    # particular type to be abstract, thus screwing over performance. Easy to fix though.
-    # Generate new type for the function based on its args.
-    type_signature = :($type_name{$(def_dict[:whereparams]...)})
-    type_fields = Expr(:block, typed_args...)
-    model_type = Expr(:type, false, type_signature, type_fields)
+    # Construct a new type to store the arguments to foo.
+    dummy_types = [gensym() for _ in eachindex(arg_types)]
+    sig_types = vcat(
+        reverse(wheres)...,
+        [:($dummy<:$tp) for (dummy, tp) in zip(dummy_types, arg_types)],
+    )
+    fields = [:($arg_name::$dummy) for (arg_name, dummy) in zip(args, dummy_types)]
+
+    # Inner constructor definition.
+    inner_ctor_signature = :($type_name($(fields...)) where $(sig_types...))
+    inner_ctor_body = :(new{$(reverse(wheres_vals)...), $(dummy_types...)}($(args...)))
+    inner_ctor = Expr(:function, inner_ctor_signature, inner_ctor_body)
+
+    type_signature = :($type_name{$(sig_types...)})
+    type_body = Expr(:block, fields..., inner_ctor)
+    model_type = Expr(:type, false, type_signature, type_body)
 
     # Generate a method of `foo` which spits out the appropriate struct.
-    foo_method = :(foo(x...) = $type_name(x...))
+    foo_signature = :($name($(typed_args...)) where $(wheres...))
+    foo_body = Expr(:call, type_name, args...)
+    foo_method = Expr(:function, foo_signature, foo_body)
 
     # Generate `rand` method
     rand_signature = :(Base.rand($foo_name::$type_name))
@@ -64,7 +78,8 @@ function _model(def::Expr)
         end
     end
     logpdf_body = Expr(:block,
-        :($l = 0.0), # THIS IS A BAD IDEA IN GENERAL! CHANGE THIS.
+        [:($x = $foo_name.$x) for x in args]...,
+        :($l = 0.0),
         logpdf_compute.args...
     )
     logpdf_method = Expr(:function, logpdf_signature, logpdf_body)
@@ -81,15 +96,8 @@ macro model(def::Expr)
     return esc(_model(def))
 end
 
-# A possible Bayesian linear regressor.
-@model function foo(X, σw::T, σn::Real) where T<:Real
-    w ~ Normal(0, σw)
-    f = X * w
-    return f, w
-end
-
 expr = :(
-function foo(X::AbstractMatrix{T}, σw::T, σn::Real) where T<:Real
+function foo(X, σw::T, σn::Real) where T<:Real
     w ~ Normal(0, σw)
     f = X * w
     y ~ Normal(f, σn)
@@ -97,74 +105,17 @@ function foo(X::AbstractMatrix{T}, σw::T, σn::Real) where T<:Real
 end
 )
 
-@model function foo(X::AbstractMatrix{T}, σw::T, σn::Real) where T<:Real
+@model function foo(X, σw::T, σn::Real) where T<:Real
     w ~ Normal(0, σw)
     f = X * w
     y ~ Normal(f, σn)
     return y
 end
 
-
-@model function model_f(X, σw)
-    w ~ Normal(0, σw)
-    f = X * w
-    return f
+@model function bar()
+    s ~ InverseGamma(2, 3)
+    m ~ Normal(0, sqrt(s))
+    x1 ~ Normal(m, sqrt(s))
+    x2 ~ Normal(m, sqrt(s))
+    return x1, x2
 end
-
-@model function noise_model(f, σn)
-    y ~ Normal(f, σn)
-    return y
-end
-
-@model function lr(X, σw, σn)
-    f ~ model_f(X, σw)
-    y ~ noise_model(f, σn)
-    return y
-end
-
-# @model function blr(X)
-#     σw ~ Gamma...
-#     σn ~ Gamma...
-#     return lr(X, σw, σn)
-# end
-
-logpdf(blr(X, σw, σn), y)
-
-dag(blr, X, σw, σn)
-
-noise_model ∘ foo
-
-bar = :(function foo(X::AbstractMatrix{T}, σw::T, σn::Real) where T<:Real
-    w ~ Normal(0, σw)
-    f = X * w
-    y ~ Normal(f, σn)
-end)
-
-# Output should look something like this:
-struct MangledStruct{Tθ}
-    θ::Tθ
-end
-
-# Slow and ugly allocating implementation of rand. A good implementation would use rand!.
-function rand(rng::AbstractRNG, f::MangledStruct)
-    w = rand(rng, Normal(0, σw))
-    f = X * w
-    y = rand(rng, Normal(f, σn))
-    return vcat(w, y)
-end
-
-# Probably sensible logpdf evaluation function.
-function logpdf(foo::MangledStruct, x)
-    w = x[:w]
-    l = logpdf(Normal(0, foo.σw), w)
-    f = foo.X * w
-    y = x[:y]
-    l += logpdf(Normal(f, foo.σ), y)
-    return l
-end
-
-
-
-
-
-
