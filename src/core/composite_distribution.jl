@@ -1,3 +1,8 @@
+using MacroTools: splitdef, postwalk
+
+# Remove type information from function arguments obtained using `MacroTools.splitdef`
+detype_args(args::Vector) = map(x->x isa Expr ? x.args[1] : x, args)
+
 """
     _model(def::Expr)
 
@@ -7,21 +12,64 @@ function _model(def::Expr)
 
     # Split up the definition using MacroTools.
     def_dict = splitdef(def)
+    name, typed_args, body = def_dict[:name], def_dict[:args], def_dict[:body]
+
+    # Get arguments with types removed.
+    args = detype_args(typed_args)
+
+    # Get the names of all of the things treated as random variables.
+    rv_names = []
+    postwalk(body) do x
+        @capture(x, lhs_ ~ rhs_) && push!(rv_names, lhs)
+        return x
+    end
 
     # Explicitly disallow some things that we don't currently handle.
     length(def_dict[:kwargs]) != 0 && throw(error("Don't support kwargs at the minute."))
 
+    # Generate some symbols.
+    foo_name, l, type_name = gensym(), gensym(), gensym()
+
     # THIS IMPLEMENTATION IS SHIT. NEEDS TO BE IMPROVED. Currently allows fields of a
     # particular type to be abstract, thus screwing over performance. Easy to fix though.
     # Generate new type for the function based on its args.
-    type_signature = :($(def_dict[:name]){$(def_dict[:whereparams]...)} <: Distribution)
-    type_fields = Expr(:block, def_dict[:args]...)
+    type_signature = :($type_name{$(def_dict[:whereparams]...)})
+    type_fields = Expr(:block, typed_args...)
     model_type = Expr(:type, false, type_signature, type_fields)
 
-    # Generate logpdf by traversing body and playing around with the ~ - terms.
+    # Generate a method of `foo` which spits out the appropriate struct.
+    foo_method = :(foo(x...) = $type_name(x...))
 
+    # Generate `rand` method
+    rand_signature = :(Base.rand($foo_name::$type_name))
+    rand_body = Expr(:block,
+        [:($x = $foo_name.$x) for x in args]...,
+        postwalk(x->@capture(x, lhs_ ~ rhs_) ? :($lhs = rand($rhs)) : x, body).args...,
+    )
+    rand_method = Expr(:function, rand_signature, rand_body)
 
-    return model_type
+    # Generate `logpdf` method
+    logpdf_signature = Expr(:call,
+        :(Distributions.logpdf),
+        :($foo_name::$type_name),
+        rv_names...,
+    )
+    logpdf_compute = postwalk(body) do x
+        if @capture(x, lhs_ ~ rhs_)
+            return :($l += logpdf($rhs, $lhs))
+        elseif @capture(x, return out__)
+            return :(return $l)
+        else
+            return x
+        end
+    end
+    logpdf_body = Expr(:block,
+        :($l = 0.0), # THIS IS A BAD IDEA IN GENERAL! CHANGE THIS.
+        logpdf_compute.args...
+    )
+    logpdf_method = Expr(:function, logpdf_signature, logpdf_body)
+
+    return Expr(:block, model_type, foo_method, rand_method, logpdf_method)
 end
 
 """
@@ -34,10 +82,26 @@ macro model(def::Expr)
 end
 
 # A possible Bayesian linear regressor.
-@model function foo(X::AbstractMatrix{T}, σw::T, σn::Real) where T<:Real
+@model function foo(X, σw::T, σn::Real) where T<:Real
     w ~ Normal(0, σw)
     f = X * w
     return f, w
+end
+
+expr = :(
+function foo(X::AbstractMatrix{T}, σw::T, σn::Real) where T<:Real
+    w ~ Normal(0, σw)
+    f = X * w
+    y ~ Normal(f, σn)
+    return y
+end
+)
+
+@model function foo(X::AbstractMatrix{T}, σw::T, σn::Real) where T<:Real
+    w ~ Normal(0, σw)
+    f = X * w
+    y ~ Normal(f, σn)
+    return y
 end
 
 
