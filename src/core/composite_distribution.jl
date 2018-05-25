@@ -96,22 +96,6 @@ macro model(def::Expr)
     return esc(_model(def))
 end
 
-expr = :(
-function foo(X, σw::T, σn::Real) where T<:Real
-    w ~ Normal(0, σw)
-    f = X * w
-    y ~ Normal(f, σn)
-    return y
-end
-)
-
-@model function foo(X, σw::T, σn::Real) where T<:Real
-    w ~ Normal(0, σw)
-    f = X * w
-    y ~ Normal(f, σn)
-    return y
-end
-
 @model function bar()
     s ~ InverseGamma(2, 3)
     m ~ Normal(0, sqrt(s))
@@ -119,3 +103,7 @@ end
     x2 ~ Normal(m, sqrt(s))
     return x1, x2
 end
+
+using BenchmarkTools
+@benchmark rand(bar())
+@benchmark logpdf(bar(), 1.0, 0.0, 0.5, -0.5)
