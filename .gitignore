@@ -10,3 +10,5 @@ tmp/
 
 deps/usr
 deps/deps.jl
+
+docs/*

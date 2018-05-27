@@ -6,11 +6,7 @@ using Distributions
 detype_args(args::Vector) = map(x->x isa Expr ? x.args[1] : x, args)
 dearg_types(args::Vector) = map(x->x isa Expr ? x.args[2] : :Any, args)
 
-"""
-    _model(def::Expr)
-
-Internals for @model
-"""
+# Internals for _model.
 function _model(def::Expr)
 
     # Split up the definition using MacroTools.
@@ -88,7 +84,7 @@ function _model(def::Expr)
 end
 
 """
-    model(def::Expr)
+    @model(def::Expr)
 
 A model.
 """
@@ -96,17 +92,41 @@ macro model(def::Expr)
     return esc(_model(def))
 end
 
-@model function bar()
-    s ~ InverseGamma(2, 3)
+@model function bar(α::Real, β::Real)
+    s ~ InverseGamma(α, β)
     m ~ Normal(0, sqrt(s))
     x1 ~ Normal(m, sqrt(s))
     x2 ~ Normal(m, sqrt(s))
     return x1, x2
 end
 
-using BenchmarkTools
-@benchmark rand(bar())
-@benchmark logpdf(bar(), 1.0, 0.0, 0.5, -0.5)
+abstract type CompositeDistribution end
+
+struct Bar{T<:Real V<:Real} <: CompositeDistribution
+    α::T
+    β::V
+end
+
+function logpdf(bar::Bar, s::Real, m::Real, x1::Real, x2::Real)
+    l = 0.0
+    l += logpdf(InverseGamma(bar.α, bar.β), s)
+    l += logpdf(Normal(0, sqrt(s)), m)
+    l += logpdf(Normal(m, sqrt(s)), x1)
+    l += logpdf(Normal(m, sqrt(s)), x2)
+    return l
+end
+
+function rand(bar::Bar)
+    s = rand(InverseGamma(bar.α, bar.β))
+    m = rand(Normal(0, sqrt(s)))
+    x1 = rand(Normal(m, sqrt(s)))
+    x2 = rand(Normal(m, sqrt(s)))
+    return x1, x2
+end
+
+# using BenchmarkTools
+# @benchmark rand(bar())
+# @benchmark logpdf(bar(), 1.0, 0.0, 0.5, -0.5)
 
 #=
 Outstanding Issues:
