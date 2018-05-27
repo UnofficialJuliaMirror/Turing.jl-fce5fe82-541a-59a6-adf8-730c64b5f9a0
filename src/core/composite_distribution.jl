@@ -107,3 +107,18 @@ end
 using BenchmarkTools
 @benchmark rand(bar())
 @benchmark logpdf(bar(), 1.0, 0.0, 0.5, -0.5)
+
+#=
+Outstanding Issues:
+1. Limitations / brittleness of existing approach:
+    The current approach is _possibly_ a bit limited / brittle as we are limited to having
+    only `Symbol`s on the lhs of a `~`. There are definitely other things that you would
+    want to do, such as assignment, which involves there being an expression on the rhs.
+    We have also implicitly limited outselves to not doing in-place stuff.
+2. Semantics for making assignments:
+    Presumably we want to stick with the current mechanism in Turing. I would propose
+    automatically adding keyword arguments via the @model macro which allow you to pass in
+    data for arbitrary random variables.
+=#
+
+
