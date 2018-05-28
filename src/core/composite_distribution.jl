@@ -92,37 +92,42 @@ macro model(def::Expr)
     return esc(_model(def))
 end
 
+@model function foo(s::Real)
+    w ~ Normal(0, s)
+    return w
+end
+
 @model function bar(α::Real, β::Real)
     s ~ InverseGamma(α, β)
-    m ~ Normal(0, sqrt(s))
+    m ~ foo(s)
     x1 ~ Normal(m, sqrt(s))
     x2 ~ Normal(m, sqrt(s))
     return x1, x2
 end
 
-abstract type CompositeDistribution end
+# abstract type CompositeDistribution end
 
-struct Bar{T<:Real V<:Real} <: CompositeDistribution
-    α::T
-    β::V
-end
+# struct Bar{T<:Real V<:Real} <: CompositeDistribution
+#     α::T
+#     β::V
+# end
 
-function logpdf(bar::Bar, s::Real, m::Real, x1::Real, x2::Real)
-    l = 0.0
-    l += logpdf(InverseGamma(bar.α, bar.β), s)
-    l += logpdf(Normal(0, sqrt(s)), m)
-    l += logpdf(Normal(m, sqrt(s)), x1)
-    l += logpdf(Normal(m, sqrt(s)), x2)
-    return l
-end
+# function logpdf(bar::Bar, s::Real, m::Real, x1::Real, x2::Real)
+#     l = 0.0
+#     l += logpdf(InverseGamma(bar.α, bar.β), s)
+#     l += logpdf(Normal(0, sqrt(s)), m)
+#     l += logpdf(Normal(m, sqrt(s)), x1)
+#     l += logpdf(Normal(m, sqrt(s)), x2)
+#     return l
+# end
 
-function rand(bar::Bar)
-    s = rand(InverseGamma(bar.α, bar.β))
-    m = rand(Normal(0, sqrt(s)))
-    x1 = rand(Normal(m, sqrt(s)))
-    x2 = rand(Normal(m, sqrt(s)))
-    return x1, x2
-end
+# function rand(bar::Bar)
+#     s = rand(InverseGamma(bar.α, bar.β))
+#     m = rand(Normal(0, sqrt(s)))
+#     x1 = rand(Normal(m, sqrt(s)))
+#     x2 = rand(Normal(m, sqrt(s)))
+#     return x1, x2
+# end
 
 # using BenchmarkTools
 # @benchmark rand(bar())
