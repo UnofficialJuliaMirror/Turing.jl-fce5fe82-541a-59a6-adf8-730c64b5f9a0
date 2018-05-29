@@ -2,6 +2,24 @@ using MacroTools
 using MacroTools: splitdef, postwalk
 using Distributions
 
+# This is probably quite brittle, and could do with some improvements.
+function get_vars!(vars::Vector{Symbol}, x::Symbol)
+    x ∉ vars && push!(vars, x)
+    return vars
+end
+function get_vars!(vars::Vector{Symbol}, x::Expr)
+    if x.head == :tuple
+        map(arg->get_vars!(vars, arg), x.args)
+    elseif x.head == :ref
+        get_vars!(vars, x.args[1])
+    elseif x.head == :call && x.args[1] == :setindex
+        get_vars!(cars, x.args[2])
+    else
+        throw(error("Unacceptable lhs of ~"))
+    end
+    return vars
+end
+
 # Remove type information from function arguments obtained using `MacroTools.splitdef`
 detype_args(args::Vector) = map(x->x isa Expr ? x.args[1] : x, args)
 dearg_types(args::Vector) = map(x->x isa Expr ? x.args[2] : :Any, args)
@@ -19,9 +37,9 @@ function _model(def::Expr)
     wheres_vals = map(x->x isa Expr ? x.args[1] : x, wheres)
 
     # Get the names of all of the things treated as random variables.
-    rv_names = []
+    rv_names = Vector{Symbol}()
     postwalk(body) do x
-        @capture(x, lhs_ ~ rhs_) && push!(rv_names, lhs)
+        @capture(x, lhs_ ~ rhs_) && get_vars!(rv_names, lhs)
         return x
     end
 
@@ -62,7 +80,7 @@ function _model(def::Expr)
     logpdf_signature = Expr(:call,
         :(Distributions.logpdf),
         :($foo_name::$type_name),
-        rv_names...,
+        :(args),
     )
     logpdf_compute = postwalk(body) do x
         if @capture(x, lhs_ ~ rhs_)
@@ -74,6 +92,7 @@ function _model(def::Expr)
         end
     end
     logpdf_body = Expr(:block,
+        Expr(Symbol("="), Expr(:tuple, rv_names...), :args),
         [:($x = $foo_name.$x) for x in args]...,
         :($l = 0.0),
         logpdf_compute.args...
@@ -104,46 +123,3 @@ end
     x2 ~ Normal(m, sqrt(s))
     return x1, x2
 end
-
-# abstract type CompositeDistribution end
-
-# struct Bar{T<:Real V<:Real} <: CompositeDistribution
-#     α::T
-#     β::V
-# end
-
-# function logpdf(bar::Bar, s::Real, m::Real, x1::Real, x2::Real)
-#     l = 0.0
-#     l += logpdf(InverseGamma(bar.α, bar.β), s)
-#     l += logpdf(Normal(0, sqrt(s)), m)
-#     l += logpdf(Normal(m, sqrt(s)), x1)
-#     l += logpdf(Normal(m, sqrt(s)), x2)
-#     return l
-# end
-
-# function rand(bar::Bar)
-#     s = rand(InverseGamma(bar.α, bar.β))
-#     m = rand(Normal(0, sqrt(s)))
-#     x1 = rand(Normal(m, sqrt(s)))
-#     x2 = rand(Normal(m, sqrt(s)))
-#     return x1, x2
-# end
-
-# using BenchmarkTools
-# @benchmark rand(bar())
-# @benchmark logpdf(bar(), 1.0, 0.0, 0.5, -0.5)
-
-#=
-Outstanding Issues:
-1. Limitations / brittleness of existing approach:
-    The current approach is _possibly_ a bit limited / brittle as we are limited to having
-    only `Symbol`s on the lhs of a `~`. There are definitely other things that you would
-    want to do, such as assignment, which involves there being an expression on the rhs.
-    We have also implicitly limited outselves to not doing in-place stuff.
-2. Semantics for making assignments:
-    Presumably we want to stick with the current mechanism in Turing. I would propose
-    automatically adding keyword arguments via the @model macro which allow you to pass in
-    data for arbitrary random variables.
-=#
-
-
