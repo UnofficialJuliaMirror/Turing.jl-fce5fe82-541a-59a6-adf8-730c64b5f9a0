@@ -1,6 +1,6 @@
 # Some notes on the problem of compiler design for Turing.
 
-Below we discuss a proposal for a rethink of the internals of Turing. There is a mock implementation in `src/composite_distribution.jl` that is able to handle the basics. Crucially, this design approach is both compositional and _highly_ performant. There are a couple of open questions regarding semantics that need to be addressed; these are examined at the end of the document.
+Below we discuss a proposal for a rethink of the internals of Turing. There is a mock implementation in `src/composite_distribution.jl` that is able to handle the basics. Crucially, this design approach is both compositional and highly performant. There are a couple of open questions regarding semantics that need to be addressed; these are examined at the end of the document.
 
 ## Design Fundamentals
 The basic proposal is to make the core building block of Turing programme a subtype of
