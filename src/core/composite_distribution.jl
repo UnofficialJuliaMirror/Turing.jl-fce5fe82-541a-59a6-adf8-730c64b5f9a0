@@ -110,16 +110,3 @@ A model.
 macro model(def::Expr)
     return esc(_model(def))
 end
-
-@model function foo(s::Real)
-    w ~ Normal(0, s)
-    return w
-end
-
-@model function bar(α::Real, β::Real)
-    s ~ InverseGamma(α, β)
-    m ~ foo(s)
-    x1 ~ Normal(m, sqrt(s))
-    x2 ~ Normal(m, sqrt(s))
-    return x1, x2
-end
