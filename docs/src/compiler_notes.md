@@ -9,6 +9,9 @@ abstract type CompositeDistribution <: Distribution end
 ```
 that is generated automatically. For example,
 ```julia
+using Turing, Distributions, BenchmarkTools
+using Turing: @model
+
 @model function foo(α::Real, β::Real)
     s ~ InverseGamma(α, β)
     m ~ Normal(0, sqrt(s))
@@ -52,80 +55,93 @@ The above list is almost certainly not a complete list of things that will be ne
 ## Compositionality
 Consider the following minor re-write of the previous example:
 ```julia
-@model function bar(s::Real)
+@model function bar(α::Real, β::Real)
+    s ~ InverseGamma(α, β)
     w ~ Normal(0, s)
-    return w
+    return s, w
 end
 
 @model function foo(α::Real, β::Real)
-    s ~ InverseGamma(α, β)
-    m ~ bar(s)
+    s, m ~ bar(α, β)
     x1 ~ Normal(m, sqrt(s))
     x2 ~ Normal(m, sqrt(s))
-    return x1, x2
+    return s, m, x1, x2
 end
 ```
-We have simply encapsulated `m` inside another composite distribution, `bar`. Although this example is contrived, it demonstrates that compositionality of generative procedures comes for free with this kind of design, enabling code re-use.
+We have simply encapsulated `m` inside another composite distribution, `bar`. Although this example is contrived, it demonstrates that compositionality of generative procedures comes (almost) for free with this kind of design, enabling code re-use.
 
 ## Performance
 
-### `Normal` vs `foo`
+### `foo` vs hand-written `foo`
 
-`foo` accrues virtually no overhead relative to `Normal` for random number generation:
+`foo` accrues no overhead relative to a hand-written version for random number generation:
 ```julia
-julia> @benchmark rand(Normal(0, 1))
-BenchmarkTools.Trial:
-  memory estimate:  0 bytes
-  allocs estimate:  0
-  --------------
-  minimum time:     14.829 ns (0.00% GC)
-  median time:      15.671 ns (0.00% GC)
-  mean time:        15.757 ns (0.00% GC)
-  maximum time:     37.405 ns (0.00% GC)
-  --------------
-  samples:          10000
-  evals/sample:     998
+function bar_rand_manual(α::Real, β::Real)
+    s = rand(InverseGamma(α, β))
+    w = rand(Normal(0, s))
+    return s, w
+end
 
-julia> @benchmark rand(foo())
+julia> @benchmark bar_rand_manual(1.0, 1.0)
 BenchmarkTools.Trial:
   memory estimate:  0 bytes
   allocs estimate:  0
   --------------
-  minimum time:     14.863 ns (0.00% GC)
-  median time:      15.714 ns (0.00% GC)
-  mean time:        16.223 ns (0.00% GC)
-  maximum time:     48.624 ns (0.00% GC)
+  minimum time:     93.691 ns (0.00% GC)
+  median time:      106.888 ns (0.00% GC)
+  mean time:        107.232 ns (0.00% GC)
+  maximum time:     156.455 ns (0.00% GC)
   --------------
   samples:          10000
-  evals/sample:     998
+  evals/sample:     972
+
+julia> @benchmark rand(bar(1.0, 1.0))
+BenchmarkTools.Trial:
+  memory estimate:  0 bytes
+  allocs estimate:  0
+  --------------
+  minimum time:     95.912 ns (0.00% GC)
+  median time:      106.510 ns (0.00% GC)
+  mean time:        107.141 ns (0.00% GC)
+  maximum time:     291.328 ns (0.00% GC)
+  --------------
+  samples:          10000
+  evals/sample:     975
 ```
-Similarly, `foo` accrues virtually no overhead relative to `Normal` for `logpdf` evaluation:
+The same applies for `logpdf` computation:
 ```julia
-julia> @benchmark logpdf(Normal(0, 1), 1.0)
-BenchmarkTools.Trial:
-  memory estimate:  0 bytes
-  allocs estimate:  0
-  --------------
-  minimum time:     12.768 ns (0.00% GC)
-  median time:      12.787 ns (0.00% GC)
-  mean time:        12.897 ns (0.00% GC)
-  maximum time:     32.556 ns (0.00% GC)
-  --------------
-  samples:          10000
-  evals/sample:     999
+function bar_logpdf_manual(α::Real, β::Real, s, w)
+    l = 0.0
+    l += logpdf(InverseGamma(α, β), s)
+    l += logpdf(Normal(0, s), w)
+    return l
+end
 
-julia> @benchmark logpdf(foo(), 1.0)
+julia> @benchmark bar_logpdf_manual(1.0, 1.0, 1.0, 1.0)
 BenchmarkTools.Trial:
   memory estimate:  0 bytes
   allocs estimate:  0
   --------------
-  minimum time:     12.771 ns (0.00% GC)
-  median time:      12.788 ns (0.00% GC)
-  mean time:        12.921 ns (0.00% GC)
-  maximum time:     56.056 ns (0.00% GC)
+  minimum time:     48.531 ns (0.00% GC)
+  median time:      48.550 ns (0.00% GC)
+  mean time:        48.946 ns (0.00% GC)
+  maximum time:     113.179 ns (0.00% GC)
   --------------
   samples:          10000
-  evals/sample:     999
+  evals/sample:     988
+
+julia> @benchmark logpdf(bar(1.0, 1.0), (1.0, 1.0))
+BenchmarkTools.Trial:
+  memory estimate:  0 bytes
+  allocs estimate:  0
+  --------------
+  minimum time:     48.940 ns (0.00% GC)
+  median time:      49.127 ns (0.00% GC)
+  mean time:        50.932 ns (0.00% GC)
+  maximum time:     167.871 ns (0.00% GC)
+  --------------
+  samples:          10000
+  evals/sample:     988
 ```
 
 ### `bar`
@@ -136,34 +152,37 @@ BenchmarkTools.Trial:
   memory estimate:  0 bytes
   allocs estimate:  0
   --------------
-  minimum time:     123.070 ns (0.00% GC)
-  median time:      136.067 ns (0.00% GC)
-  mean time:        136.763 ns (0.00% GC)
-  maximum time:     269.462 ns (0.00% GC)
+  minimum time:     95.658 ns (0.00% GC)
+  median time:      106.645 ns (0.00% GC)
+  mean time:        107.172 ns (0.00% GC)
+  maximum time:     237.714 ns (0.00% GC)
   --------------
   samples:          10000
-  evals/sample:     949
+  evals/sample:     973
 
-julia> @benchmark logpdf(bar(1.0, 1.0), 0.5, 4.0, -1.0, 1.0)
+julia> @benchmark logpdf(bar(1.0, 1.0), (0.5, 4.0, -1.0, 1.0))
 BenchmarkTools.Trial:
   memory estimate:  0 bytes
   allocs estimate:  0
   --------------
-  minimum time:     92.676 ns (0.00% GC)
-  median time:      92.876 ns (0.00% GC)
-  mean time:        94.507 ns (0.00% GC)
-  maximum time:     267.597 ns (0.00% GC)
+  minimum time:     51.329 ns (0.00% GC)
+  median time:      51.509 ns (0.00% GC)
+  mean time:        52.387 ns (0.00% GC)
+  maximum time:     112.912 ns (0.00% GC)
   --------------
   samples:          10000
-  evals/sample:     954
+  evals/sample:     987
 ```
 
 ## Open Problems
 There are several technical limitations in the above examples which are a consequence of the state of the implementation (it's not finished) as opposed to issues with the proposed approach in general. These include:
-- `~` with anything other than a plain symbol on the lhs doesn't work. For example the following won't currently work:
-    + `x[i] ~ ...`,
-    + `x, y, z ~ ...`,
-- We don't have a performant way to generate arrays of observations - all random-number generation is done by `rand` rather than `rand!`.
+- It is currently necessary to always return a `Tuple` from one's `@model`s. Only a relatively small amount of work will be required to remove this constraint.
+- We don't have a performant way to generate arrays of observations - all random-number generation is done by `rand` rather than `rand!`. Relatively straightforward to fix, but probably does require a bit of thought to get right. There are a few options here:
+  + Leave it as it is -- a win for simplicity, but bad for performance.
+  + Provide an in-place version of `~`, which allows the user to explicitly provide destination data for their random variable to avoid allocating when `rand` is called -- possibly a bit ugly, probably good for performance, not entirely clear how this should interact with, for example, `logpdf`.
+  + Force all `rand` calls when `rand` produces arrays to be `rand!` calls, and automatically construct appropriately managed destination arrays -- probably a win for performance, but likely tricky.
+  On the whole, I think I favour the third option, but it would be worth working through the consequences of both the second and third options before committing to anything.
+- We don't currently propagate type constraints on `~`'d random variables. Again, straightforward to fix.
 
 The major block (as I see it) is understanding how to do parameter / random variable handling properly. Clearly, we need a naming scheme similar to that proposed in [1] \(relating to the `c_sym` variables in the current Turing design\), but this aspect clearly requires some more thought. The current `logpdf` semantics are also sub-optimal.
 
