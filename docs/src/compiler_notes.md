@@ -177,6 +177,7 @@ BenchmarkTools.Trial:
 ## Open Problems
 There are several technical limitations in the above examples which are a consequence of the state of the implementation (it's not finished) as opposed to issues with the proposed approach in general. These include:
 - It is currently necessary to always return a `Tuple` from one's `@model`s. Only a relatively small amount of work will be required to remove this constraint.
+- We don't support keyword arguments in `@model` functions. Again, only a small amount of work required to fix.
 - We don't have a performant way to generate arrays of observations - all random-number generation is done by `rand` rather than `rand!`. Relatively straightforward to fix, but probably does require a bit of thought to get right. There are a few options here:
   + Leave it as it is -- a win for simplicity, but bad for performance.
   + Provide an in-place version of `~`, which allows the user to explicitly provide destination data for their random variable to avoid allocating when `rand` is called -- possibly a bit ugly, probably good for performance, not entirely clear how this should interact with, for example, `logpdf`.
