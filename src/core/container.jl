@@ -148,14 +148,39 @@ function resample!( pc :: ParticleContainer,
   empty!(pc)
   num_children = zeros(Int,n1)
   map(i->num_children[i]+=1, indx)
-  for i = 1:n1
+
+  c = 1
+  pcs = Vector{typeof(first(particles))}(sum(num_children))
+  lck = Threads.SpinLock()
+
+  # --
+  # Note: Multi-threaded implement using experimental interface (julia 0.63).
+  # Usage: Export env. variable using export JULIA_NUM_THREADS=NUM_THREADS before usage
+  # --
+
+  Threads.@threads for i = 1:n1
+
     is_ref = particles[i] == ref
     p = is_ref ? Traces.fork(particles[i], is_ref) : particles[i]
-    num_children[i] > 0 && push!(pc, p)
-    for k=1:num_children[i]-1
-      newp = Traces.fork(p, is_ref)
-      push!(pc, newp)
+
+    if num_children[i] > 0
+      lock(lck)
+      pcs[c] = p
+      c += 1
+      unlock(lck)
     end
+
+    for k in 1:num_children[i]-1
+      newp = Traces.fork(p, is_ref)
+      lock(lck)
+      pcs[c] = newp
+      c += 1
+      unlock(lck)
+    end
+  end
+
+  for i = 1:c-1
+    push!(pc, pcs[i])
   end
 
   if isa(ref, Particle)
