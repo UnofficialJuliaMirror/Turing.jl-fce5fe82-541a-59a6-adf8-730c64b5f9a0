@@ -19,6 +19,8 @@ end
 GKernel(var) = (x) -> Normal(x, sqrt.(var))
 alg = PMMH(1000, SMC(20, :m), MH(1,(:s, GKernel(1))))
 chain = sample(pmmhtest(x), alg)
+println(mean(chain[:s]))
+println(49/12)
 @test mean(chain[:s]) ≈ 49/24 atol=0.2
 @test mean(chain[:m]) ≈ 7/6 atol=0.1
 

@@ -27,12 +27,19 @@ Base.similar{T}(pc :: ParticleContainer{T}) = ParticleContainer{T}(pc.model, 0)
 # pc[i] returns the i'th particle
 Base.getindex(pc :: ParticleContainer, i :: Real) = pc.vals[i]
 
+# resize a particle container inplace
+function Base.resize!(pc :: ParticleContainer, n :: Integer)
+    resize!(pc.vals, n)
+    resize!(pc.logWs, n)
+    pc.num_particles = n
+    pc
+end 
 
 # registers a new x-particle in the container
 function Base.push!(pc :: ParticleContainer, p :: Particle)
   pc.num_particles += 1
   push!(pc.vals, p)
-  push!(pc.logWs, 0)
+  push!(pc.logWs, 0.)
   pc
 end
 Base.push!(pc :: ParticleContainer) = Base.push!(pc, eltype(pc.vals)(pc.model))
@@ -42,11 +49,19 @@ function Base.push!(pc :: ParticleContainer, n :: Int, spl :: Sampler, varInfo :
   logWs = Array{eltype(pc.logWs), 1}(n)
   for i=1:n
     vals[i]  = eltype(pc.vals)(pc.model, spl, varInfo)
-    logWs[i] = 0
+    logWs[i] = 0.
   end
   append!(pc.vals, vals)
   append!(pc.logWs, logWs)
   pc.num_particles += n
+  pc
+end
+
+function Base.setindex!(pc :: ParticleContainer, p :: Particle, i :: Int)
+  @assert length(pc.vals) == length(pc.logWs)
+  
+  pc.vals[i] = p
+  pc.logWs[i] = 0.
   pc
 end
 
@@ -150,7 +165,7 @@ function resample!( pc :: ParticleContainer,
   map(i->num_children[i]+=1, indx)
 
   c = 1
-  pcs = Vector{typeof(first(particles))}(sum(num_children))
+  resize!(pc, sum(num_children))
   lck = Threads.SpinLock()
 
   # --
@@ -165,7 +180,7 @@ function resample!( pc :: ParticleContainer,
 
     if num_children[i] > 0
       lock(lck)
-      pcs[c] = p
+      pc[c] = p
       c += 1
       unlock(lck)
     end
@@ -173,15 +188,13 @@ function resample!( pc :: ParticleContainer,
     for k in 1:num_children[i]-1
       newp = Traces.fork(p, is_ref)
       lock(lck)
-      pcs[c] = newp
+      pc[c] = newp
       c += 1
       unlock(lck)
     end
   end
 
-  for i = 1:c-1
-    push!(pc, pcs[i])
-  end
+  resize!(pc, c - 1)
 
   if isa(ref, Particle)
     # Insert the retained particle. This is based on the replaying trick for efficiency
