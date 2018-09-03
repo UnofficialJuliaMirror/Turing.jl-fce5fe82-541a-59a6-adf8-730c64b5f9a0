@@ -30,7 +30,7 @@ import MCMCChain: AbstractChains, Chains
 # Global variables/constants #
 ##############################
 
-global ADBACKEND = :reverse_diff
+global ADBACKEND = :forward_diff
 setadbackend(backend_sym) = begin
   @assert backend_sym == :forward_diff || backend_sym == :reverse_diff
   global ADBACKEND = backend_sym
@@ -42,17 +42,18 @@ setadsafe(switch::Bool) = begin
   global ADSAFE = switch
 end
 
-global CHUNKSIZE = 0        # default chunksize used by AD
-global SEEDS                # pre-alloced dual parts
-setchunksize(chunk_size::Int) = begin
-  if ~(CHUNKSIZE == chunk_size)
-    @info("[Turing]: AD chunk size is set as $chunk_size")
-    global CHUNKSIZE = chunk_size
-    global SEEDS = ForwardDiff.construct_seeds(ForwardDiff.Partials{chunk_size,Float64})
-  end
+global FADCfg
+setchunksize(chunk_size::Int, x = zeros(chunk_size)) = begin
+    @debug("[Turing]: AD chunk size is set as $chunk_size")
+    # V, N, f = eltype(x), min(chunk_size, length(x)), nothing; T = ForwardDiff.Tag(f, V)
+    # SEEDS   = ForwardDiff.construct_seeds(ForwardDiff.Partials{N,V})
+    # DUALS   = similar(x, ForwardDiff.Dual{T,V,N})
+    # global FADCfg    = ForwardDiff.GradientConfig{T,V,N,typeof(DUALS)}(SEEDS, DUALS)
+    N = min(chunk_size, length(x))
+    global FADCfg = ForwardDiff.GradientConfig(nothing, x, ForwardDiff.Chunk{N}())
 end
 
-setchunksize(40)
+setchunksize(40);
 
 global PROGRESS = true
 turnprogress(switch::Bool) = begin
