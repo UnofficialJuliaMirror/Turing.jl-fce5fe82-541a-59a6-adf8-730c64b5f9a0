@@ -10,10 +10,14 @@ grad = gradient(vi, model, spl)
 end
 ```
 """
-gradient_f(θ::Vector{Float64}, vi::VarInfo, model::Function) = gradient(vi, model, nothing)
+gradient(vi::VarInfo, model::Function) = gradient_f(realpart(vi[nothing]), vi, model, nothing)
+gradient(vi::VarInfo, model::Function, spl::Union{Nothing, Sampler}) = gradient_f(realpart(vi[spl]), vi, model, spl)
+
+gradient_f(θ::Vector{Float64}, vi::VarInfo, model::Function) = gradient_f(vi, model, nothing)
 gradient_f(θ::Vector{Float64}, _vi::VarInfo, model::Function, spl::Union{Nothing, Sampler}) = begin
 
-  vi = deepcopy(_vi)
+  vi      = deepcopy(_vi)
+  vi[spl] = θ
 
   f(x::Vector) = begin
     vi[spl] = x
