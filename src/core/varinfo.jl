@@ -1,7 +1,5 @@
 module VarReplay
 
-
-
 using Turing: CACHERESET, CACHEIDCS, CACHERANGES
 using Turing: Sampler, realpart, dualpart, vectorize, reconstruct, reconstruct!, SimplexDistribution
 using Distributions
@@ -27,7 +25,6 @@ struct VarName
 end
 
 # NOTE: VarName should only be constructed by VarInfo internally due to the nature of the counter field.
-
 Base.hash(vn::VarName) = hash((vn.modelid, vn.varid, vn.indexing, vn.counter))
 
 isequal(x::VarName, y::VarName) = hash(x) == hash(y)

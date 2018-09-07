@@ -1,9 +1,9 @@
 using Turing, Test
 using Turing: reconstruct, invlink, step
 using Turing.VarReplay
-using Turing.VarReplay: uid, cuid, getvals, getidcs, set_retained_vns_del_by_spl!, is_flagged, unset_flag!
+using Turing.VarReplay: getvals, getidcs, set_retained_vns_del_by_spl!, is_flagged, unset_flag!
 
-randr(vi::VarInfo, vn::VarName, dist::Distribution, spl::Turing.Sampler, count::Bool) = begin
+function randr(vi::VarInfo, vn::VarName, dist::Distribution, spl::Turing.Sampler, count::Bool)
   if ~haskey(vi, vn)
     r = rand(dist)
     Turing.push!(vi, vn, r, dist, spl.alg.gid)
@@ -20,30 +20,39 @@ randr(vi::VarInfo, vn::VarName, dist::Distribution, spl::Turing.Sampler, count::
   end
 end
 
-# Test for uid() (= string())
-csym = gensym()
-vn1 = VarName(csym, :x, "[1]", 1)
-@test string(vn1) == "{$csym,x[1]}:1"
-# println(string(vn1))
+# generate unique model id
+modelid = gensym(:model)
 
-vn2 = VarName(csym, :x, "[1]", 2)
-vn11 = VarName(csym, :x, "[1]", 1)
+# generate unique compiletime variable id
+varid = gensym()
 
-@test cuid(vn1) == cuid(vn2)
+# construct VarName object
+vn1 = VarName(modelid, varid, :x, ([1],), 1)
+
+@test vn1.modelid == modelid
+@test vn1.varid == varid
+@test vn1.varname == :x
+@test vn1.indexing == ([1],)
+@test vn1.counter == 1
+
+vn11 = VarName(modelid, varid, :x, ([1],), 1)
 @test vn11 == vn1
-
 
 vi = VarInfo()
 dists = [Normal(0, 1), MvNormal([0; 0], [1.0 0; 0 1.0]), Wishart(7, [1 0.5; 0.5 1])]
 
 alg = PG(PG(5,5),2)
 spl2 = Turing.Sampler(alg)
-vn_w = VarName(gensym(), :w, "", 1)
+
+# model unique id
+modelid = gensym(:model)
+
+vn_w = VarName(modelid, gensym(), :w, (), 1)
 randr(vi, vn_w, dists[1], spl2, true)
 
-vn_x = VarName(gensym(), :x, "", 1)
-vn_y = VarName(gensym(), :y, "", 1)
-vn_z = VarName(gensym(), :z, "", 1)
+vn_x = VarName(modelid, gensym(), :x, (), 1)
+vn_y = VarName(modelid, gensym(), :y, (), 1)
+vn_z = VarName(modelid, gensym(), :z, (), 1)
 vns = [vn_x, vn_y, vn_z]
 
 alg = PG(PG(5,5),1)
@@ -60,7 +69,7 @@ end
 @test length(getvals(vi, spl2)) == 1
 
 
-vn_u = VarName(gensym(), :u, "", 1)
+vn_u = VarName(modelid, gensym(), :u, (), 1)
 randr(vi, vn_u, dists[1], spl2, true)
 
 # println(vi)
