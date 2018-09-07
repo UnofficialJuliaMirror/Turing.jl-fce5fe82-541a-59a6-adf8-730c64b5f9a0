@@ -9,36 +9,42 @@ using Distributions
 import Base: string, isequal, ==, hash, getindex, setindex!, push!, show, isempty
 import Turing: link!, invlink!, link, invlink
 
-export VarName, VarInfo, uid, sym, getlogp, set_retained_vns_del_by_spl!, resetlogp!, is_flagged, unset_flag!, setgid!, copybyindex, 
-       setorder!, updategid!, acclogp!, istrans, link!, invlink!, setlogp!, getranges, getrange, getvns, cleandual!, getval
+export VarName, VarInfo, sym, getlogp, set_retained_vns_del_by_spl!, 
+        resetlogp!, is_flagged, unset_flag!, setgid!, copybyindex, 
+        setorder!, updategid!, acclogp!, istrans, link!, invlink!, 
+        setlogp!, getranges, getrange, getvns, cleandual!, getval
 export string, isequal, ==, hash, getindex, setindex!, push!, show, isempty
 
 ###########
 # VarName #
 ###########
 struct VarName
-  csym      ::    Symbol        # symbol generated in compilation time
-  sym       ::    Symbol        # variable symbol
-  indexing  ::    String        # indexing
-  counter   ::    Int           # counter of same {csym, uid}
+  modelid   :: Symbol
+  varid     :: Symbol        # symbol generated in compilation time
+  varname   :: Symbol        # variable symbol
+  indexing  :: Tuple # indexing
+  counter   :: Int           # counter of same {csym, uid}
 end
 
 # NOTE: VarName should only be constructed by VarInfo internally due to the nature of the counter field.
 
-uid(vn::VarName) = (vn.csym, vn.sym, vn.indexing, vn.counter)
-Base.hash(vn::VarName) = hash(uid(vn))
+Base.hash(vn::VarName) = hash((vn.modelid, vn.varid, vn.indexing, vn.counter))
 
-isequal(x::VarName, y::VarName) = hash(uid(x)) == hash(uid(y))
-==(x::VarName, y::VarName)      = isequal(x, y)
+isequal(x::VarName, y::VarName) = hash(x) == hash(y)
+==(x::VarName, y::VarName) = isequal(x, y)
 
-Base.string(vn::VarName) = "{$(vn.csym),$(vn.sym)$(vn.indexing)}:$(vn.counter)"
+Base.string(vn::VarName) = """model id: $(vn.modelid),
+                              variabel id: $(vn.varid),
+                              variable name: $(vn.sym),
+                              variable indexing: $(vn.indexing),
+                              variable counter: $(vn.counter)"""
 Base.string(vns::Vector{VarName}) = replace(string(map(vn -> string(vn), vns)), "String" => "")
 
 sym(vn::VarName) = Symbol("$(vn.sym)$(vn.indexing)")  # simplified symbol
 
-cuid(vn::VarName) = (vn.csym, vn.sym, vn.indexing)    # the uid which is only available at compile time
-
-copybyindex(vn::VarName, indexing::String) = VarName(vn.csym, vn.sym, indexing, vn.counter)
+function copybyindex(vn::VarName, indexing::Tuple)
+  return VarName(vn.modelid, vn.varid, vn.varname, indexing, vn.counter)
+end
 
 ###########
 # VarInfo #
@@ -273,14 +279,16 @@ setorder!(vi::VarInfo, vn::VarName, index::Int) = begin
 end
 
 # This method is use to generate a new VarName with the right count
-VarName(vi::VarInfo, csym::Symbol, sym::Symbol, indexing::String) = begin
+VarName(vi::VarInfo, modelid::Symbol, varid::Symbol, varname::Symbol, indexing::Tuple) = begin
   # TODO: update this method when implementing the sanity check
-  VarName(csym, sym, indexing, 1)
+  @warn("This function should probably increase the counter value but it doesn't")
+  VarName(modelid, varid, varname, indexing, 1)
 end
-VarName(vi::VarInfo, syms::Vector{Symbol}, indexing::String) = begin
+
+#VarName(vi::VarInfo, syms::Vector{Symbol}, indexing::String) = begin
   # TODO: update this method when implementing the sanity check
-    VarName(syms[1], syms[2], indexing, 1)
-end
+#    VarName(syms[1], syms[2], indexing, 1)
+#end
 
 #################################
 # Utility functions for VarInfo #
