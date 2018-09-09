@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Description...">
+  <meta name="author" content="USER_NAME">
+  <link rel="shortcut icon" href="img/favicon.ico">
+  <title>Home - Turing.jl</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  <link href="assets/Documenter.css" rel="stylesheet">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Home";
+    var mkdocs_page_input_path = "index.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="js/jquery-2.1.1.min.js" defer></script>
+  <script src="js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href="." class="icon icon-home"> Turing.jl</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href=".">Home</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#turingjl">Turing.jl</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#features">Features</a></li>
+        
+            <li><a class="toctree-l3" href="#resources">Resources</a></li>
+        
+            <li><a class="toctree-l3" href="#citing-turing">Citing Turing</a></li>
+        
+            <li><a class="toctree-l3" href="#other-probablisticdeep-learning-languages">Other probablistic/deep learning languages</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href=".">Turing.jl</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Home</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/cpfiffer/Turing.jl/edit/master/docs/index.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <p><a id='Turing.jl-1'></a></p>
+<h1 id="turingjl">Turing.jl</h1>
+<p><strong>Turing</strong> is a <em>universal</em> probabilistic programming language with a focus on intuitive modelling interface, composable probabilistic inference and computational scalability.</p>
+<p><a id='Features-1'></a></p>
+<h2 id="features">Features</h2>
+<p>Turing provides <strong>Hamiltonian Monte Carlo</strong> (HMC) and <strong>particle MCMC</strong> sampling algorithms for complex posterior distributions (e.g. those involving discrete variables and stochastic control flows). Current features include:</p>
+<ul>
+<li><strong>Universal</strong> probabilistic programming with an intuitive modelling interface</li>
+<li><strong>Hamiltonian Monte Carlo</strong> (HMC) sampling for differentiable posterior distributions</li>
+<li><strong>Particle MCMC</strong> sampling for complex posterior distributions involving discrete variables and stochastic control flows</li>
+<li><strong>Gibbs</strong> sampling that combines particle MCMC,  HMC and many other MCMC algorithms</li>
+</ul>
+<p><a id='Resources-1'></a></p>
+<h2 id="resources">Resources</h2>
+<p>Please visit <a href="https://github.com/TuringLang/Turing.jl/wiki">Turing.jl wiki</a> for documentation, tutorials (e.g. <a href="https://github.com/TuringLang/Turing.jl/wiki/Get-started">get started</a>) and other topics (e.g. <a href="https://github.com/TuringLang/Turing.jl/wiki/Advanced-usages">advanced usages</a>). Below are some example models for Turing.</p>
+<ul>
+<li><a href="https://nbviewer.jupyter.org/github/TuringLang/Turing-Examples/blob/master/notebooks/Introduction.ipynb">Introduction</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/TuringLang/Turing-Examples/blob/master/notebooks/GMM.ipynb">Gaussian Mixture Model</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/TuringLang/Turing-Examples/blob/master/notebooks/BayesHmm.ipynb">Bayesian Hidden Markov Model</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/TuringLang/Turing-Examples/blob/master/notebooks/FHMM.ipynb">Factorical Hidden Markov Model</a></li>
+<li><a href="https://nbviewer.jupyter.org/github/TuringLang/Turing-Examples/blob/master/notebooks/TopicModels.ipynb">Topic Models: LDA and MoC</a></li>
+</ul>
+<p><a id='Citing-Turing-1'></a></p>
+<h2 id="citing-turing">Citing Turing</h2>
+<p>To cite Turing, please refer to the following paper. Sample BibTeX entry is given below:</p>
+<pre><code>@InProceedings{turing17,
+  title =    {{T}uring: a language for flexible probabilistic inference},
+  author =   {Ge, Hong and Xu, Kai and Ghahramani, Zoubin},
+  booktitle =    {Proceedings of the 21th International Conference on Artificial Intelligence and Statistics},
+  year =     {2018},
+  series =   {Proceedings of Machine Learning Research},
+  publisher =    {PMLR},
+}
+</code></pre>
+
+<p><a id='Other-probablistic/deep-learning-languages-1'></a></p>
+<h2 id="other-probablisticdeep-learning-languages">Other probablistic/deep learning languages</h2>
+<ul>
+<li><a href="http://mc-stan.org/">Stan</a></li>
+<li><a href="https://www.microsoft.com/en-us/research/project/infernet/">Infer.NET</a></li>
+<li><a href="http://pytorch.org/">PyTorch</a> / <a href="https://github.com/uber/pyro">Pyro</a></li>
+<li><a href="https://www.tensorflow.org/">TensorFlow</a> / <a href="http://edwardlib.org/">Edward</a></li>
+<li><a href="https://github.com/clab/dynet">DyNet</a></li>
+</ul>
+              
+            </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/cpfiffer/Turing.jl/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+      
+    </span>
+</div>
+    <script>var base_url = '.';</script>
+    <script src="js/theme.js" defer></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML" defer></script>
+      <script src="assets/mathjaxhelper.js" defer></script>
+      <script src="search/main.js" defer></script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.0.4
+Build Date UTC : 2018-09-09 17:26:50
+-->
