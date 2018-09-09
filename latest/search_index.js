@@ -497,7 +497,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#",
+    "location": "api.html#",
     "page": "API",
     "title": "API",
     "category": "page",
@@ -505,7 +505,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Function-Documentation-1",
+    "location": "api.html#Function-Documentation-1",
     "page": "API",
     "title": "Function Documentation",
     "category": "section",
@@ -513,7 +513,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.@model",
+    "location": "api.html#Turing.@model",
     "page": "API",
     "title": "Turing.@model",
     "category": "macro",
@@ -521,7 +521,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.@~",
+    "location": "api.html#Turing.@~",
     "page": "API",
     "title": "Turing.@~",
     "category": "macro",
@@ -529,7 +529,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Modelling-1",
+    "location": "api.html#Modelling-1",
     "page": "API",
     "title": "Modelling",
     "category": "section",
@@ -537,7 +537,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.Sampler",
+    "location": "api.html#Turing.Sampler",
     "page": "API",
     "title": "Turing.Sampler",
     "category": "type",
@@ -545,7 +545,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.Gibbs",
+    "location": "api.html#Turing.Gibbs",
     "page": "API",
     "title": "Turing.Gibbs",
     "category": "type",
@@ -553,7 +553,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.HMC",
+    "location": "api.html#Turing.HMC",
     "page": "API",
     "title": "Turing.HMC",
     "category": "type",
@@ -561,7 +561,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.HMCDA",
+    "location": "api.html#Turing.HMCDA",
     "page": "API",
     "title": "Turing.HMCDA",
     "category": "type",
@@ -569,7 +569,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.IPMCMC",
+    "location": "api.html#Turing.IPMCMC",
     "page": "API",
     "title": "Turing.IPMCMC",
     "category": "type",
@@ -577,7 +577,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.IS",
+    "location": "api.html#Turing.IS",
     "page": "API",
     "title": "Turing.IS",
     "category": "type",
@@ -585,7 +585,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.MH",
+    "location": "api.html#Turing.MH",
     "page": "API",
     "title": "Turing.MH",
     "category": "type",
@@ -593,7 +593,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.NUTS",
+    "location": "api.html#Turing.NUTS",
     "page": "API",
     "title": "Turing.NUTS",
     "category": "type",
@@ -601,7 +601,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.PG",
+    "location": "api.html#Turing.PG",
     "page": "API",
     "title": "Turing.PG",
     "category": "type",
@@ -609,7 +609,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.PMMH",
+    "location": "api.html#Turing.PMMH",
     "page": "API",
     "title": "Turing.PMMH",
     "category": "type",
@@ -617,7 +617,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.SGHMC",
+    "location": "api.html#Turing.SGHMC",
     "page": "API",
     "title": "Turing.SGHMC",
     "category": "type",
@@ -625,7 +625,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.SGLD",
+    "location": "api.html#Turing.SGLD",
     "page": "API",
     "title": "Turing.SGLD",
     "category": "type",
@@ -633,7 +633,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Turing.SMC",
+    "location": "api.html#Turing.SMC",
     "page": "API",
     "title": "Turing.SMC",
     "category": "type",
@@ -641,7 +641,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Samplers-1",
+    "location": "api.html#Samplers-1",
     "page": "API",
     "title": "Samplers",
     "category": "section",
@@ -649,7 +649,7 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "functions.html#Index-1",
+    "location": "api.html#Index-1",
     "page": "API",
     "title": "Index",
     "category": "section",
