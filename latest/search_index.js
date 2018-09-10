@@ -77,7 +77,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Install Julia",
     "category": "section",
-    "text": "You will need Julia 0.6, which you can get from the official Julia website.It provides three options for usersA command line version Julia/downloads (recommended)\nA community maintained IDE Juno\nJuliaBox.com - a Jupyter notebook in the browserFor command line version, we recommend that you install a version downloaded from Julia\'s official website, as Turing may not work correctly with Julia provided by other sources (e.g. Turing does not work with Julia installed via apt-get due to missing header files).Juno also needs the command line version installed. This IDE is recommended for heavy users who require features like debugging, quick documentation check, etc.JuliaBox provides a pre-installed Jupyter notebook for Julia. You can take a shot at Turing without installing Julia on your machine in few seconds."
+    "text": "You will need Julia 1.0, which you can get from the official Julia website.It provides three options for users:A command line version Julia/downloads (recommended)\nA community maintained IDE Juno\nJuliaBox.com - a Jupyter notebook in the browserFor command line version, we recommend that you install a version downloaded from Julia\'s official website, as Turing may not work correctly with Julia provided by other sources (e.g. Turing does not work with Julia installed via apt-get due to missing header files).Juno also needs the command line version installed. This IDE is recommended for heavy users who require features like debugging, quick documentation check, etc.JuliaBox provides a pre-installed Jupyter notebook for Julia. You can take a shot at Turing without installing Julia on your machine in few seconds."
 },
 
 {
@@ -85,7 +85,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Install Turing.jl",
     "category": "section",
-    "text": "Turing is an officially registered Julia package, so the following should install a stable version of Turing:Pkg.add(\"Turing\")\n\n# Switch to master branch; recommended\nPkg.checkout(\"Turing\", \"master\")\nPkg.build(\"Turing\")\n\nPkg.test(\"Turing\")[Recommended] If you want to use the latest version of Turing with some experimental features, you can try the following instead:Pkg.update()\nPkg.clone(\"Turing\")\nPkg.build(\"Turing\")\nPkg.test(\"Turing\")If all tests pass, you\'re ready to start using Turing."
+    "text": "Turing is an officially registered Julia package, so the following will install a stable version of Turing while inside Julia\'s package manager (press ] from the REPL):add Turing[Recommended] If you want to use the latest version of Turing with some experimental features, you can try the following instead:add Turing#master\ntest TuringIf all tests pass, you\'re ready to start using Turing."
 },
 
 {
@@ -269,7 +269,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Contributing",
     "title": "Contributing",
     "category": "section",
-    "text": "Turing is an open source project. If you feel you have some relevant skills and are interested in contributing, then please do get in touch. You can contribute by opening issues on Github or implementing things yourself and making a pull request. We would also appreciate example models written using Turing.Turing has a style guide. It is not strictly necessary to review it, but particularly adventurous contributors may enjoy reviewing it."
+    "text": "Turing is an open source project. If you feel that you have some relevant skills and are interested in contributing, then please do get in touch. You can contribute by opening issues on GitHub or implementing things yourself and making a pull request. We would also appreciate example models written using Turing.Turing has a style guide. It is not strictly necessary to review it before making a pull request, but you may be asked to change portions of your code to conform with the style guide before it is merged."
 },
 
 {
