@@ -14,7 +14,7 @@ Turing provides **Hamiltonian Monte Carlo** (HMC) and **particle MCMC** sampling
 
 # Resources
 
-Please visit the [Turing.jl documentation](https://turing.ml/latest) for documentation, tutorials (e.g. [get started](http://turing.ml/latest/get-started.html)) and other topics (e.g. [advanced usages](http://turing.ml/latest/advanced.html)). Below are some example models for Turing.
+Please visit the [Turing.jl documentation](http://turing.ml/latest) for documentation, tutorials (e.g. [get started](http://turing.ml/latest/get-started.html)) and other topics (e.g. [advanced usages](http://turing.ml/latest/advanced.html)). Below are some example models for Turing.
 
 - [Introduction](http://turing.ml/latest/ex/0_Introduction.html)
 - [Gaussian Mixture Model](https://nbviewer.jupyter.org/github/TuringLang/Turing-Examples/blob/master/notebooks/GMM.ipynb)
