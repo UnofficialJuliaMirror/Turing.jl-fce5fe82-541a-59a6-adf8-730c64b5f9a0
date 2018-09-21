@@ -16,11 +16,11 @@ Turing provides **Hamiltonian Monte Carlo** (HMC) and **particle MCMC** sampling
 
 Please visit the [Turing.jl documentation](http://turing.ml/latest) for documentation, tutorials (e.g. [get started](http://turing.ml/latest/get-started.html)) and other topics (e.g. [advanced usages](http://turing.ml/latest/advanced.html)). Below are some example models for Turing.
 
-- [Introduction](http://turing.ml/latest/ex/0_Introduction.html)
-- [Gaussian Mixture Model](https://nbviewer.jupyter.org/github/TuringLang/Turing-Examples/blob/master/notebooks/GMM.ipynb)
-- [Bayesian Hidden Markov Model](https://nbviewer.jupyter.org/github/TuringLang/Turing-Examples/blob/master/notebooks/BayesHmm.ipynb)
-- [Factorical Hidden Markov Model](https://nbviewer.jupyter.org/github/TuringLang/Turing-Examples/blob/master/notebooks/FHMM.ipynb)
-- [Topic Models: LDA and MoC](https://nbviewer.jupyter.org/github/TuringLang/Turing-Examples/blob/master/notebooks/TopicModels.ipynb)
+- [Introduction](https://github.com/TuringLang/TuringTutorials/tree/master/old-notebooks/Introduction.ipynb)
+- [Gaussian Mixture Model](https://github.com/TuringLang/TuringTutorials/tree/master/old-notebooks/GMM.ipynb)
+- [Bayesian Hidden Markov Model](https://github.com/TuringLang/TuringTutorials/tree/master/old-notebooks/BayesHmm.ipynb)
+- [Factorical Hidden Markov Model](https://github.com/TuringLang/TuringTutorials/tree/master/old-notebooks/FHMM.ipynb)
+- [Topic Models: LDA and MoC](https://github.com/TuringLang/TuringTutorials/tree/master/old-notebooks/TopicModels.ipynb)
 
 # Citing Turing
 
