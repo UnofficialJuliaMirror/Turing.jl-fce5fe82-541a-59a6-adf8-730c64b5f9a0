@@ -13,15 +13,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Documentation",
     "title": "Documentation",
     "category": "section",
-    "text": "Turing is a universal probabilistic programming language with a focus on an intuitive modelling interface, composable probabilistic inference and computational scalability.Turing provides Hamiltonian Monte Carlo (HMC) and particle MCMC sampling algorithms for complex posterior distributions (e.g. those involving discrete variables and stochastic control flows). Current features include:Universal probabilistic programming with an intuitive modelling interface\nHamiltonian Monte Carlo (HMC) sampling for differentiable posterior distributions\nParticle MCMC sampling for complex posterior distributions involving discrete variables and stochastic control flow\nGibbs sampling that combines particle MCMC,  HMC and many other MCMC algorithms"
-},
-
-{
-    "location": "index.html#Resources-1",
-    "page": "Documentation",
-    "title": "Resources",
-    "category": "section",
-    "text": "Please visit Turing.jl wiki for documentation, tutorials (e.g. get started) and other topics (e.g. advanced usages). Below are some example models for Turing.Introduction\nGaussian Mixture Model\nBayesian Hidden Markov Model\nFactorical Hidden Markov Model\nTopic Models: LDA and MoC"
+    "text": "Turing is a universal probabilistic programming language with an intuitive modelling interface, composable probabilistic inference and computational scalability.Turing provides Hamiltonian Monte Carlo (HMC) and particle MCMC sampling algorithms for complex posterior distributions (e.g. those involving discrete variables and stochastic control flows). Current features include:Universal probabilistic programming with an intuitive modelling interface;\nHamiltonian Monte Carlo (HMC) sampling for differentiable posterior distributions;\nParticle MCMC sampling for complex posterior distributions involving discrete variables and stochastic control flow; and\nGibbs sampling that combines particle MCMC,  HMC and many other MCMC algorithms."
 },
 
 {
@@ -69,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Getting Started",
     "title": "Install Julia",
     "category": "section",
-    "text": "You will need Julia 1.0, which you can get from the official Julia website.There are three options for users:A command line version Julia/downloads (recommended).\nA community maintained IDE Juno.\nJuliaBox.com – a Jupyter notebook in the browser.For the command line version, we recommend that you install a version downloaded from Julia\'s official website, as Turing may not work correctly with Julia provided by other sources (e.g. Turing does not work with Julia installed via apt-get due to missing header files).Juno will also the command line version installed. This IDE is recommended for heavy users who require features like debugging, quick documentation check, etc.JuliaBox provides a pre-installed Jupyter notebook for Julia. You can take a shot at Turing without installing Julia on your machine in few seconds."
+    "text": "You will need to install Julia 1.0, which you can get from the official Julia website."
 },
 
 {
@@ -78,6 +70,118 @@ var documenterSearchIndex = {"docs": [
     "title": "Install Turing.jl",
     "category": "section",
     "text": "Turing is an officially registered Julia package, so the following will install a stable version of Turing while inside Julia\'s package manager (press ] from the REPL):add TuringIf you want to use the latest version of Turing with some experimental features, you can try the following instead:add Turing#master\ntest TuringIf all tests pass, you\'re ready to start using Turing."
+},
+
+{
+    "location": "guide.html#",
+    "page": "Guide",
+    "title": "Guide",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "guide.html#Guide-1",
+    "page": "Guide",
+    "title": "Guide",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "guide.html#Basics-1",
+    "page": "Guide",
+    "title": "Basics",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "guide.html#Introduction-1",
+    "page": "Guide",
+    "title": "Introduction",
+    "category": "section",
+    "text": "A probabilistic program is Julia code wrapped in a @model macro. It can use arbitrary Julia code, but to ensure correctness of inference it should not have external effects or modify global state. Stack-allocated variables are safe, but mutable heap-allocated objects may lead to subtle bugs when using task copying. To help avoid those we provide a Turing-safe datatype TArray that can be used to create mutable arrays in Turing programs.To specify distributions of random variables, Turing programs should use the ~ notation:x ~ distr where x is a symbol and distr is a distribution. If x is undefined in the model function, inside the probabilistic program, this puts a random variable named x, distributed according to distr, in the current scope. distr can be a value of any type that implements rand(distr), which samples a value from the distribution distr. If x is defined, this is used for conditioning in a style similar to Anglican (another PPL). In this case, x is an observed value, assumed to have been drawn from the distribution distr. The likelihood is computed using logpdf(distr,y). The observe statements should be arranged so that every possible run traverses all of them in exactly the same order. This is equivalent to demanding that they are not placed inside stochastic control flow.Available inference methods include  Importance Sampling (IS), Sequential Monte Carlo (SMC), Particle Gibbs (PG), Hamiltonian Monte Carlo (HMC), Hamiltonian Monte Carlo with Dual Averaging (HMCDA) and The No-U-Turn Sampler (NUTS)."
+},
+
+{
+    "location": "guide.html#Simple-Gaussian-Demo-1",
+    "page": "Guide",
+    "title": "Simple Gaussian Demo",
+    "category": "section",
+    "text": "Below is a simple Gaussian demo illustrate the basic usage of Turing.jl.# Import packages.\nusing Turing, MCMCChain, Distributions\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x, y) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0,sqrt(s))\n  x ~ Normal(m, sqrt(s))\n  y ~ Normal(m, sqrt(s))\n  return s, m\nendNote: As a sanity check, the expectation of s is 49/24 (2.04166666...) and the expectation of m is 7/6 (1.16666666...).We can perform inference by using the sample function, the first argument of which is our probabalistic program and the second of which is a sampler. More information on each sampler is located in the API.#  Run sampler, collect results.\nc1 = sample(gdemo(1.5, 2), SMC(1000))\nc2 = sample(gdemo(1.5, 2), PG(10,1000))\nc3 = sample(gdemo(1.5, 2), HMC(1000, 0.1, 5))\nc4 = sample(gdemo(1.5, 2), Gibbs(1000, PG(10, 2, :m), HMC(2, 0.1, 5, :s)))\nc5 = sample(gdemo(1.5, 2), HMCDA(1000, 0.15, 0.65))\nc6 = sample(gdemo(1.5, 2), NUTS(1000,  0.65))\n\n# Summarise results\nMCMCChain.describe(c3)\n\n# Plot results\np = MCMCChain.plot(c3)\nMCMCChain.draw(p, fmt=:pdf, filename=\"gdemo-plot.pdf\")The arguments for each sampler are:SMC: number of particles.\nPG: number of particles, number of iterations.\nHMC: number of samples, leapfrog step size, leapfrog step numbers.\nGibbs: number of samples, component sampler 1, component sampler 2, ...\nHMCDA: number of samples, total leapfrog length, target accept ratio.\nNUTS: number of samples, target accept ratio.For detailed information on the samplers, please review Turing.jl\'s API documentation."
+},
+
+{
+    "location": "guide.html#Modelling-Syntax-Explained-1",
+    "page": "Guide",
+    "title": "Modelling Syntax Explained",
+    "category": "section",
+    "text": "Using this syntax, a probabilistic model is defined in Turing. The model function generated by Turing can then be used to condition the model onto data. Subsequently, the sample function can be used to generate samples from the posterior distribution.In the following example, the defined model is conditioned to the date (arg1 = 1, arg2 = 2) by passing (1, 2) to the model function.@model model_name(arg_1, arg_2) = begin\n  ...\nendThe conditioned model can then be passed onto the sample function to run posterior inference.model_func = model_name(1, 2)\nchn = sample(model_func, HMC(..)) # Perform inference by sampling using HMC.The returned chain contains samples of the variables in the model.var_1 = mean(chn[:var_1]) # Taking the mean of a variable named var_1.Note that the key (:var_1) should be a symbol. For example, to fetch x[1], one would need to do chn[Symbol(:x[1])."
+},
+
+{
+    "location": "guide.html#Sampling-from-the-Prior-1",
+    "page": "Guide",
+    "title": "Sampling from the Prior",
+    "category": "section",
+    "text": "Turing allows you to sample from a declared model\'s prior by calling the model without specifying inputs or a sampler. In the below example, we specify a gdemo model which accepts two inputs, x and y.@model gdemo(x, y) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0,sqrt(s))\n  x ~ Normal(m, sqrt(s))\n  y ~ Normal(m, sqrt(s))\n  return x, y\nendAssign the function without inputs to a variable, and Turing will produce a sample from the prior distribution.g = gdemo()\ng\n# Output: (0.685690547873451, -1.1972706455914328)"
+},
+
+{
+    "location": "guide.html#Beyond-the-Basics-1",
+    "page": "Guide",
+    "title": "Beyond the Basics",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "guide.html#Compositional-Sampling-Using-Gibbs-1",
+    "page": "Guide",
+    "title": "Compositional Sampling Using Gibbs",
+    "category": "section",
+    "text": "Turing.jl provides a Gibbs interface to combine different samplers. For example, one can combine an HMC sampler with a PG sampler to run inference for different parameters in a single model as below.@model simple_choice(xs) = begin\n  p ~ Beta(2, 2)\n  z ~ Categorical(p)\n  for x = xs\n    if z == 1\n      x ~ Normal(0, 1)\n    else\n      x ~ Normal(2, 1)\n    end\n  end\nend\n\nsimple_choice_f = simple_choice([1.5, 2.0, 0.3])\n\nchn = sample(simple_choice_f, Gibbs(1000, HMC(1,0.2,3,:p), PG(20,1,:z))For details of compositional sampling in Turing.jl, please check the corresponding paper."
+},
+
+{
+    "location": "guide.html#Working-with-MCMCChain.jl-1",
+    "page": "Guide",
+    "title": "Working with MCMCChain.jl",
+    "category": "section",
+    "text": "Turing.jl wraps its samples using MCMCChain.Chain so that all the functions working for MCMCChain.Chain can be re-used in Turing.jl. Two typical functions are MCMCChain.describe and MCMCChain.plot, which can be used as follows for an obtained chain chn. For more information on MCMCChain, please see the GitHub repository.using MCMCChain: describe, plot\n\ndescribe(chn) # Lists statistics of the samples.\nplot(chn) # Plots statistics of the samples.There are numerous functions in addition to describe and plot in the MCMCChain package, such as those used in convergence diagnostics. For more information on the package, please see the GitHub repository."
+},
+
+{
+    "location": "guide.html#Changing-Default-Settings-1",
+    "page": "Guide",
+    "title": "Changing Default Settings",
+    "category": "section",
+    "text": "Some of Turing.jl\'s default settings can be changed for better usage."
+},
+
+{
+    "location": "guide.html#AD-Chunk-Size-1",
+    "page": "Guide",
+    "title": "AD Chunk Size",
+    "category": "section",
+    "text": "Turing.jl uses ForwardDiff.jl for automatic differentiation, which uses forward-mode chunk-wise AD. The chunk size can be manually set by setchunksize(new_chunk_size); alternatively, use an auto-tuning helper function auto_tune_chunk_size!(mf::Function, rep_num=10), which will profile various chunk sizes. Here mf is the model function, e.g. gdemo(1.5, 2), and rep_num is the number of repetitions during profiling."
+},
+
+{
+    "location": "guide.html#AD-Backend-1",
+    "page": "Guide",
+    "title": "AD Backend",
+    "category": "section",
+    "text": "Since #428, Turing.jl supports ReverseDiff.jl as backend. To switch between ForwardDiff.jl and ReverseDiff.jl, one can call function setadbackend(backend_sym), where backend_sym can be :forward_diff or :reverse_diff."
+},
+
+{
+    "location": "guide.html#Progress-Meter-1",
+    "page": "Guide",
+    "title": "Progress Meter",
+    "category": "section",
+    "text": "Turing.jl uses ProgressMeter.jl to show the progress of sampling, which may lead to slow down of inference or even cause bugs in some IDEs due to I/O. This can be turned on or off by turnprogress(true) and turnprogress(false), of which the former is set as default."
 },
 
 {
@@ -149,7 +253,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Advanced Usage",
     "title": "Avoid Using the @model Macro",
     "category": "section",
-    "text": "When integrating Turing.jl with other libraries, it\'s can be necessary to avoid using the @model macro. To achieve this, one needs to understand the @model macro, which works as a closure and generates an amended function byassigning the arguments to corresponding local variables;\nadding two keyword arguments vi=VarInfo() and sampler=nothing to the scope; and\nforcing the function to return vi.Thus by doing these three steps manually, one can get rid of the @model macro. Taking the gdemo model as an example, the two code sections below (macro and macro-free) are equivalent.@model gdemo(x) = begin\n    s ~ InverseGamma(2,3)\n    m ~ Normal(0,sqrt(s))\n    x[1] ~ Normal(m, sqrt(s))\n    x[2] ~ Normal(m, sqrt(s))\n    return s, m\nend\n\nmf = gdemo([1.5, 2.0])\nsample(mf, HMC(1000, 0.1, 5))# Force Turing.jl to initialize its compiler\nmf(vi, sampler; x=[1.5, 2.0]) = begin\n  s = Turing.assume(sampler,\n                    InverseGamma(2, 3),\n                    Turing.VarName(vi, [:c_s, :s], \"\"),\n                    vi)\n  m = Turing.assume(sampler,\n                    Normal(0,sqrt(s)),\n                    Turing.VarName(vi, [:c_m, :m], \"\"),\n                    vi)\n  for i = 1:2\n    Turing.observe(sampler,\n                   Normal(m, sqrt(s)),\n                   x[i],\n                   vi)\n  end\n  vi\nend\nmf() = mf(Turing.VarInfo(), nothing)\n\nsample(mf, HMC(1000, 0.1, 5))Note that the use of ~ must be removed due to the fact that in Julia 0.6, ~ is no longer a macro. For this reason, Turing.jl parses ~ within the @model macro to allow for this intuitive notation."
+    "text": "When integrating Turing.jl with other libraries, it can be necessary to avoid using the @model macro. To achieve this, one needs to understand the @model macro, which works as a closure and generates an amended function byassigning the arguments to corresponding local variables;\nadding two keyword arguments vi=VarInfo() and sampler=nothing to the scope; and\nforcing the function to return vi.Thus by doing these three steps manually, one can get rid of the @model macro. Taking the gdemo model as an example, the two code sections below (macro and macro-free) are equivalent.@model gdemo(x, y) = begin\n    s ~ InverseGamma(2,3)\n    m ~ Normal(0,sqrt(s))\n    x ~ Normal(m, sqrt(s))\n    x ~ Normal(m, sqrt(s))\n    return s, m\nend\n\nmf = gdemo(1.5, 2.0)\nsample(mf, HMC(1000, 0.1, 5))# Force Turing.jl to initialize its compiler\nmf(vi, sampler; x=[1.5, 2.0]) = begin\n  s = Turing.assume(sampler,\n                    InverseGamma(2, 3),\n                    Turing.VarName(vi, [:c_s, :s], \"\"),\n                    vi)\n  m = Turing.assume(sampler,\n                    Normal(0,sqrt(s)),\n                    Turing.VarName(vi, [:c_m, :m], \"\"),\n                    vi)\n  for i = 1:2\n    Turing.observe(sampler,\n                   Normal(m, sqrt(s)),\n                   x[i],\n                   vi)\n  end\n  vi\nend\nmf() = mf(Turing.VarInfo(), nothing)\n\nsample(mf, HMC(1000, 0.1, 5))Note that the use of ~ must be removed due to the fact that in Julia 0.6, ~ is no longer a macro. For this reason, Turing.jl parses ~ within the @model macro to allow for this intuitive notation."
 },
 
 {
@@ -185,35 +289,27 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "contributing/guide.html#Getting-started-1",
+    "location": "contributing/guide.html#Getting-Started-1",
     "page": "Contributing",
-    "title": "Getting started",
+    "title": "Getting Started",
     "category": "section",
     "text": "Fork this repository.\nClone your fork on your local machine: git clone https://github.com/your_username/Turing.jl.\nAdd a remote corresponding to this repository:git remote add upstream https://github.com/TuringLang/Turing.jl."
 },
 
 {
-    "location": "contributing/guide.html#What-can-I-do-?-1",
+    "location": "contributing/guide.html#What-Can-I-Do?-1",
     "page": "Contributing",
-    "title": "What can I do ?",
+    "title": "What Can I Do?",
     "category": "section",
     "text": "Look at the issues page to find an outstanding issue. For instance, you could implement new features, fix bugs or write example models."
 },
 
 {
-    "location": "contributing/guide.html#Git-workflow-1",
+    "location": "contributing/guide.html#Git-Workflow-1",
     "page": "Contributing",
-    "title": "Git workflow",
+    "title": "Git Workflow",
     "category": "section",
-    "text": "Make sure that your local master branch is up to date with this repository\'s one (for more details):git fetch upstream\ngit checkout master\ngit rebase upstream/masterCreate a new branch: git checkout -b branch_name (usually use feature-issue_id or bugfix-issue_id).\nDo your stuff: git add ..., git commit -m \'...\'.\nPush your local branch to your fork of this repository: git push --set-upstream origin branch_name."
-},
-
-{
-    "location": "contributing/guide.html#Make-a-pull-request-1",
-    "page": "Contributing",
-    "title": "Make a pull request",
-    "category": "section",
-    "text": "Create a pull request by going to this repository front page and selecting Compare & pull request.\nIf related to a specific issue, link the pull request link in that issue, and in the pull request also link the issue."
+    "text": "For more information on how the Git workflow typically functions, please see the GitHub\'s introduction or Julia\'s contribution guide."
 },
 
 {
@@ -397,7 +493,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction to Turing",
     "title": "Coin Flipping With Turing",
     "category": "section",
-    "text": "In the previous example, we used the fact that our prior distribution is a conjugate prior. Note that a closed-form expression (the updated_belief expression) for the posterior is not accessible in general and usually does not exist for more interesting models. We are now going to move away from the closed-form expression above and specify the same model using Turing. To do so, we will first need to import Turing, MCMCChain, Distributions, and StatPlots. MCMChain is a library built by the Turing team to help summarize Markov Chain Monte Carlo (MCMC) simulations, as well as a variety of utility functions for diagnostics and visualizations.# Load Turing and MCMCChain.\nusing Turing, MCMCChain\n\n# Load the distributions library.\nusing Distributions\n\n# Load stats plots for density plots.\nusing StatPlotsFirst, we define the coin-flip model using Turing.@model coinflip(y) = begin\n    \n    # Our prior belief about the probability of heads in a coin.\n    p ~ Beta(1, 1)\n    \n    # The number of observations.\n    N = length(y)\n    for n in 1:N\n        # Heads or tails of a coin are drawn from a Bernoulli distribution.\n        y[n] ~ Bernoulli(p)\n    end\nend;After defining the model, we can approximate the posterior distribution by drawing samples from the distribution. In this example, we use a Hamiltonian Monte Carlo sampler to draw these samples. Later tutorials will give more information on the samplers available in Turing and discuss their use for different models.# Settings of the Hamiltonian Monte Carlo (HMC) sampler.\niterations = 1000\nϵ = 0.05\nτ = 10\n\n# Start sampling.\nchain = sample(coinflip(data), HMC(iterations, ϵ, τ));[HMC] Finished with\n  Running time        = 4.126384291;\n  Accept rate         = 0.997;\n  #lf / sample        = 9.99;\n  #evals / sample     = 12.985;\n  pre-cond. diag mat  = [1.0].After finishing the sampling process, we can visualize the posterior distribution approximated using Turing against the posterior distribution in closed-form. We can extract the chain data from the sampler using the Chains(chain[:p]) function, exported from the MCMCChain module. Chains(chain[:p]) creates an instance of the Chain type which summarizes the MCMC simulation — the MCMCChain module supports numerous tools for plotting, summarizing, and describing variables of type Chain.# Construct summary of the sampling process for the parameter p, i.e. the probability of heads in a coin.\np_summary = Chains(chain[:p])\nhistogramplot(p_summary){{< figure src=\"../figures/0Introduction9_1.svg\"  >}}Now we can build our plot:# Compute the posterior distribution in closed-form.\nN = length(data)\nheads = sum(data)\nupdated_belief = Beta(prior_belief.α + heads, prior_belief.β + N - heads)\n\n# Visualize a blue density plot of the approximate posterior distribution using HMC (see Chain 1 in the legend).\np = densityplot(p_summary, xlim = (0,1), legend = :best, w = 2, c = :blue)\n\n# Visualize a green density plot of posterior distribution in closed-form.\nplot!(p, range(0, stop = 1, length = 100), pdf.(Ref(updated_belief), range(0, stop = 1, length = 100)), \n        xlabel = \"probability of heads\", ylabel = \"\", title = \"\", xlim = (0,1), label = \"Closed-form\",\n        fill=0, α=0.3, w=3, c = :lightgreen)\n\n# Visualize the true probability of heads in red.\nvline!(p, [p_true], label = \"True probability\", c = :red);(Image: sdf)As we can see, the Turing model closely approximates the true probability. Hopefully this tutorial has provided an easy-to-follow, yet informative introduction to Turing\'s simpler applications. More advanced usage will be demonstrated in later tutorials."
+    "text": "In the previous example, we used the fact that our prior distribution is a conjugate prior. Note that a closed-form expression (the updated_belief expression) for the posterior is not accessible in general and usually does not exist for more interesting models. We are now going to move away from the closed-form expression above and specify the same model using Turing. To do so, we will first need to import Turing, MCMCChain, Distributions, and StatPlots. MCMChain is a library built by the Turing team to help summarize Markov Chain Monte Carlo (MCMC) simulations, as well as a variety of utility functions for diagnostics and visualizations.# Load Turing and MCMCChain.\nusing Turing, MCMCChain\n\n# Load the distributions library.\nusing Distributions\n\n# Load stats plots for density plots.\nusing StatPlotsFirst, we define the coin-flip model using Turing.@model coinflip(y) = begin\n    \n    # Our prior belief about the probability of heads in a coin.\n    p ~ Beta(1, 1)\n    \n    # The number of observations.\n    N = length(y)\n    for n in 1:N\n        # Heads or tails of a coin are drawn from a Bernoulli distribution.\n        y[n] ~ Bernoulli(p)\n    end\nend;After defining the model, we can approximate the posterior distribution by drawing samples from the distribution. In this example, we use a Hamiltonian Monte Carlo sampler to draw these samples. Later tutorials will give more information on the samplers available in Turing and discuss their use for different models.# Settings of the Hamiltonian Monte Carlo (HMC) sampler.\niterations = 1000\nϵ = 0.05\nτ = 10\n\n# Start sampling.\nchain = sample(coinflip(data), HMC(iterations, ϵ, τ));[HMC] Finished with\n  Running time        = 5.182771467999993;\n  Accept rate         = 0.997;\n  #lf / sample        = 9.99;\n  #evals / sample     = 11.989;\n  pre-cond. diag mat  = [1.0].After finishing the sampling process, we can visualize the posterior distribution approximated using Turing against the posterior distribution in closed-form. We can extract the chain data from the sampler using the Chains(chain[:p]) function, exported from the MCMCChain module. Chains(chain[:p]) creates an instance of the Chain type which summarizes the MCMC simulation — the MCMCChain module supports numerous tools for plotting, summarizing, and describing variables of type Chain.# Construct summary of the sampling process for the parameter p, i.e. the probability of heads in a coin.\np_summary = Chains(chain[:p])\nhistogramplot(p_summary)(Image: )Now we can build our plot:# Compute the posterior distribution in closed-form.\nN = length(data)\nheads = sum(data)\nupdated_belief = Beta(prior_belief.α + heads, prior_belief.β + N - heads)\n\n# Visualize a blue density plot of the approximate posterior distribution using HMC (see \"Chain 1\" in the legend).\np = densityplot(p_summary, xlim = (0,1), legend = :best, w = 2, c = :blue)\n\n# Visualize a green density plot of posterior distribution in closed-form.\nplot!(p, range(0, stop = 1, length = 100), pdf.(Ref(updated_belief), range(0, stop = 1, length = 100)), \n        xlabel = \"probability of heads\", ylabel = \"\", title = \"\", xlim = (0,1), label = \"Closed-form\",\n        fill=0, α=0.3, w=3, c = :lightgreen)\n\n# Visualize the true probability of heads in red.\nvline!(p, [p_true], label = \"True probability\", c = :red);(Image: sdf)As we can see, the Turing model closely approximates the true probability. Hopefully this tutorial has provided an easy-to-follow, yet informative introduction to Turing\'s simpler applications. More advanced usage will be demonstrated in later tutorials."
 },
 
 {
@@ -421,7 +517,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Turing.@model",
     "category": "macro",
-    "text": "@model(name, fbody)\n\nWrapper for models.\n\nUsage:\n\n@model model() = begin\n  # body\nend\n\nExample:\n\n@model gauss() = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0,sqrt.(s))\n  1.5 ~ Normal(m, sqrt.(s))\n  2.0 ~ Normal(m, sqrt.(s))\n  return(s, m)\nend\n\n\n\n\n\n"
+    "text": "@model(name, fbody)\n\nMacro to specify a probabilistic model.\n\nExample:\n\n@model Gaussian(x) = begin\n    s ~ InverseGamma(2,3)\n    m ~ Normal(0,sqrt.(s))\n    for i in 1:length(x)\n        x[i] ~ Normal(m, sqrt.(s))\n    end\n    return (s, m)\nend\n\nCompiler design: sample(fname(x,y), sampler).\n\nfname(x=nothing,y=nothing; compiler=compiler) = begin\n    ex = quote\n        # Pour in kwargs for those args where value != nothing.\n        fname_model(vi::VarInfo, sampler::Sampler; x = x, y = y) = begin\n            vi.logp = zero(Real)\n          \n            # Pour in model definition.\n            x ~ Normal(0,1)\n            y ~ Normal(x, 1)\n            return x, y\n        end\n    end\n    return Main.eval(ex)\nend\n\n\n\n\n\n"
 },
 
 {
@@ -429,7 +525,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Turing.@~",
     "category": "macro",
-    "text": "var_name ~ Distribution()\n\nTilde notation ~ can be used to specifiy a variable follows a distributions.\n\nIf var_name is an un-defined variable or a container (e.g. Vector or Matrix), this variable will be treated as model parameter; otherwise if var_name is defined, this variable will be treated as data.\n\n\n\n\n\n"
+    "text": "macro: @~ var Distribution()\n\nTilde notation macro. This macro constructs Turing.observe or Turing.assume calls depending on the left-hand argument. Note that the macro is interconnected with the @model macro and assumes that a compiler struct is available.\n\nExample:\n\n@~ x Normal()\n\n\n\n\n\n"
 },
 
 {
@@ -453,7 +549,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Turing.Gibbs",
     "category": "type",
-    "text": "Gibbs(n_iters, alg_1, alg_2)\n\nCompositional MCMC interface.\n\nUsage:\n\nalg = Gibbs(1000, HMC(1, 0.2, 3, :v1), PG(20, 1, :v2))\n\n\n\n\n\n"
+    "text": "Gibbs(n_iters, alg_1, alg_2)\n\nCompositional MCMC interface.\n\nExample:\n\nalg = Gibbs(1000, HMC(1, 0.2, 3, :v1), PG(20, 1, :v2))\n\n\n\n\n\n"
 },
 
 {
@@ -461,7 +557,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Turing.HMC",
     "category": "type",
-    "text": "HMC(n_iters::Int, epsilon::Float64, tau::Int)\n\nHamiltonian Monte Carlo sampler.\n\nUsage:\n\nHMC(1000, 0.05, 10)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0,sqrt.(s))\n  x[1] ~ Normal(m, sqrt.(s))\n  x[2] ~ Normal(m, sqrt.(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), HMC(1000, 0.05, 10))\n\n\n\n\n\n"
+    "text": "HMC(n_iters::Int, epsilon::Float64, tau::Int)\n\nHamiltonian Monte Carlo sampler.\n\nUsage:\n\nHMC(1000, 0.05, 10)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0, sqrt(s))\n  x[1] ~ Normal(m, sqrt(s))\n  x[2] ~ Normal(m, sqrt(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), HMC(1000, 0.05, 10))\n\n\n\n\n\n"
 },
 
 {
@@ -469,7 +565,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Turing.HMCDA",
     "category": "type",
-    "text": "HMCDA(n_iters::Int, n_adapt::Int, delta::Float64, lambda::Float64)\n\nHamiltonian Monte Carlo sampler wiht Dual Averaging algorithm.\n\nUsage:\n\nHMCDA(1000, 200, 0.65, 0.3)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0,sqrt.(s))\n  x[1] ~ Normal(m, sqrt.(s))\n  x[2] ~ Normal(m, sqrt.(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), HMCDA(1000, 200, 0.65, 0.3))\n\n\n\n\n\n"
+    "text": "HMCDA(n_iters::Int, n_adapt::Int, delta::Float64, lambda::Float64)\n\nHamiltonian Monte Carlo sampler wiht Dual Averaging algorithm.\n\nUsage:\n\nHMCDA(1000, 200, 0.65, 0.3)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0, sqrt(s))\n  x[1] ~ Normal(m, sqrt(s))\n  x[2] ~ Normal(m, sqrt(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), HMCDA(1000, 200, 0.65, 0.3))\n\n\n\n\n\n"
 },
 
 {
@@ -485,7 +581,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Turing.IS",
     "category": "type",
-    "text": "IS(n_particles::Int)\n\nImportance sampling algorithm object.\n\nn_particles is the number of particles to use\n\nUsage:\n\nIS(1000)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0,sqrt.(s))\n  x[1] ~ Normal(m, sqrt.(s))\n  x[2] ~ Normal(m, sqrt.(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), IS(1000))\n\n\n\n\n\n"
+    "text": "IS(n_particles::Int)\n\nImportance sampling algorithm object.\n\nn_particles is the number of particles to use\n\nUsage:\n\nIS(1000)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n    s ~ InverseGamma(2,3)\n    m ~ Normal(0,sqrt.(s))\n    x[1] ~ Normal(m, sqrt.(s))\n    x[2] ~ Normal(m, sqrt.(s))\n    return s, m\nend\n\nsample(gdemo([1.5, 2]), IS(1000))\n\n\n\n\n\n"
 },
 
 {
@@ -501,7 +597,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Turing.NUTS",
     "category": "type",
-    "text": "NUTS(n_iters::Int, n_adapt::Int, delta::Float64)\n\nNo-U-Turn Sampler (NUTS) sampler.\n\nUsage:\n\nNUTS(1000, 200, 0.6j_max)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0,sqrt.(s))\n  x[1] ~ Normal(m, sqrt.(s))\n  x[2] ~ Normal(m, sqrt.(s))\n  return s, m\nend\n\nsample(gdemo([1.j_max, 2]), NUTS(1000, 200, 0.6j_max))\n\n\n\n\n\n"
+    "text": "NUTS(n_iters::Int, n_adapt::Int, delta::Float64)\n\nNo-U-Turn Sampler (NUTS) sampler.\n\nUsage:\n\nNUTS(1000, 200, 0.6j_max)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0, sqrt(s))\n  x[1] ~ Normal(m, sqrt(s))\n  x[2] ~ Normal(m, sqrt(s))\n  return s, m\nend\n\nsample(gdemo([1.j_max, 2]), NUTS(1000, 200, 0.6j_max))\n\n\n\n\n\n"
 },
 
 {
@@ -509,7 +605,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Turing.PG",
     "category": "type",
-    "text": "PG(n_particles::Int, n_iters::Int)\n\nParticle Gibbs sampler.\n\nUsage:\n\nPG(100, 100)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0,sqrt.(s))\n  x[1] ~ Normal(m, sqrt.(s))\n  x[2] ~ Normal(m, sqrt.(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), PG(100, 100))\n\n\n\n\n\n"
+    "text": "PG(n_particles::Int, n_iters::Int)\n\nParticle Gibbs sampler.\n\nUsage:\n\nPG(100, 100)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0, sqrt(s))\n  x[1] ~ Normal(m, sqrt(s))\n  x[2] ~ Normal(m, sqrt(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), PG(100, 100))\n\n\n\n\n\n"
 },
 
 {
@@ -541,7 +637,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "Turing.SMC",
     "category": "type",
-    "text": "SMC(n_particles::Int)\n\nSequential Monte Carlo sampler.\n\nUsage:\n\nSMC(1000)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0,sqrt.(s))\n  x[1] ~ Normal(m, sqrt.(s))\n  x[2] ~ Normal(m, sqrt.(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), SMC(1000))\n\n\n\n\n\n"
+    "text": "SMC(n_particles::Int)\n\nSequential Monte Carlo sampler.\n\nUsage:\n\nSMC(1000)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0, sqrt(s))\n  x[1] ~ Normal(m, sqrt(s))\n  x[2] ~ Normal(m, sqrt(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), SMC(1000))\n\n\n\n\n\n"
 },
 
 {
