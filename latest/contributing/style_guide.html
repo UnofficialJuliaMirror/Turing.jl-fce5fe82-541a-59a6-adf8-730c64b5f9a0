@@ -77,7 +77,44 @@ function foobar(
 end</code></pre><h3><a class="nav-anchor" id="Keyword-Arguments-1" href="#Keyword-Arguments-1">Keyword Arguments</a></h3><p>When calling a function always separate your keyword arguments from your positional arguments with a semicolon. This avoids mistakes in ambiguous cases (such as splatting a <code>Dict</code>).</p><pre><code class="language-julia"># Yes:
 xy = foo(x; y=3)
 # No:
-xy = foo(x, y=3)</code></pre><h3><a class="nav-anchor" id="Whitespace-1" href="#Whitespace-1">Whitespace</a></h3><p>Avoid extraneous whitespace in the following situations:</p><ul><li><p>Immediately inside parentheses, square brackets or braces.</p><p><code>julia   Yes: spam(ham[1], [eggs])   No:  spam( ham[ 1 ], [ eggs ] )</code></p></li><li><p>Immediately before a comma or semicolon:</p><p><code>julia   Yes: if x == 4 @show(x, y); x, y = y, x end   No:  if x == 4 @show(x , y) ; x , y = y , x end</code></p></li><li><p>When using ranges unless additional operators are used:</p><p><code>julia   Yes: ham[1:9], ham[1:3:9], ham[1:3:end]   No:  ham[1: 9], ham[1 : 3: 9]</code></p><p><code>julia   Yes: ham[lower:upper], ham[lower:step:upper]   Yes: ham[lower + offset : upper + offset]   Yes: ham[(lower + offset):(upper + offset)]   No:  ham[lower + offset:upper + offset]</code></p></li><li><p>More than one space around an assignment (or other) operator to align it with another:</p><p>```</p><h1>Yes:</h1><p>x = 1   y = 2   long_variable = 3</p><h1>No:</h1><p>x             = 1   y             = 2   long_variable = 3   ```</p></li><li><p>Always surround these binary operators with a single space on either side: assignment (<code>=</code>), <a href="https://docs.julialang.org/en/latest/manual/mathematical-operations/#Updating-operators-1">updating operators</a> (<code>+=</code>, <code>-=</code>, etc.), <a href="https://docs.julialang.org/en/latest/manual/mathematical-operations/#Numeric-Comparisons-1">numeric comparisons operators</a> (<code>==</code>, <code>&lt;</code>, <code>&gt;</code>, <code>!=</code>, etc.). Note that this guideline does not apply when performing assignment in method definitions.</p><p>```   Yes: i = i + 1   No:  i=i+1</p><p>Yes: submitted += 1   No:  submitted +=1</p><p>Yes: x^2 &lt; y   No:  x^2&lt;y   ```</p></li><li><p>Assignments using expanded array, tuple, or function notation should have the first open bracket on the same line assignment operator and the closing bracket should match the indentation level of the assignment. Alternatively you can perform assignments on a single line when they are short:</p><p>```julia</p><h1>Yes:</h1><p>arr = [       1,       2,       3,   ]   arr = [       1, 2, 3,   ]   result = Function(       arg1,       arg2,   )   arr = [1, 2, 3]</p></li></ul><pre><code class="language-none"># No:
+xy = foo(x, y=3)</code></pre><h3><a class="nav-anchor" id="Whitespace-1" href="#Whitespace-1">Whitespace</a></h3><p>Avoid extraneous whitespace in the following situations:</p><ul><li>Immediately inside parentheses, square brackets or braces.</li></ul><pre><code class="language-julia">Yes: spam(ham[1], [eggs])
+No:  spam( ham[ 1 ], [ eggs ] )</code></pre><ul><li>Immediately before a comma or semicolon:</li></ul><pre><code class="language-julia">Yes: if x == 4 @show(x, y); x, y = y, x end
+No:  if x == 4 @show(x , y) ; x , y = y , x end</code></pre><ul><li>When using ranges unless additional operators are used:</li></ul><pre><code class="language-julia">Yes: ham[1:9], ham[1:3:9], ham[1:3:end]
+No:  ham[1: 9], ham[1 : 3: 9]</code></pre><pre><code class="language-julia">Yes: ham[lower:upper], ham[lower:step:upper]
+Yes: ham[lower + offset : upper + offset]
+Yes: ham[(lower + offset):(upper + offset)]
+No:  ham[lower + offset:upper + offset]</code></pre><ul><li>More than one space around an assignment (or other) operator to align it with another:</li></ul><pre><code class="language-julia"># Yes:
+x = 1
+y = 2
+long_variable = 3
+
+# No:
+x             = 1
+y             = 2
+long_variable = 3</code></pre><ul><li>Always surround these binary operators with a single space on either side: assignment (<span>$=$</span>), <a href="https://docs.julialang.org/en/latest/manual/mathematical-operations/#Updating-operators-1">updating operators</a> (<span>$+=$</span>, <span>$-=$</span>, etc.), <a href="https://docs.julialang.org/en/latest/manual/mathematical-operations/#Numeric-Comparisons-1">numeric comparisons operators</a> (<span>$==$</span>, <span>$&lt;$</span>, <span>$&gt;$</span>, <span>$!=$</span>, etc.). Note that this guideline does not apply when performing assignment in method definitions.</li></ul><pre><code class="language-julia">Yes: i = i + 1
+No:  i=i+1
+
+Yes: submitted += 1
+No:  submitted +=1
+
+Yes: x^2 &lt; y
+No:  x^2&lt;y</code></pre><ul><li>Assignments using expanded array, tuple, or function notation should have the first open bracket on the same line assignment operator and the closing bracket should match the indentation level of the assignment. Alternatively you can perform assignments on a single line when they are short:</li></ul><pre><code class="language-julia"># Yes:
+arr = [
+    1,
+    2,
+    3,
+]
+arr = [
+    1, 2, 3,
+]
+result = Function(
+    arg1,
+    arg2,
+)
+arr = [1, 2, 3]
+
+
+# No:
 arr =
 [
     1,
@@ -92,8 +129,74 @@ arr = [
     1,
     2,
     3,
-    ]
-```</code></pre><ul><li><p>Nested array or tuples that are in expanded notation should have the opening and closing brackets at the same indentation level:</p><p>```julia</p><h1>Yes:</h1><p>x = [       [           1, 2, 3,       ],       [           &quot;hello&quot;,           &quot;world&quot;,       ],       [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;],   ]</p><h1>No:</h1><p>y = [       [           1, 2, 3,       ], [           &quot;hello&quot;,           &quot;world&quot;,       ],   ]   z = [[           1, 2, 3,       ], [           &quot;hello&quot;,           &quot;world&quot;,       ],   ]   ```</p></li><li><p>Always include the trailing comma when working with expanded arrays, tuples or functions notation. This allows future edits to easily move elements around or add additional elements. The trailing comma should be excluded when the notation is only on a single-line:</p><p>```julia</p><h1>Yes:</h1><p>arr = [       1,       2,       3,   ]   result = Function(       arg1,       arg2,   )   arr = [1, 2, 3]</p><h1>No:</h1><p>arr = [       1,       2,       3   ]   result = Function(       arg1,       arg2   )   arr = [1, 2, 3,]   ```</p></li><li><p>Triple-quotes use the indentation of the lowest indented line (excluding the opening triple-quote). This means the closing triple-quote should be aligned to least indented line in the string. Triple-backticks should also follow this style even though the indentation does not matter for them.</p><p>```julia</p><h1>Yes:</h1><p>str = &quot;&quot;&quot;       hello       world!       &quot;&quot;&quot;   str = &quot;&quot;&quot;           hello       world!       &quot;&quot;&quot;   cmd = <code>program           --flag value           parameter</code></p><h1>No:</h1><p>str = &quot;&quot;&quot;       hello       world!   &quot;&quot;&quot;   ```</p></li></ul><h3><a class="nav-anchor" id="Comments-1" href="#Comments-1">Comments</a></h3><p>Comments should be used to state the intended behaviour of code. This is especially important when the code is doing something clever that may not be obvious upon first inspection. Avoid writing comments that state exactly what the code obviously does.</p><pre><code class="language-julia"># Yes:
+    ]</code></pre><ul><li>Nested array or tuples that are in expanded notation should have the opening and closing brackets at the same indentation level:</li></ul><pre><code class="language-julia"># Yes:
+x = [
+    [
+        1, 2, 3,
+    ],
+    [
+        &quot;hello&quot;,
+        &quot;world&quot;,
+    ],
+    [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;],
+]
+
+# No:
+y = [
+    [
+        1, 2, 3,
+    ], [
+        &quot;hello&quot;,
+        &quot;world&quot;,
+    ],
+]
+z = [[
+        1, 2, 3,
+    ], [
+        &quot;hello&quot;,
+        &quot;world&quot;,
+    ],
+]</code></pre><ul><li>Always include the trailing comma when working with expanded arrays, tuples or functions notation. This allows future edits to easily move elements around or add additional elements. The trailing comma should be excluded when the notation is only on a single-line:</li></ul><pre><code class="language-julia"># Yes:
+arr = [
+    1,
+    2,
+    3,
+]
+result = Function(
+    arg1,
+    arg2,
+)
+arr = [1, 2, 3]
+
+# No:
+arr = [
+    1,
+    2,
+    3
+]
+result = Function(
+    arg1,
+    arg2
+)
+arr = [1, 2, 3,]</code></pre><ul><li>Triple-quotes use the indentation of the lowest indented line (excluding the opening triple-quote). This means the closing triple-quote should be aligned to least indented line in the string. Triple-backticks should also follow this style even though the indentation does not matter for them.</li></ul><pre><code class="language-julia"># Yes:
+str = &quot;&quot;&quot;
+    hello
+    world!
+    &quot;&quot;&quot;
+str = &quot;&quot;&quot;
+        hello
+    world!
+    &quot;&quot;&quot;
+cmd = ```
+    program
+        --flag value
+        parameter
+      ```
+# No:
+str = &quot;&quot;&quot;
+    hello
+    world!
+&quot;&quot;&quot;</code></pre><h3><a class="nav-anchor" id="Comments-1" href="#Comments-1">Comments</a></h3><p>Comments should be used to state the intended behaviour of code. This is especially important when the code is doing something clever that may not be obvious upon first inspection. Avoid writing comments that state exactly what the code obviously does.</p><pre><code class="language-julia"># Yes:
 x = x + 1      # Compensate for border
 
 # No:
@@ -101,7 +204,7 @@ x = x + 1      # Increment x</code></pre><p>Comments that contradict the code ar
 # A commment
 code
 
-# anothher comment
+# Another comment
 more code
 
 TODO</code></pre><h3><a class="nav-anchor" id="Documentation-1" href="#Documentation-1">Documentation</a></h3><p>It is recommended that most modules, types and functions should have <a href="http://docs.julialang.org/en/latest/manual/documentation/">docstrings</a>. That being said, only exported functions are required to be documented. Avoid documenting methods like <code>==</code> as the built in docstring for the function already covers the details well. Try to document a function and not individual methods where possible as typically all methods will have similar docstrings. If you are adding a method to a function which was defined in <code>Base</code> or another package only add a docstring if the behaviour of your function deviates from the existing docstring.</p><p>Docstrings are written in <a href="https://en.wikipedia.org/wiki/Markdown">Markdown</a> and should be concise. Docstring lines should be wrapped at 92 characters.</p><pre><code class="language-julia">&quot;&quot;&quot;
