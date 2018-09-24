@@ -173,7 +173,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Guide",
     "title": "AD Backend",
     "category": "section",
-    "text": "Since #428, Turing.jl supports ReverseDiff.jl as backend. To switch between ForwardDiff.jl and ReverseDiff.jl, one can call function setadbackend(backend_sym), where backend_sym can be :forward_diff or :reverse_diff."
+    "text": "Since #428, Turing.jl supports Flux.Tracker as backend for reverse mode autodiff. To switch between ForwardDiff.jl and Flux.Tracker, one can call function setadbackend(backend_sym), where backend_sym can be :forward_diff or :reverse_diff."
 },
 
 {
