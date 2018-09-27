@@ -16,7 +16,7 @@ c2 = sample(gdemo(1.5, 2), PG(10,1000))
 c3 = sample(gdemo(1.5, 2), HMC(1000, 0.1, 5))
 c4 = sample(gdemo(1.5, 2), Gibbs(1000, PG(10, 2, :m), HMC(2, 0.1, 5, :s)))
 c5 = sample(gdemo(1.5, 2), HMCDA(1000, 0.15, 0.65))
-c6 = sample(gdemo(1.5, 2), NUTS(1000,  0.65))</code></pre><p>The <code>MCMCChain</code> function provides plotting tools for the <code>Chain</code> objects returned by a <code>sample</code> function. See the <a href="https://github.com/TuringLang/MCMCChain.jl">MCMCChain</a> repository for more information.</p><pre><code class="language-julia"># Summarise results
+c6 = sample(gdemo(1.5, 2), NUTS(1000,  0.65))</code></pre><p>The <code>MCMCChain</code> module (which is re-exported by Turing) provides plotting tools for the <code>Chain</code> objects returned by a <code>sample</code> function. See the <a href="https://github.com/TuringLang/MCMCChain.jl">MCMCChain</a> repository for more information on the suite of tools available for diagnosing MCMC chains.</p><pre><code class="language-julia"># Summarise results
 describe(c3)
 
 # Plot results
