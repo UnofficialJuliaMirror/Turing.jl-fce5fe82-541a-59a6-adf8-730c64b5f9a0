@@ -498,15 +498,15 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#",
-    "page": "API",
-    "title": "API",
+    "page": "Library",
+    "title": "Library",
     "category": "page",
     "text": ""
 },
 
 {
     "location": "api.html#Function-Documentation-1",
-    "page": "API",
+    "page": "Library",
     "title": "Function Documentation",
     "category": "section",
     "text": "CurrentModule = TuringPages = [\"functions.md\"]\nDepth = 5"
@@ -514,7 +514,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.@model",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.@model",
     "category": "macro",
     "text": "@model(name, fbody)\n\nMacro to specify a probabilistic model.\n\nExample:\n\n@model Gaussian(x) = begin\n    s ~ InverseGamma(2,3)\n    m ~ Normal(0,sqrt.(s))\n    for i in 1:length(x)\n        x[i] ~ Normal(m, sqrt.(s))\n    end\n    return (s, m)\nend\n\nCompiler design: sample(fname(x,y), sampler).\n\nfname(x=nothing,y=nothing; compiler=compiler) = begin\n    ex = quote\n        # Pour in kwargs for those args where value != nothing.\n        fname_model(vi::VarInfo, sampler::Sampler; x = x, y = y) = begin\n            vi.logp = zero(Real)\n          \n            # Pour in model definition.\n            x ~ Normal(0,1)\n            y ~ Normal(x, 1)\n            return x, y\n        end\n    end\n    return Main.eval(ex)\nend\n\n\n\n\n\n"
@@ -522,7 +522,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.@~",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.@~",
     "category": "macro",
     "text": "macro: @~ var Distribution()\n\nTilde notation macro. This macro constructs Turing.observe or Turing.assume calls depending on the left-hand argument. Note that the macro is interconnected with the @model macro and assumes that a compiler struct is available.\n\nExample:\n\n@~ x Normal()\n\n\n\n\n\n"
@@ -530,7 +530,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Modelling-1",
-    "page": "API",
+    "page": "Library",
     "title": "Modelling",
     "category": "section",
     "text": "@model\n@~"
@@ -538,7 +538,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.Sampler",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.Sampler",
     "category": "type",
     "text": "Sampler{T}\n\nGeneric interface for implementing inference algorithms. An implementation of an algorithm should include the following:\n\nA type specifying the algorithm and its parameters, derived from InferenceAlgorithm\nA method of sample function that produces results of inference, which is where actual inference happens.\n\nTuring translates models to chunks that call the modelling functions at specified points. The dispatch is based on the value of a sampler variable. To include a new inference algorithm implements the requirements mentioned above in a separate file, then include that file at the end of this one.\n\n\n\n\n\n"
@@ -546,7 +546,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.Gibbs",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.Gibbs",
     "category": "type",
     "text": "Gibbs(n_iters, alg_1, alg_2)\n\nCompositional MCMC interface.\n\nExample:\n\nalg = Gibbs(1000, HMC(1, 0.2, 3, :v1), PG(20, 1, :v2))\n\n\n\n\n\n"
@@ -554,7 +554,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.HMC",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.HMC",
     "category": "type",
     "text": "HMC(n_iters::Int, epsilon::Float64, tau::Int)\n\nHamiltonian Monte Carlo sampler.\n\nUsage:\n\nHMC(1000, 0.05, 10)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n    s ~ InverseGamma(2,3)\n    m ~ Normal(0, sqrt(s))\n    x[1] ~ Normal(m, sqrt(s))\n    x[2] ~ Normal(m, sqrt(s))\n    return s, m\nend\n\nsample(gdemo([1.5, 2]), HMC(1000, 0.05, 10))\n\n\n\n\n\n"
@@ -562,7 +562,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.HMCDA",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.HMCDA",
     "category": "type",
     "text": "HMCDA(n_iters::Int, n_adapt::Int, delta::Float64, lambda::Float64)\n\nHamiltonian Monte Carlo sampler wiht Dual Averaging algorithm.\n\nUsage:\n\nHMCDA(1000, 200, 0.65, 0.3)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0, sqrt(s))\n  x[1] ~ Normal(m, sqrt(s))\n  x[2] ~ Normal(m, sqrt(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), HMCDA(1000, 200, 0.65, 0.3))\n\n\n\n\n\n"
@@ -570,7 +570,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.IPMCMC",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.IPMCMC",
     "category": "type",
     "text": "IPMCMC(n_particles::Int, n_iters::Int, n_nodes::Int, n_csmc_nodes::Int)\n\nParticle Gibbs sampler.\n\nUsage:\n\nIPMCMC(100, 100, 4, 2)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0,sqrt(s))\n  x[1] ~ Normal(m, sqrt(s))\n  x[2] ~ Normal(m, sqrt(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), IPMCMC(100, 100, 4, 2))\n\n\n\n\n\n"
@@ -578,7 +578,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.IS",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.IS",
     "category": "type",
     "text": "IS(n_particles::Int)\n\nImportance sampling algorithm object.\n\nn_particles is the number of particles to use\n\nUsage:\n\nIS(1000)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n    s ~ InverseGamma(2,3)\n    m ~ Normal(0,sqrt.(s))\n    x[1] ~ Normal(m, sqrt.(s))\n    x[2] ~ Normal(m, sqrt.(s))\n    return s, m\nend\n\nsample(gdemo([1.5, 2]), IS(1000))\n\n\n\n\n\n"
@@ -586,7 +586,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.MH",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.MH",
     "category": "type",
     "text": "MH(n_iters::Int)\n\nMetropolis-Hasting sampler.\n\nUsage:\n\nMH(100, (:m, (x) -> Normal(x, 0.1)))\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0,sqrt(s))\n  x[1] ~ Normal(m, sqrt(s))\n  x[2] ~ Normal(m, sqrt(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), MH(1000, (:m, (x) -> Normal(x, 0.1)), :s)))\n\n\n\n\n\n"
@@ -594,7 +594,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.NUTS",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.NUTS",
     "category": "type",
     "text": "NUTS(n_iters::Int, n_adapt::Int, delta::Float64)\n\nNo-U-Turn Sampler (NUTS) sampler.\n\nUsage:\n\nNUTS(1000, 200, 0.6j_max)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0, sqrt(s))\n  x[1] ~ Normal(m, sqrt(s))\n  x[2] ~ Normal(m, sqrt(s))\n  return s, m\nend\n\nsample(gdemo([1.j_max, 2]), NUTS(1000, 200, 0.6j_max))\n\n\n\n\n\n"
@@ -602,7 +602,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.PG",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.PG",
     "category": "type",
     "text": "PG(n_particles::Int, n_iters::Int)\n\nParticle Gibbs sampler.\n\nUsage:\n\nPG(100, 100)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0, sqrt(s))\n  x[1] ~ Normal(m, sqrt(s))\n  x[2] ~ Normal(m, sqrt(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), PG(100, 100))\n\n\n\n\n\n"
@@ -610,7 +610,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.PMMH",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.PMMH",
     "category": "type",
     "text": "PMMH(n_iters::Int, smc_alg:::SMC, parameters_algs::Tuple{MH})\n\nParticle independant Metropolis–Hastings and Particle marginal Metropolis–Hastings samplers.\n\nUsage:\n\nalg = PMMH(100, SMC(20, :v1), MH(1,:v2))\nalg = PMMH(100, SMC(20, :v1), MH(1,(:v2, (x) -> Normal(x, 1))))\n\n\n\n\n\n"
@@ -618,7 +618,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.SGHMC",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.SGHMC",
     "category": "type",
     "text": "SGHMC(n_iters::Int, learning_rate::Float64, momentum_decay::Float64)\n\nStochastic Gradient Hamiltonian Monte Carlo sampler.\n\nUsage:\n\nSGHMC(1000, 0.01, 0.1)\n\nExample:\n\n@model example begin\n  ...\nend\n\nsample(example, SGHMC(1000, 0.01, 0.1))\n\n\n\n\n\n"
@@ -626,7 +626,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.SGLD",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.SGLD",
     "category": "type",
     "text": "SGLD(n_iters::Int, step_size::Float64)\n\nStochastic Gradient Langevin Dynamics sampler.\n\nUsage:\n\nSGLD(1000, 0.5)\n\nExample:\n\n@model example begin\n  ...\nend\n\nsample(example, SGLD(1000, 0.5))\n\n\n\n\n\n"
@@ -634,7 +634,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Turing.SMC",
-    "page": "API",
+    "page": "Library",
     "title": "Turing.SMC",
     "category": "type",
     "text": "SMC(n_particles::Int)\n\nSequential Monte Carlo sampler.\n\nUsage:\n\nSMC(1000)\n\nExample:\n\n# Define a simple Normal model with unknown mean and variance.\n@model gdemo(x) = begin\n  s ~ InverseGamma(2,3)\n  m ~ Normal(0, sqrt(s))\n  x[1] ~ Normal(m, sqrt(s))\n  x[2] ~ Normal(m, sqrt(s))\n  return s, m\nend\n\nsample(gdemo([1.5, 2]), SMC(1000))\n\n\n\n\n\n"
@@ -642,7 +642,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Samplers-1",
-    "page": "API",
+    "page": "Library",
     "title": "Samplers",
     "category": "section",
     "text": "Sampler\nGibbs\nHMC\nHMCDA\nIPMCMC\nIS\nMH\nNUTS\nPG\nPMMH\nSGHMC\nSGLD\nSMC"
@@ -650,7 +650,7 @@ var documenterSearchIndex = {"docs": [
 
 {
     "location": "api.html#Index-1",
-    "page": "API",
+    "page": "Library",
     "title": "Index",
     "category": "section",
     "text": ""
