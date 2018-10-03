@@ -54,7 +54,7 @@ end
 Note: As a sanity check, the expectation of `s` is 49/24 (2.04166666...) and the expectation of `m` is 7/6 (1.16666666...).
 
 
-We can perform inference by using the `sample` function, the first argument of which is our probabalistic program and the second of which is a sampler. More information on each sampler is located in the [API]({{site.baseurl}}/docs/library/).
+We can perform inference by using the `sample` function, the first argument of which is our probabalistic program and the second of which is a sampler. More information on each sampler is located in the [API](docs/library/).
 
 
 ```julia
@@ -92,7 +92,7 @@ The arguments for each sampler are:
   * NUTS: number of samples, target accept ratio.
 
 
-For detailed information on the samplers, please review Turing.jl's [API]({{site.baseurl}}/docs/library/) documentation.
+For detailed information on the samplers, please review Turing.jl's [API](docs/library/) documentation.
 
 
 <a id='Modelling-Syntax-Explained-1'></a>
