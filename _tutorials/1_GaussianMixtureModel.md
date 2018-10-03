@@ -29,7 +29,7 @@ scatter(x[1,:], x[2,:], legend = false, title = "Synthetic Dataset")
 ````
 
 
-![](figures/1_GaussianMixtureModel_1_1.svg)
+![](/tutorials/figures/1_GaussianMixtureModel_1_1.svg)
 
 
 ## Gaussian Mixture Model in Turing
