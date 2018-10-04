@@ -17,36 +17,13 @@ Turing provides **Hamiltonian Monte Carlo** (HMC) and **particle MCMC** sampling
   * **Gibbs** sampling that combines particle MCMC,  HMC and many other MCMC algorithms.
 
 
-<a id='Citing-Turing-1'></a>
-
-## Citing Turing
-
-
-To cite Turing, please refer to the following paper. A sample BiBTeX entry entry is given below:
-
-
-```
-{% raw %}
-@InProceedings{turing17,
-  title = 	 {{T}uring: a language for flexible probabilistic inference},
-  author = 	 {Ge, Hong and Xu, Kai and Ghahramani, Zoubin},
-  booktitle = 	 {Proceedings of the 21th International Conference on Artificial Intelligence and Statistics},
-  year = 	 {2018},
-  series = 	 {Proceedings of Machine Learning Research},
-  publisher = 	 {PMLR},
-}
-{% endraw %}
-```
+<sub>If you use **Turing** for your own research, please consider citing the following publication: Hong Ge, Kai Xu, and Zoubin Ghahramani: **Turing: Composable inference for probabilistic programming.** AISTATS 2018 [pdf](http://proceedings.mlr.press/v84/ge18b.html) [bibtex](https://dblp.org/rec/bib2/conf/aistats/GeXG18.bib)</sub>
 
 
 <a id='Other-Probablistic/Deep-Learning-Languages-1'></a>
 
-## Other Probablistic/Deep Learning Languages
+### Other Probablistic/Deep Learning Languages
 
 
-  * [Stan](http://mc-stan.org/)
-  * [Infer.NET](https://www.microsoft.com/en-us/research/project/infernet/)
-  * [PyTorch](http://pytorch.org/) / [Pyro](https://github.com/uber/pyro)
-  * [TensorFlow](https://www.tensorflow.org/) / [Edward](http://edwardlib.org/)
-  * [DyNet](https://github.com/clab/dynet)
+[Stan](http://mc-stan.org/), [Infer.NET](https://www.microsoft.com/en-us/research/project/infernet/), [Pyro](https://github.com/uber/pyro), [Edward](http://edwardlib.org/), [DyNet](https://github.com/clab/dynet)
 
