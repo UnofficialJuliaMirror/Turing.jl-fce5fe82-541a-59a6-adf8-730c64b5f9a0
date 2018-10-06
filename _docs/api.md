@@ -455,10 +455,33 @@ sample(gdemo([1.5, 2]), SMC(1000))
 <a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/88a3643335ff88f763b3568553b6777316a50e67/src/samplers/smc.jl#L1-L26' class='documenter-source'>source</a><br>
 
 
+<a id='Data-Structures-1'></a>
+
+## Data Structures
+
+
+```
+TArray
+IArray
+```
+
+
+<a id='Utilities-1'></a>
+
+## Utilities
+
+
+```
+tzeros
+localcopy
+```
+
+
 <a id='Index-1'></a>
 
 ## Index
 
+- [`Libtask.TArray`]({{site.baseurl}}/docs/library/#Libtask.TArray)
 - [`Turing.Gibbs`]({{site.baseurl}}/docs/library/#Turing.Gibbs)
 - [`Turing.HMC`]({{site.baseurl}}/docs/library/#Turing.HMC)
 - [`Turing.HMCDA`]({{site.baseurl}}/docs/library/#Turing.HMCDA)
@@ -472,6 +495,7 @@ sample(gdemo([1.5, 2]), SMC(1000))
 - [`Turing.SGLD`]({{site.baseurl}}/docs/library/#Turing.SGLD)
 - [`Turing.SMC`]({{site.baseurl}}/docs/library/#Turing.SMC)
 - [`Turing.Sampler`]({{site.baseurl}}/docs/library/#Turing.Sampler)
+- [`Libtask.tzeros`]({{site.baseurl}}/docs/library/#Libtask.tzeros)
 - [`Turing.@model`]({{site.baseurl}}/docs/library/#Turing.@model)
 - [`Turing.@~`]({{site.baseurl}}/docs/library/#Turing.@~)
 

@@ -1,3 +1,7 @@
+---
+title: Introduction to Turing
+permalink: /:collection/:name/
+---
 
 
 ## Introduction
@@ -94,9 +98,6 @@ Which is 0.5 when $$\alpha = \beta$$, as we expect for a large enough number of 
 The intuition about this definition is that the variance of the distribution will approach 0 with more and more samples, as the denominator will grow faster than will the numerator. More samples means less variance.
 
 ````julia
-# Import StatsPlots for animating purposes.
-using StatPlots
-
 # This is required for plotting only.
 x = range(0, stop = 1, length = 100)
 
@@ -111,7 +112,7 @@ animation = @animate for (i, N) in enumerate(Ns)
     updated_belief = Beta(prior_belief.α + heads, prior_belief.β + tails)
 
     # Plotting
-    plot(updated_belief, 
+    plot(x, pdf.(Ref(updated_belief), x), 
         size = (500, 250), 
         title = "Updated belief after $$N observations",
         xlabel = "probability of heads", 
@@ -187,7 +188,7 @@ chain = sample(coinflip(data), HMC(iterations, ϵ, τ));
 
 ````
 [HMC] Finished with
-  Running time        = 5.213980837999997;
+  Running time        = 7.1547015269999985;
   Accept rate         = 0.997;
   #lf / sample        = 9.99;
   #evals / sample     = 11.989;
@@ -202,7 +203,7 @@ After finishing the sampling process, we can visualize the posterior distributio
 ````julia
 # Construct summary of the sampling process for the parameter p, i.e. the probability of heads in a coin.
 p_summary = Chains(chain[:p])
-plot(p_summary, seriestype = :histogram)
+plot(p_summary)
 ````
 
 
@@ -217,8 +218,8 @@ N = length(data)
 heads = sum(data)
 updated_belief = Beta(prior_belief.α + heads, prior_belief.β + N - heads)
 
-# Visualize a blue density plot of the approximate posterior distribution using HMC (see Chain 1 in the legend).
-p = plot(p_summary, seriestype = :density, xlim = (0,1), legend = :best, w = 2, c = :blue)
+# Visualize a blue density plot of the approximate posterior distribution using HMC (see "Chain 1" in the legend).
+p = plot(p_summary, DensityPlot, xlim = (0,1), legend = :best, w = 2, c = :blue)
 
 # Visualize a green density plot of posterior distribution in closed-form.
 plot!(p, range(0, stop = 1, length = 100), pdf.(Ref(updated_belief), range(0, stop = 1, length = 100)), 
