@@ -459,10 +459,29 @@ sample(gdemo([1.5, 2]), SMC(1000))
 
 ## Data Structures
 
+### <a id='Libtask.TArray' href='#Libtask.TArray'>#</a> **`Libtask.TArray`** &mdash; *Type*.
+
 
 ```
-TArray
-IArray
+TArray{T}(dims, ...)
+```
+
+Implementation of data structures that automatically perform copy-on-write after task copying.
+
+If current*task is an existing key in `s`, then return `s[current*task]`. Otherwise, return`s[current*task] = s[last*task]`.
+
+Usage:
+
+```julia
+TArray(dim)
+```
+
+Example:
+
+```julia
+ta = TArray(4)              # init
+for i in 1:4 ta[i] = i end  # assign
+Array(ta)                   # convert to 4-element Array{Int64,1}: [1, 2, 3, 4]
 ```
 
 
@@ -470,10 +489,24 @@ IArray
 
 ## Utilities
 
+### <a id='Libtask.tzeros' href='#Libtask.tzeros'>#</a> **`Libtask.tzeros`** &mdash; *Function*.
+
 
 ```
-tzeros
-localcopy
+ tzeros(dims, ...)
+```
+
+Construct a distributed array of zeros. Trailing arguments are the same as those accepted by `TArray`.
+
+```julia
+tzeros(dim)
+```
+
+Example:
+
+```julia
+tz = tzeros(4)              # construct
+Array(tz)                   # convert to 4-element Array{Int64,1}: [0, 0, 0, 0]
 ```
 
 
