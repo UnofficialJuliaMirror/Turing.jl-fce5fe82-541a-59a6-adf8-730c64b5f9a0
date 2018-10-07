@@ -138,10 +138,9 @@
     margin-bottom: 2em;
     padding: 3em 0;
     @include clearfix;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
-    background-position: right;
-    background-color: $lighter-gray;
+    background-position: center;
     -webkit-animation: $intro-transition;
     animation: $intro-transition;
     -webkit-animation-delay: 0.25s;
@@ -164,12 +163,8 @@
     .page__meta,
     .page__lead,
     .btn {
-      color: $text-color;
-      text-shadow: 1px 1px 4px rgba(#fff, 0.5);
-    }
-
-    .btn {
-      border: 1px solid $text-color;
+      color: #fff;
+      text-shadow: 1px 1px 4px rgba(#000, 0.5);
     }
 
     .page__lead {

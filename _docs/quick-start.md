@@ -14,7 +14,7 @@ This is an excerpt from a more formal example introducing probabalistic programm
 
 ```julia
 # Import libraries.
-using Turing, StatPlots, Random
+using Turing, Distributions, MCMCChain, StatPlots, Random
 
 # Set the true probability of heads in a coin.
 p_true = 0.5
@@ -25,6 +25,9 @@ Ns = 0:100;
 # Draw data from a Bernoulli distribution, i.e. draw heads or tails.
 Random.seed!(12)
 data = rand(Bernoulli(p_true), last(Ns))
+
+# Here's what the first five coin flips look like:
+data[1:5]
 
 # Declare our Turing model.
 @model coinflip(y) = begin
@@ -48,7 +51,7 @@ iterations = 1000
 chain = sample(coinflip(data), HMC(iterations, ϵ, τ));
 
 # Construct summary of the sampling process for the parameter p, i.e. the probability of heads in a coin.
-psummary = Chains(chain[:p])
-histogram(psummary)
+p_summary = Chains(chain[:p])
+histogramplot(p_summary)
 ```
 
