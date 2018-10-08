@@ -25,7 +25,7 @@ First, define a type of the distribution, as a subtype of a corresponding distri
 
 
 ```julia
-immutable Flat <: ContinuousUnivariateDistribution
+struct Flat <: ContinuousUnivariateDistribution
 end
 ```
 
