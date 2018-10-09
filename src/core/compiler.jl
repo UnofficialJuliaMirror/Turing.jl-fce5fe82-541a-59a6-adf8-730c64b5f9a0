@@ -1,4 +1,5 @@
 using Base.Meta: parse
+using MacroTools: postwalk
 
 #################
 # Overload of ~ #
@@ -28,70 +29,39 @@ function var_tuple(sym::Symbol, inds::Expr=:(()))
 end
 
 """
-    generate_observe(observation, distribution)
+    generate_observe(obs, dist)
 
 Generate an observe expression.
 """
-function generate_observe(observation, distribution)
-    return esc(
-        quote
-            vi.logp += Turing.observe(
-                sampler,
-                $(distribution),
-                $(observation),
-                vi
-            )
-        end
-    )
-end
+generate_observe(obs, dist) = :(vi.logp += Turing.observe(sampler, $(dist), $(obs), vi))
 
 """
     generate_assume(variable, distribution, syms)
 
 Generate an assume expression.
 """
-function generate_assume(variable, distribution, syms)
-    return esc(
-        quote
-            varname = Turing.VarName(vi, $syms, "")
-            ($(variable), _lp) = if isa($(distribution), Vector)
-                Turing.assume(
-                    sampler,
-                    $(distribution),
-                    varname,
-                    $(variable),
-                    vi
-                )
-            else
-                Turing.assume(
-                    sampler,
-                    $(distribution),
-                    varname,
-                    vi
-                )
-            end
-            vi.logp += _lp
+function generate_assume(var, dist, syms)
+    return quote
+        varname = Turing.VarName(vi, $syms, "")
+        if $(distribution) isa Vector
+            $var, _lp = Turing.assume(sampler, $(dist), varname, $(var), vi)
+        else
+            $var, _lp = Turing.assume(sampler, $(dist), varname, vi)
         end
-    )
+        vi.logp += _lp
+    end
 end
 
-function generate_assume(variable::Expr, distribution)
-    return esc(
-        quote
-            sym, idcs, csym = @VarName $variable
-            csym_str = string(Turing._compiler_[:name])*string(csym)
-            indexing = mapfoldl(string, *, idcs, init = "")
-            varname = Turing.VarName(vi, Symbol(csym_str), sym, indexing)
+function generate_assume(var::Expr, dist)
+    return quote
+        sym, idcs, csym = @VarName $variable
+        csym_str = string(Turing._compiler_[:name]) * string(csym)
+        indexing = mapfoldl(string, *, idcs, init = "")
+        varname = Turing.VarName(vi, Symbol(csym_str), sym, indexing)
 
-            $(variable), _lp = Turing.assume(
-                sampler,
-                $(distribution),
-                varname,
-                vi
-            )
-            vi.logp += _lp
-        end
-    )
+        $var, _lp = Turing.assume(sampler, $(dist), varname, vi)
+        vi.logp += _lp
+    end
 end
 
 """
@@ -108,12 +78,10 @@ Example:
 ```
 """
 macro ~(left, right)
-    return tilde(left, right)
+    return esc(tilde(left, right))
 end
 
-function tilde(left, right)
-    return generate_observe(left, right)
-end
+tilde(left, right) = generate_observe(left, right)
 
 function tilde(left::Symbol, right)
     # Check if left-hand side is a observation.
@@ -146,7 +114,7 @@ end
 
 function tilde(left::Expr, right)
     vsym = getvsym(left)
-    @assert isa(vsym, Symbol)
+    @assert vsym isa Symbol
 
     if vsym in Turing._compiler_[:args]
         if !(vsym in Turing._compiler_[:dvars])
@@ -212,9 +180,6 @@ end
 """
 macro model(fexpr)
 
-    # translate all ~ occurences to macro calls
-    fexpr = translate(fexpr)
-
     # extract model name (:name), arguments (:args), (:kwargs) and definition (:body)
     modeldef = MacroTools.splitdef(fexpr)
 
@@ -234,12 +199,13 @@ macro model(fexpr)
     )
 
     # Manipulate the function arguments.
-    fargs = deepcopy(vcat(modeldef[:args], modeldef[:kwargs]))
-    for i in 1:length(fargs)
-        if isa(fargs[i], Symbol)
-            fargs[i] = Expr(:kw, fargs[i], :nothing)
-        end
-    end
+    fargs = map(
+        arg->arg isa Symbol ? Expr(:kw, fargs[i], :nothing) : arg,
+        deepcopy(vcat(modeldef[:args], modeldef[:kwargs])),
+    )
+
+    # translate all ~ occurences to macro calls in body.
+    modeldef[:body] = translate(modeldef[:body])
 
     # Construct closure.
     closure = MacroTools.combinedef(
@@ -296,26 +262,26 @@ macro model(fexpr)
             :kwargs => [Expr(:kw, :compiler, compiler)],
             :args => fargs,
             :body => Expr(:block, 
-                            quote
-                                Turing.eval(:(_compiler_ = deepcopy($compiler)))
-                                # Copy the expr of function definition and callbacks
-                                closure = Turing._compiler_[:closure]
-                                alias1 = Turing._compiler_[:alias1]
-                                alias2 = Turing._compiler_[:alias2]
-                                alias3 = Turing._compiler_[:alias3]
-                                modelname = Turing._compiler_[:closure_name]
-                            end,
-                            # Insert argument values as kwargs to the closure
-                            map(data_insertion, fargs)...,
-                            # Eval the closure's methods globally and return it
-                            quote
-                                Main.eval(Expr(:(=), modelname, closure))
-                                Main.eval(alias1)
-                                Main.eval(alias2)
-                                Main.eval(alias3)
-                                return $(compiler[:closure_name])
-                            end,
-                        )
+                quote
+                    Turing.eval(:(Turing._compiler_ = deepcopy($compiler)))
+                    # Copy the expr of function definition and callbacks
+                    closure = Turing._compiler_[:closure]
+                    alias1 = Turing._compiler_[:alias1]
+                    alias2 = Turing._compiler_[:alias2]
+                    alias3 = Turing._compiler_[:alias3]
+                    modelname = Turing._compiler_[:closure_name]
+                end,
+                # Insert argument values as kwargs to the closure
+                map(data_insertion, fargs)...,
+                # Eval the closure's methods globally and return it
+                quote
+                    Main.eval(Expr(:(=), modelname, closure))
+                    Main.eval(alias1)
+                    Main.eval(alias2)
+                    Main.eval(alias3)
+                    return $(compiler[:closure_name])
+                end,
+            )
         )
     )
     
@@ -328,35 +294,30 @@ end
 ####################
 
 function data_insertion(k)
-        if isa(k, Symbol)
-            _k = k
-        elseif k.head == :kw
-            _k = k.args[1]
-        else
+    if k isa Symbol
+        _k = k
+    elseif k.head == :kw
+        _k = k.args[1]
+    else
         return :()
-        end
+    end
 
-    return  quote
-                if $_k == nothing
-                    # Notify the user if an argument is missing.
-                    @warn("Data `"*$(string(_k))*"` not provided, treating as parameter instead.")
-                else
-                    if $(QuoteNode(_k)) ∉ Turing._compiler_[:args]
-                        push!(Turing._compiler_[:args], $(QuoteNode(_k)))
-                    end
-                    closure = Turing.setkwargs(closure, $(QuoteNode(_k)), $_k)
-                end
+    return quote
+        if $_k == nothing
+            # Notify the user if an argument is missing.
+            @warn("Data `"*$(string(_k))*"` not provided, treating as parameter instead.")
+        else
+            if $(QuoteNode(_k)) ∉ Turing._compiler_[:args]
+                push!(Turing._compiler_[:args], $(QuoteNode(_k)))
             end
+            closure = Turing.setkwargs(closure, $(QuoteNode(_k)), $_k)
+        end
+    end
 end
 
 function setkwargs(fexpr::Expr, kw::Symbol, value)
-    # Split up the function definition.
     funcdef = MacroTools.splitdef(fexpr)
-
-    # Add the new keyword argument.
     push!(funcdef[:kwargs], Expr(:kw, kw, value))
-
-    # Recompose the function.
     return MacroTools.combinedef(funcdef)
 end
 
@@ -366,15 +327,5 @@ function getvsym(expr::Expr)
     return getvsym(expr.args[1])
 end
 
-translate!(ex::Any) = ex
-function translate!(ex::Expr)
-    if ex.head === :call && ex.args[1] === :(~)
-        ex.head = :macrocall
-        ex.args[1] = Symbol("@~")
-        insert!(ex.args, 2, LineNumberNode(@__LINE__))
-    else
-        map(translate!, ex.args)
-    end
-    return ex
-end
-translate(ex::Expr) = translate!(deepcopy(ex))
+tilde_expr(x, d) = Expr(:macrocall, Symbol("@~"), LineNumberNode(@__LINE__), x, d)
+translate(ex::Expr) = postwalk(ex->@capture(ex, x_ ~ d_) ? tilde_expr(x, d) : ex, ex)
