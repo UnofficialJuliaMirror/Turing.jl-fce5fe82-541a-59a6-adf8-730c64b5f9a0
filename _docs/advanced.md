@@ -5,6 +5,9 @@ toc: true
 toc_sticky: true
 ---
 
+If you need to get more into the internals of Turing, this section contains information on defining custom distributions, the mechanics of task copying, and how to calculate the maximum a posteriori estimate.
+
+
 <a id='How-to-Define-a-Customized-Distribution-1'></a>
 
 ## How to Define a Customized Distribution
