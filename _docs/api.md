@@ -52,7 +52,7 @@ end
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/core/compiler.jl#L211-L246' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/core/compiler.jl#L211-L246' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.@~' href='#Turing.@~'>#</a> **`Turing.@~`** &mdash; *Macro*.
 
@@ -70,7 +70,7 @@ Example:
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/core/compiler.jl#L130-L142' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/core/compiler.jl#L130-L142' class='documenter-source'>source</a><br>
 
 
 <a id='Samplers-1'></a>
@@ -92,25 +92,40 @@ Generic interface for implementing inference algorithms. An implementation of an
 Turing translates models to chunks that call the modelling functions at specified points. The dispatch is based on the value of a `sampler` variable. To include a new inference algorithm implements the requirements mentioned above in a separate file, then include that file at the end of this one.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/Turing.jl#L98-L109' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/Turing.jl#L98-L109' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Gibbs' href='#Turing.Gibbs'>#</a> **`Turing.Gibbs`** &mdash; *Type*.
 
 
 ```
-Gibbs(n_iters, alg_1, alg_2)
+Gibbs(n_iters, algs...)
 ```
 
-Compositional MCMC interface.
+Compositional MCMC interface. Gibbs sampling combines one or more sampling algorithms, each of which samples from a different set of variables in a model.
 
 Example:
 
 ```julia
+@model gibbs_example(x) = begin
+    v1 ~ Normal(0,1)
+    v2 ~ Categorical(5)
+        ...
+end
+
+# Use PG for a 'v2' variable, and use HMC for the 'v1' variable.
+# Note that v2 is discrete, so the PG sampler is more appropriate
+# than is HMC.
 alg = Gibbs(1000, HMC(1, 0.2, 3, :v1), PG(20, 1, :v2))
 ```
 
+Tips:
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/samplers/gibbs.jl#L1-L10' class='documenter-source'>source</a><br>
+  * `HMC` and `NUTS` are very active, and can throw off particle-based
+
+samplers. You can increase the effectiveness of particle sampling by including more particles in the particle sampler.
+
+
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/samplers/gibbs.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.HMC' href='#Turing.HMC'>#</a> **`Turing.HMC`** &mdash; *Type*.
 
@@ -120,6 +135,12 @@ HMC(n_iters::Int, epsilon::Float64, tau::Int)
 ```
 
 Hamiltonian Monte Carlo sampler.
+
+Arguments:
+
+  * `n_iters::Int` : The number of samples to pull.
+  * `epsilon::Float64` : The leapfrog step size to use.
+  * `tau::Int` : The number of leapfrop steps to use.
 
 Usage:
 
@@ -142,8 +163,22 @@ end
 sample(gdemo([1.5, 2]), HMC(1000, 0.05, 10))
 ```
 
+Tips:
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/samplers/hmc.jl#L1-L26' class='documenter-source'>source</a><br>
+  * If you are receiving gradient errors when using `HMC`, try reducing the
+
+`step_size` parameter.
+
+```julia
+# Original step_size
+sample(gdemo([1.5, 2]), HMC(1000, 0.1, 10))
+
+# Reduced step_size.
+sample(gdemo([1.5, 2]), HMC(1000, 0.01, 10))
+```
+
+
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/samplers/hmc.jl#L1-L45' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.HMCDA' href='#Turing.HMCDA'>#</a> **`Turing.HMCDA`** &mdash; *Type*.
 
@@ -176,7 +211,7 @@ sample(gdemo([1.5, 2]), HMCDA(1000, 200, 0.65, 0.3))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/samplers/hmcda.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/samplers/hmcda.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.IPMCMC' href='#Turing.IPMCMC'>#</a> **`Turing.IPMCMC`** &mdash; *Type*.
 
@@ -209,7 +244,7 @@ sample(gdemo([1.5, 2]), IPMCMC(100, 100, 4, 2))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/samplers/ipmcmc.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/samplers/ipmcmc.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.IS' href='#Turing.IS'>#</a> **`Turing.IS`** &mdash; *Type*.
 
@@ -244,7 +279,7 @@ sample(gdemo([1.5, 2]), IS(1000))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/samplers/is.jl#L1-L28' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/samplers/is.jl#L1-L28' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.MH' href='#Turing.MH'>#</a> **`Turing.MH`** &mdash; *Type*.
 
@@ -277,7 +312,7 @@ sample(gdemo([1.5, 2]), MH(1000, (:m, (x) -> Normal(x, 0.1)), :s)))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/samplers/mh.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/samplers/mh.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.NUTS' href='#Turing.NUTS'>#</a> **`Turing.NUTS`** &mdash; *Type*.
 
@@ -310,7 +345,7 @@ sample(gdemo([1.j_max, 2]), NUTS(1000, 200, 0.6j_max))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/samplers/nuts.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/samplers/nuts.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.PG' href='#Turing.PG'>#</a> **`Turing.PG`** &mdash; *Type*.
 
@@ -343,7 +378,7 @@ sample(gdemo([1.5, 2]), PG(100, 100))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/samplers/pgibbs.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/samplers/pgibbs.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.PMMH' href='#Turing.PMMH'>#</a> **`Turing.PMMH`** &mdash; *Type*.
 
@@ -362,7 +397,7 @@ alg = PMMH(100, SMC(20, :v1), MH(1,(:v2, (x) -> Normal(x, 1))))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/samplers/pmmh.jl#L1-L13' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/samplers/pmmh.jl#L1-L13' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.SGHMC' href='#Turing.SGHMC'>#</a> **`Turing.SGHMC`** &mdash; *Type*.
 
@@ -390,7 +425,7 @@ sample(example, SGHMC(1000, 0.01, 0.1))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/samplers/sghmc.jl#L1-L21' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/samplers/sghmc.jl#L1-L21' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.SGLD' href='#Turing.SGLD'>#</a> **`Turing.SGLD`** &mdash; *Type*.
 
@@ -418,7 +453,7 @@ sample(example, SGLD(1000, 0.5))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/samplers/sgld.jl#L1-L21' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/samplers/sgld.jl#L1-L21' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.SMC' href='#Turing.SMC'>#</a> **`Turing.SMC`** &mdash; *Type*.
 
@@ -451,7 +486,7 @@ sample(gdemo([1.5, 2]), SMC(1000))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/f27f2c99db1dc3980adef72ac179e253724bb9fb/src/samplers/smc.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/64351a8b8a12c51e9575135fd3e0fd931b9fc0af/src/samplers/smc.jl#L1-L26' class='documenter-source'>source</a><br>
 
 
 <a id='Data-Structures-1'></a>
