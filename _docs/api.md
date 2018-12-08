@@ -52,7 +52,7 @@ end
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/core/compiler.jl#L211-L246' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/core/compiler.jl#L211-L246' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.@~' href='#Turing.@~'>#</a> **`Turing.@~`** &mdash; *Macro*.
 
@@ -70,7 +70,7 @@ Example:
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/core/compiler.jl#L130-L142' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/core/compiler.jl#L130-L142' class='documenter-source'>source</a><br>
 
 
 <a id='Samplers-1'></a>
@@ -92,7 +92,7 @@ Generic interface for implementing inference algorithms. An implementation of an
 Turing translates models to chunks that call the modelling functions at specified points. The dispatch is based on the value of a `sampler` variable. To include a new inference algorithm implements the requirements mentioned above in a separate file, then include that file at the end of this one.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/Turing.jl#L98-L109' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/Turing.jl#L98-L109' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Gibbs' href='#Turing.Gibbs'>#</a> **`Turing.Gibbs`** &mdash; *Type*.
 
@@ -125,7 +125,7 @@ Tips:
 samplers. You can increase the effectiveness of particle sampling by including more particles in the particle sampler.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/samplers/gibbs.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/samplers/gibbs.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.HMC' href='#Turing.HMC'>#</a> **`Turing.HMC`** &mdash; *Type*.
 
@@ -178,7 +178,7 @@ sample(gdemo([1.5, 2]), HMC(1000, 0.01, 10))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/samplers/hmc.jl#L1-L45' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/samplers/hmc.jl#L1-L45' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.HMCDA' href='#Turing.HMCDA'>#</a> **`Turing.HMCDA`** &mdash; *Type*.
 
@@ -220,7 +220,7 @@ sample(gdemo([1.5, 2]), HMCDA(1000, 200, 0.65, 0.3))
 A paper on this can be found [here](https://arxiv.org/abs/1111.4246).
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/samplers/hmcda.jl#L1-L35' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/samplers/hmcda.jl#L1-L35' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.IPMCMC' href='#Turing.IPMCMC'>#</a> **`Turing.IPMCMC`** &mdash; *Type*.
 
@@ -264,7 +264,7 @@ sample(gdemo([1.5, 2]), IPMCMC(100, 100, 4, 2))
 A paper on this can be found [here](https://arxiv.org/abs/1602.05128).
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/samplers/ipmcmc.jl#L1-L38' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/samplers/ipmcmc.jl#L1-L38' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.IS' href='#Turing.IS'>#</a> **`Turing.IS`** &mdash; *Type*.
 
@@ -303,7 +303,7 @@ sample(gdemo([1.5, 2]), IS(1000))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/samplers/is.jl#L1-L33' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/samplers/is.jl#L1-L33' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.MH' href='#Turing.MH'>#</a> **`Turing.MH`** &mdash; *Type*.
 
@@ -336,7 +336,7 @@ chn = sample(gdemo([1.5, 2]), MH(1000))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/samplers/mh.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/samplers/mh.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.NUTS' href='#Turing.NUTS'>#</a> **`Turing.NUTS`** &mdash; *Type*.
 
@@ -375,7 +375,7 @@ sample(gdemo([1.j_max, 2]), NUTS(1000, 200, 0.6j_max))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/samplers/nuts.jl#L1-L32' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/samplers/nuts.jl#L1-L32' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.PG' href='#Turing.PG'>#</a> **`Turing.PG`** &mdash; *Type*.
 
@@ -410,7 +410,7 @@ sample(gdemo([1.5, 2]), PG(100, 100))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/samplers/pgibbs.jl#L1-L29' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/samplers/pgibbs.jl#L1-L29' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.PMMH' href='#Turing.PMMH'>#</a> **`Turing.PMMH`** &mdash; *Type*.
 
@@ -439,7 +439,7 @@ Arguments:
 sample space specification.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/samplers/pmmh.jl#L1-L23' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/samplers/pmmh.jl#L1-L23' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.SGHMC' href='#Turing.SGHMC'>#</a> **`Turing.SGHMC`** &mdash; *Type*.
 
@@ -473,7 +473,7 @@ sample(example, SGHMC(1000, 0.01, 0.1))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/samplers/sghmc.jl#L1-L27' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/samplers/sghmc.jl#L1-L27' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.SGLD' href='#Turing.SGLD'>#</a> **`Turing.SGLD`** &mdash; *Type*.
 
@@ -506,7 +506,7 @@ sample(example, SGLD(1000, 0.5))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/samplers/sgld.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/samplers/sgld.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.SMC' href='#Turing.SMC'>#</a> **`Turing.SMC`** &mdash; *Type*.
 
@@ -541,7 +541,7 @@ sample(gdemo([1.5, 2]), SMC(1000))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/eb4c93dabcf93f4fb244003924ffa3d0d24032fe/src/samplers/smc.jl#L1-L29' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/d54b5228e125608a82cddf910440195bc9782cd2/src/samplers/smc.jl#L1-L29' class='documenter-source'>source</a><br>
 
 
 <a id='Data-Structures-1'></a>
