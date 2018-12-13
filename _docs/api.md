@@ -52,7 +52,7 @@ end
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/core/compiler.jl#L211-L246' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/core/compiler.jl#L211-L246' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.@~' href='#Turing.@~'>#</a> **`Turing.@~`** &mdash; *Macro*.
 
@@ -70,7 +70,7 @@ Example:
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/core/compiler.jl#L130-L142' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/core/compiler.jl#L130-L142' class='documenter-source'>source</a><br>
 
 
 <a id='Samplers-1'></a>
@@ -92,40 +92,25 @@ Generic interface for implementing inference algorithms. An implementation of an
 Turing translates models to chunks that call the modelling functions at specified points. The dispatch is based on the value of a `sampler` variable. To include a new inference algorithm implements the requirements mentioned above in a separate file, then include that file at the end of this one.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/Turing.jl#L99-L110' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/Turing.jl#L99-L110' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Gibbs' href='#Turing.Gibbs'>#</a> **`Turing.Gibbs`** &mdash; *Type*.
 
 
 ```
-Gibbs(n_iters, algs...)
+Gibbs(n_iters, alg_1, alg_2)
 ```
 
-Compositional MCMC interface. Gibbs sampling combines one or more sampling algorithms, each of which samples from a different set of variables in a model.
+Compositional MCMC interface.
 
 Example:
 
 ```julia
-@model gibbs_example(x) = begin
-    v1 ~ Normal(0,1)
-    v2 ~ Categorical(5)
-        ...
-end
-
-# Use PG for a 'v2' variable, and use HMC for the 'v1' variable.
-# Note that v2 is discrete, so the PG sampler is more appropriate
-# than is HMC.
 alg = Gibbs(1000, HMC(1, 0.2, 3, :v1), PG(20, 1, :v2))
 ```
 
-Tips:
 
-  * `HMC` and `NUTS` are fast samplers, and can throw off particle-based
-
-methods like Particle Gibbs. You can increase the effectiveness of particle sampling by including more particles in the particle sampler.
-
-
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/samplers/gibbs.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/samplers/gibbs.jl#L1-L10' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.HMC' href='#Turing.HMC'>#</a> **`Turing.HMC`** &mdash; *Type*.
 
@@ -135,12 +120,6 @@ HMC(n_iters::Int, epsilon::Float64, tau::Int)
 ```
 
 Hamiltonian Monte Carlo sampler.
-
-Arguments:
-
-  * `n_iters::Int` : The number of samples to pull.
-  * `epsilon::Float64` : The leapfrog step size to use.
-  * `tau::Int` : The number of leapfrop steps to use.
 
 Usage:
 
@@ -163,22 +142,8 @@ end
 sample(gdemo([1.5, 2]), HMC(1000, 0.05, 10))
 ```
 
-Tips:
 
-  * If you are receiving gradient errors when using `HMC`, try reducing the
-
-`step_size` parameter.
-
-```julia
-# Original step_size
-sample(gdemo([1.5, 2]), HMC(1000, 0.1, 10))
-
-# Reduced step_size.
-sample(gdemo([1.5, 2]), HMC(1000, 0.01, 10))
-```
-
-
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/samplers/hmc.jl#L1-L45' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/samplers/hmc.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.HMCDA' href='#Turing.HMCDA'>#</a> **`Turing.HMCDA`** &mdash; *Type*.
 
@@ -187,20 +152,13 @@ sample(gdemo([1.5, 2]), HMC(1000, 0.01, 10))
 HMCDA(n_iters::Int, n_adapts::Int, delta::Float64, lambda::Float64)
 ```
 
-Hamiltonian Monte Carlo sampler with Dual Averaging algorithm.
+Hamiltonian Monte Carlo sampler wiht Dual Averaging algorithm.
 
 Usage:
 
 ```julia
 HMCDA(1000, 200, 0.65, 0.3)
 ```
-
-Arguments:
-
-  * `n_iters::Int` : Number of samples to pull.
-  * `n_adapts::Int` : Numbers of samples to use for adaptation.
-  * `delta::Float64` : Target acceptance rate. 65% is often recommended.
-  * `lambda::Float64` : Target leapfrop length.
 
 Example:
 
@@ -217,12 +175,8 @@ end
 sample(gdemo([1.5, 2]), HMCDA(1000, 200, 0.65, 0.3))
 ```
 
-For more information, please view the following paper ([arXiv link](https://arxiv.org/abs/1111.4246)):
 
-Hoffman, Matthew D., and Andrew Gelman. "The No-U-turn sampler: adaptively setting path lengths in Hamiltonian Monte Carlo." Journal of Machine Learning Research 15, no. 1 (2014): 1593-1623.
-
-
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/samplers/hmcda.jl#L1-L37' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/samplers/hmcda.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.IPMCMC' href='#Turing.IPMCMC'>#</a> **`Turing.IPMCMC`** &mdash; *Type*.
 
@@ -233,20 +187,11 @@ IPMCMC(n_particles::Int, n_iters::Int, n_nodes::Int, n_csmc_nodes::Int)
 
 Particle Gibbs sampler.
 
-Note that this method is particle-based, and arrays of variables must be stored in a [`TArray`]({{site.baseurl}}/docs/library/#Libtask.TArray) object.
-
 Usage:
 
 ```julia
 IPMCMC(100, 100, 4, 2)
 ```
-
-Arguments:
-
-  * `n_particles::Int` : Number of particles to use.
-  * `n_iters::Int` : Number of iterations to employ.
-  * `n_nodes::Int` : The number of nodes running SMC and CSMC.
-  * `n_csmc_nodes::Int` : The number of CSMC nodes.
 
 Example:
 
@@ -263,10 +208,8 @@ end
 sample(gdemo([1.5, 2]), IPMCMC(100, 100, 4, 2))
 ```
 
-A paper on this can be found [here](https://arxiv.org/abs/1602.05128).
 
-
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/samplers/ipmcmc.jl#L1-L38' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/samplers/ipmcmc.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.IS' href='#Turing.IS'>#</a> **`Turing.IS`** &mdash; *Type*.
 
@@ -275,13 +218,9 @@ A paper on this can be found [here](https://arxiv.org/abs/1602.05128).
 IS(n_particles::Int)
 ```
 
-Importance sampling algorithm.
+Importance sampling algorithm object.
 
-Note that this method is particle-based, and arrays of variables must be stored in a [`TArray`]({{site.baseurl}}/docs/library/#Libtask.TArray) object.
-
-Arguments:
-
-  * `n_particles` is the number of particles to use.
+  * `n_particles` is the number of particles to use
 
 Usage:
 
@@ -305,7 +244,7 @@ sample(gdemo([1.5, 2]), IS(1000))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/samplers/is.jl#L1-L33' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/samplers/is.jl#L1-L28' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.MH' href='#Turing.MH'>#</a> **`Turing.MH`** &mdash; *Type*.
 
@@ -314,7 +253,7 @@ sample(gdemo([1.5, 2]), IS(1000))
 MH(n_iters::Int)
 ```
 
-Metropolis-Hastings sampler.
+Metropolis-Hasting sampler.
 
 Usage:
 
@@ -334,11 +273,11 @@ Example:
   return s, m
 end
 
-chn = sample(gdemo([1.5, 2]), MH(1000))
+sample(gdemo([1.5, 2]), MH(1000, (:m, (x) -> Normal(x, 0.1)), :s)))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/samplers/mh.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/samplers/mh.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.NUTS' href='#Turing.NUTS'>#</a> **`Turing.NUTS`** &mdash; *Type*.
 
@@ -354,12 +293,6 @@ Usage:
 ```julia
 NUTS(1000, 200, 0.6j_max)
 ```
-
-Arguments:
-
-  * `n_iters::Int` : The number of samples to pull.
-  * `n_adapts::Int` : The number of samples to use with adapatation.
-  * `delta::Float64` : Target acceptance rate.
 
 Example:
 
@@ -377,7 +310,7 @@ sample(gdemo([1.j_max, 2]), NUTS(1000, 200, 0.6j_max))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/samplers/nuts.jl#L1-L32' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/samplers/nuts.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.PG' href='#Turing.PG'>#</a> **`Turing.PG`** &mdash; *Type*.
 
@@ -387,8 +320,6 @@ PG(n_particles::Int, n_iters::Int)
 ```
 
 Particle Gibbs sampler.
-
-Note that this method is particle-based, and arrays of variables must be stored in a [`TArray`]({{site.baseurl}}/docs/library/#Libtask.TArray) object.
 
 Usage:
 
@@ -412,7 +343,7 @@ sample(gdemo([1.5, 2]), PG(100, 100))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/samplers/pgibbs.jl#L1-L29' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/samplers/pgibbs.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.PMMH' href='#Turing.PMMH'>#</a> **`Turing.PMMH`** &mdash; *Type*.
 
@@ -423,8 +354,6 @@ PMMH(n_iters::Int, smc_alg:::SMC, parameters_algs::Tuple{MH})
 
 Particle independant Metropolis–Hastings and Particle marginal Metropolis–Hastings samplers.
 
-Note that this method is particle-based, and arrays of variables must be stored in a [`TArray`]({{site.baseurl}}/docs/library/#Libtask.TArray) object.
-
 Usage:
 
 ```julia
@@ -432,16 +361,8 @@ alg = PMMH(100, SMC(20, :v1), MH(1,:v2))
 alg = PMMH(100, SMC(20, :v1), MH(1,(:v2, (x) -> Normal(x, 1))))
 ```
 
-Arguments:
 
-  * `n_iters::Int` : Number of iterations to run.
-  * `smc_alg:::SMC` : An [`SMC`]({{site.baseurl}}/docs/library/#Turing.SMC) algorithm to use.
-  * `parameters_algs::Tuple{MH}` : An [`MH`]({{site.baseurl}}/docs/library/#Turing.MH) algorithm, which includes a
-
-sample space specification.
-
-
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/samplers/pmmh.jl#L1-L23' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/samplers/pmmh.jl#L1-L13' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.SGHMC' href='#Turing.SGHMC'>#</a> **`Turing.SGHMC`** &mdash; *Type*.
 
@@ -458,12 +379,6 @@ Usage:
 SGHMC(1000, 0.01, 0.1)
 ```
 
-Arguments:
-
-  * `n_iters::Int` : Number of samples to pull.
-  * `learning_rate::Float64` : The learning rate.
-  * `momentum_decay::Float64` : Momentum decay variable.
-
 Example:
 
 ```julia
@@ -475,7 +390,7 @@ sample(example, SGHMC(1000, 0.01, 0.1))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/samplers/sghmc.jl#L1-L27' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/samplers/sghmc.jl#L1-L21' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.SGLD' href='#Turing.SGLD'>#</a> **`Turing.SGLD`** &mdash; *Type*.
 
@@ -492,11 +407,6 @@ Usage:
 SGLD(1000, 0.5)
 ```
 
-Arguments:
-
-  * `n_iters::Int` : Number of samples to pull.
-  * `epsilon::Float64` : The scaling factor for the learing rate.
-
 Example:
 
 ```julia
@@ -508,7 +418,7 @@ sample(example, SGLD(1000, 0.5))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/samplers/sgld.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/samplers/sgld.jl#L1-L21' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.SMC' href='#Turing.SMC'>#</a> **`Turing.SMC`** &mdash; *Type*.
 
@@ -518,8 +428,6 @@ SMC(n_particles::Int)
 ```
 
 Sequential Monte Carlo sampler.
-
-Note that this method is particle-based, and arrays of variables must be stored in a [`TArray`]({{site.baseurl}}/docs/library/#Libtask.TArray) object.
 
 Usage:
 
@@ -543,7 +451,7 @@ sample(gdemo([1.5, 2]), SMC(1000))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/e88030ceb167a1faa46bcf1f9abc18383c347a3f/src/samplers/smc.jl#L1-L29' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/699b9dbc9d890501cbe66ff4f845a72e4eeefb18/src/samplers/smc.jl#L1-L26' class='documenter-source'>source</a><br>
 
 
 <a id='Data-Structures-1'></a>
