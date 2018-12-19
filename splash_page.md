@@ -58,6 +58,5 @@ citing:
 {% include feature_row id="main-feature_row" %}
 {% include feature_row id="samplers" type="left" %}
 {% include feature_row id="flux" type="right" %}
-
-
 {% include feature_row id="citing" type = "center-left" %}
+
