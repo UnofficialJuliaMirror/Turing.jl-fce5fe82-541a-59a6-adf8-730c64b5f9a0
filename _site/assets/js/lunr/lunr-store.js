@@ -29,20 +29,10 @@ var store = [{
         "tags": [],
         "url": "http://localhost:4000/docs/guide/",
         "teaser":null},{
-        "title": "Documentation",
-        "excerpt":"Turing is a universal probabilistic programming language with an intuitive modelling interface, composable probabilistic inference and computational scalability. Turing provides Hamiltonian Monte Carlo (HMC) and particle MCMC sampling algorithms for complex posterior distributions (e.g. those involving discrete variables and stochastic control flows). Current features include: Universal probabilistic programming with an...","categories": [],
+        "title": "Turing Documentation",
+        "excerpt":"Welcome to the documentation for Turing 0.5. Introduction Turing is a universal probabilistic programming language with an intuitive modelling interface, composable probabilistic inference and computational scalability. Turing provides Hamiltonian Monte Carlo (HMC) and particle MCMC sampling algorithms for complex posterior distributions (e.g. those involving discrete variables and stochastic control flows)....","categories": [],
         "tags": [],
         "url": "http://localhost:4000/docs/",
-        "teaser":null},{
-        "title": "Probablistic Programming in Thirty Seconds",
-        "excerpt":"If you are already well-versed in probabalistic programming and just want to take a quick look at how Turing’s syntax works or otherwise just want a model to start with, we have provided a Bayesian coin-flipping model to play with. This example can be run on however you have Julia...","categories": [],
-        "tags": [],
-        "url": "http://localhost:4000/docs/quick-start/",
-        "teaser":null},{
-        "title": "Introduction to Turing",
-        "excerpt":"Introduction This is the first of a series of tutorials on the universal probabilistic programming language Turing. Turing is probabilistic programming system written entirely in Julia. It has an intuitive modelling syntax and supports a wide range of sampling-based inference algorithms. Most importantly, Turing inference is composable: it combines Markov...","categories": [],
-        "tags": [],
-        "url": "http://localhost:4000/tutorials/0-introduction/",
         "teaser":null},{
         "title": "Tutorials",
         "excerpt":"This section contains tutorials on how to implement common models in Turing. If you prefer to have an interactive Jupyter notebook, please fork or download the TuringTutorials repository. A list of all the tutorials available can be found to the right. The introduction tutorial contains an introduction to coin flipping...","categories": [],
