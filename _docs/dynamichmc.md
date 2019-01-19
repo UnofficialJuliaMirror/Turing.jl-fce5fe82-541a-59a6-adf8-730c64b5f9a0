@@ -17,7 +17,7 @@ Here is a brief example of how to apply `DynamicNUTS`:
 
 ```julia
 # Import Turing and DynamicHMC.
-using DynamicHMC, Turing
+using LogDensityProblems, DynamicHMC, Turing
 
 # Model definition.
 @model gdemo(x, y) = begin
