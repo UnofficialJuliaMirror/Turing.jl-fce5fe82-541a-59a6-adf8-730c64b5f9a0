@@ -258,7 +258,11 @@ function step(model, spl::Sampler{<:Hamiltonian}, vi::VarInfo, is_first::Val{fal
     if spl.alg isa AdaptiveHamiltonian
         #vi2 = deepcopy(vi)
         #invlink!(vi2, spl)
-        adapt!(spl.info[:wum], α, vi[spl], adapt_M=true, adapt_ϵ=true)
+        if spl.alg isa HMCDA
+            adapt!(spl.info[:wum], α, vi[spl], adapt_M=false, adapt_ϵ=true)
+        else
+            adapt!(spl.info[:wum], α, vi[spl], adapt_M=true, adapt_ϵ=true)
+        end
     end
 
     @debug "R -> X..."
