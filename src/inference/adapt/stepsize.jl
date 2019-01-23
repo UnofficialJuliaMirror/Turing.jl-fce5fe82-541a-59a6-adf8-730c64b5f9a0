@@ -91,7 +91,8 @@ function adapt_stepsize!(da::DualAveraging, stats::Real)
     @debug "new ϵ = $(ϵ), old ϵ = $(da.state.ϵ)"
 
     if isnan(ϵ) || isinf(ϵ)
-        @warn "Incorrect ϵ = $ϵ; ϵ_previous = $(da.state.ϵ) is used instead."
+        @warn "Numerical error has been found: ϵ = $ϵ, rejectting..."
+        @warn "Previous valid ϵ = $(da.state.ϵ) will be used instead."
     else
         da.state.ϵ = ϵ
     end
@@ -105,4 +106,63 @@ function adapt!(da::DualAveraging, stats::Real, is_updateμ::Bool)
         da.state.μ = computeμ(da.state.ϵ)
         reset!(da.state)
     end
+end
+
+
+# TODO: remove used Turing-wrapper functions
+
+# Ref: https://github.com/stan-dev/stan/blob/develop/src/stan/mcmc/hmc/base_hmc.hpp
+function find_good_eps(model, spl::Sampler{T}, vi::VarInfo) where T
+    # Negative potential energy func, Hamiltonian energy func
+    Uf, Hf = gen_lj_func(vi, spl, model), gen_H_func()
+    momentum_sampler = gen_momentum_sampler(vi, spl)
+
+    @info "[Turing] looking for good initial eps..."
+    ϵ = 1.0
+
+    θ, p = vi[spl], momentum_sampler()
+    H0 = Hf(θ, p, Uf(θ))
+
+    θ_prime, p_prime, τ = leapfrog(θ, p, 1, ϵ, model, vi, spl)
+    h = τ == 0 ? Inf : Hf(θ_prime, p_prime, Uf(θ_prime))
+
+    delta_H = H0 - h
+    direction = delta_H > log(0.8) ? 1 : -1
+
+    iter_num = 1
+
+    # Heuristically find optimal ϵ
+    while (iter_num <= 12)
+
+        p = momentum_sampler()
+        H0 = Hf(vi[spl], p, Uf(vi[spl]))
+
+        θ_prime, p_prime, τ = leapfrog(θ, p, 1, ϵ, model, vi, spl)
+        τ == 0 &&
+            @info "\r[$T] Numerical error occured in initial step size serarch."
+        h = τ == 0 ? Inf : Hf(θ_prime, p_prime, Uf(θ_prime))
+        @debug "direction = $direction, h = $h"
+
+        delta_H = H0 - h
+
+        if ((direction == 1) && !(delta_H > log(0.8)))
+            break
+        elseif ((direction == -1) && !(delta_H < log(0.8)))
+            break
+        else
+            ϵ = direction == 1 ? 2.0 * ϵ : 0.5 * ϵ
+        end
+
+        iter_num += 1
+    end
+
+    while h == Inf  # revert if the last change is too big
+        ϵ = ϵ / 2               # safe is more important than large
+        θ_prime, p_prime, τ = leapfrog(θ, p, 1, ϵ, model, vi, spl)
+        h = τ == 0 ? Inf : Hf(θ_prime, p_prime, Uf(θ_prime))
+    end
+    h == Inf && @info "\r[$T] Numerical error occured in initial step size serarch."
+    @info "\r[$T] found initial ϵ: $ϵ"
+
+    return ϵ
 end

@@ -75,7 +75,7 @@ function gradient(
 ) where {TS <: Sampler}
 
     ad_type = getADtype(TS)
-    if ad_type <: ForwardDiffAD 
+    if ad_type <: ForwardDiffAD
         return gradient_forward(θ, vi, model, sampler)
     else ad_type <: FluxTrackerAD
         return gradient_reverse(θ, vi, model, sampler)
@@ -168,8 +168,8 @@ import Base: <=
 
 function verifygrad(grad::AbstractVector{<:Real})
     if any(isnan, grad) || any(isinf, grad)
-        @warn("Numerical error has been found in gradients.")
-        @warn("grad = $(grad)")
+        @warn("Numerical error has been found in gradients, rejectting...")
+        @warn("∇θ = $(grad)")
         return false
     else
         return true

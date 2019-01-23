@@ -223,65 +223,6 @@ function _hmc_step(θ::AbstractVector{<:Real},
                      rev_func=rev_func, log_func=log_func)
 end
 
-
-# TODO: remove used Turing-wrapper functions
-
-# Ref: https://github.com/stan-dev/stan/blob/develop/src/stan/mcmc/hmc/base_hmc.hpp
-function find_good_eps(model, spl::Sampler{T}, vi::VarInfo) where T
-    logpdf_func_float = gen_lj_func(vi, spl, model)
-    momentum_sampler = gen_momentum_sampler(vi, spl)
-    H_func = gen_H_func()
-
-    @info "[Turing] looking for good initial eps..."
-    ϵ = 0.1
-
-    p = momentum_sampler()
-
-    θ = vi[spl]
-    H0 = H_func(θ, p, logpdf_func_float(θ))
-
-
-    θ_prime, p_prime, τ = leapfrog(θ, p, 1, ϵ, model, vi, spl)
-    h = τ == 0 ? Inf : H_func(θ_prime, p_prime, logpdf_func_float(θ_prime))
-
-    delta_H = H0 - h
-    direction = delta_H > log(0.8) ? 1 : -1
-
-    iter_num = 1
-
-    # Heuristically find optimal ϵ
-    while (iter_num <= 12)
-
-        p = momentum_sampler()
-        H0 = H_func(vi[spl], p, logpdf_func_float(vi[spl]))
-
-        θ_prime, p_prime, τ = leapfrog(θ, p, 1, ϵ, model, vi, spl)
-        h = τ == 0 ? Inf : H_func(θ_prime, p_prime, logpdf_func_float(θ_prime))
-        @debug "direction = $direction, h = $h"
-
-        delta_H = H0 - h
-
-        if ((direction == 1) && !(delta_H > log(0.8)))
-            break
-        elseif ((direction == -1) && !(delta_H < log(0.8)))
-            break
-        else
-            ϵ = direction == 1 ? 2.0 * ϵ : 0.5 * ϵ
-        end
-
-        iter_num += 1
-    end
-
-    while h == Inf  # revert if the last change is too big
-        ϵ = ϵ / 2               # safe is more important than large
-        θ_prime, p_prime, τ = leapfrog(θ, p, 1, ϵ, model, vi, spl)
-        h = τ == 0 ? Inf : H_func(θ_prime, p_prime, logpdf_func_float(θ_prime))
-    end
-    @info "\r[$T] found initial ϵ: $ϵ"
-
-    return ϵ
-end
-
 """
     mh_accept(H::Real, H_new::Real)
     mh_accept(H::Real, H_new::Real, log_proposal_ratio::Real)
