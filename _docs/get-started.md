@@ -54,7 +54,7 @@ Here's a simple example showing the package in action:
 
 ```julia
 using Turing
-using StatPlots
+using StatsPlots
 
 # Define a simple Normal model with unknown mean and variance.
 @model gdemo(x, y) = begin
