@@ -226,7 +226,7 @@ c = sample(model, HMC(500, 0.01, 5))
 ```
 
 
-The above case tells the model compiler the dimensions of the values it needs to generate. The generated values for `x` can be extracted from the `Chains` object using `c[x]`.
+The above case tells the model compiler the dimensions of the values it needs to generate. The generated values for `x` can be extracted from the `Chains` object using `c[:x]`.
 
 
 <a id='Using-Argument-Defaults-1'></a>
