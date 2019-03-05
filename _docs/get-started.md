@@ -67,7 +67,7 @@ end
 #  Run sampler, collect results
 chn = sample(gdemo(1.5, 2), HMC(1000, 0.1, 5))
 
-# Summarise results (currently requires the master branch from MCMCChain)
+# Summarise results (currently requires the master branch from MCMCChains)
 describe(chn)
 
 # Plot and save results
