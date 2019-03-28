@@ -13,7 +13,7 @@ toc: true
 ### <a id='Turing.Core.@model' href='#Turing.Core.@model'>#</a> **`Turing.Core.@model`** &mdash; *Macro*.
 
 
-```
+```julia
 @model(body)
 ```
 
@@ -72,7 +72,7 @@ end
 Generating a model: `model_generator(x_value)::Model`.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/core/compiler.jl#L158-L214' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/core/compiler.jl#L158-L214' class='documenter-source'>source</a><br>
 
 
 <a id='Samplers-1'></a>
@@ -82,7 +82,7 @@ Generating a model: `model_generator(x_value)::Model`.
 ### <a id='Turing.Sampler' href='#Turing.Sampler'>#</a> **`Turing.Sampler`** &mdash; *Type*.
 
 
-```
+```julia
 Sampler{T}
 ```
 
@@ -94,12 +94,12 @@ Generic interface for implementing inference algorithms. An implementation of an
 Turing translates models to chunks that call the modelling functions at specified points. The dispatch is based on the value of a `sampler` variable. To include a new inference algorithm implements the requirements mentioned above in a separate file, then include that file at the end of this one.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/Turing.jl#L82-L93' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/Turing.jl#L82-L93' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.Gibbs' href='#Turing.Inference.Gibbs'>#</a> **`Turing.Inference.Gibbs`** &mdash; *Type*.
 
 
-```
+```julia
 Gibbs(n_iters, algs...)
 ```
 
@@ -127,12 +127,12 @@ Tips:
 methods like Particle Gibbs. You can increase the effectiveness of particle sampling by including more particles in the particle sampler.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/inference/gibbs.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/inference/gibbs.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.HMC' href='#Turing.Inference.HMC'>#</a> **`Turing.Inference.HMC`** &mdash; *Type*.
 
 
-```
+```julia
 HMC(n_iters::Int, epsilon::Float64, tau::Int)
 ```
 
@@ -180,12 +180,12 @@ sample(gdemo([1.5, 2]), HMC(1000, 0.01, 10))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/inference/hmc.jl#L1-L45' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/inference/hmc.jl#L1-L45' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.HMCDA' href='#Turing.Inference.HMCDA'>#</a> **`Turing.Inference.HMCDA`** &mdash; *Type*.
 
 
-```
+```julia
 HMCDA(n_iters::Int, n_adapts::Int, delta::Float64, lambda::Float64)
 ```
 
@@ -224,12 +224,12 @@ For more information, please view the following paper ([arXiv link](https://arxi
 Hoffman, Matthew D., and Andrew Gelman. "The No-U-turn sampler: adaptively setting path lengths in Hamiltonian Monte Carlo." Journal of Machine Learning Research 15, no. 1 (2014): 1593-1623.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/inference/hmcda.jl#L1-L37' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/inference/hmcda.jl#L1-L37' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.IPMCMC' href='#Turing.Inference.IPMCMC'>#</a> **`Turing.Inference.IPMCMC`** &mdash; *Type*.
 
 
-```
+```julia
 IPMCMC(n_particles::Int, n_iters::Int, n_nodes::Int, n_csmc_nodes::Int)
 ```
 
@@ -268,12 +268,12 @@ sample(gdemo([1.5, 2]), IPMCMC(100, 100, 4, 2))
 A paper on this can be found [here](https://arxiv.org/abs/1602.05128).
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/inference/ipmcmc.jl#L1-L38' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/inference/ipmcmc.jl#L1-L38' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.IS' href='#Turing.Inference.IS'>#</a> **`Turing.Inference.IS`** &mdash; *Type*.
 
 
-```
+```julia
 IS(n_particles::Int)
 ```
 
@@ -307,12 +307,12 @@ sample(gdemo([1.5, 2]), IS(1000))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/inference/is.jl#L1-L33' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/inference/is.jl#L1-L33' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.MH' href='#Turing.Inference.MH'>#</a> **`Turing.Inference.MH`** &mdash; *Type*.
 
 
-```
+```julia
 MH(n_iters::Int)
 ```
 
@@ -340,12 +340,12 @@ chn = sample(gdemo([1.5, 2]), MH(1000))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/inference/mh.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/inference/mh.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.NUTS' href='#Turing.Inference.NUTS'>#</a> **`Turing.Inference.NUTS`** &mdash; *Type*.
 
 
-```
+```julia
 NUTS(n_iters::Int, n_adapts::Int, delta::Float64)
 ```
 
@@ -379,12 +379,12 @@ sample(gdemo([1.j_max, 2]), NUTS(1000, 200, 0.6j_max))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/inference/nuts.jl#L1-L32' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/inference/nuts.jl#L1-L32' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.PG' href='#Turing.Inference.PG'>#</a> **`Turing.Inference.PG`** &mdash; *Type*.
 
 
-```
+```julia
 PG(n_particles::Int, n_iters::Int)
 ```
 
@@ -414,12 +414,12 @@ sample(gdemo([1.5, 2]), PG(100, 100))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/inference/pgibbs.jl#L1-L29' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/inference/pgibbs.jl#L1-L29' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.PMMH' href='#Turing.Inference.PMMH'>#</a> **`Turing.Inference.PMMH`** &mdash; *Type*.
 
 
-```
+```julia
 PMMH(n_iters::Int, smc_alg:::SMC, parameters_algs::Tuple{MH})
 ```
 
@@ -443,12 +443,12 @@ Arguments:
 sample space specification.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/inference/pmmh.jl#L1-L23' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/inference/pmmh.jl#L1-L23' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.SGHMC' href='#Turing.Inference.SGHMC'>#</a> **`Turing.Inference.SGHMC`** &mdash; *Type*.
 
 
-```
+```julia
 SGHMC(n_iters::Int, learning_rate::Float64, momentum_decay::Float64)
 ```
 
@@ -477,12 +477,12 @@ sample(example, SGHMC(1000, 0.01, 0.1))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/inference/sghmc.jl#L1-L27' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/inference/sghmc.jl#L1-L27' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.SGLD' href='#Turing.Inference.SGLD'>#</a> **`Turing.Inference.SGLD`** &mdash; *Type*.
 
 
-```
+```julia
 SGLD(n_iters::Int, epsilon::Float64)
 ```
 
@@ -510,12 +510,12 @@ sample(example, SGLD(1000, 0.5))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/inference/sgld.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/inference/sgld.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.SMC' href='#Turing.Inference.SMC'>#</a> **`Turing.Inference.SMC`** &mdash; *Type*.
 
 
-```
+```julia
 SMC(n_particles::Int)
 ```
 
@@ -545,7 +545,7 @@ sample(gdemo([1.5, 2]), SMC(1000))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/36ecbedb3a7f66b8fe5885c9dec2e09ca3e9cecb/src/inference/smc.jl#L1-L29' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/deff05d3d5ad073a88a3ab6a76074d8537ed5f68/src/inference/smc.jl#L1-L29' class='documenter-source'>source</a><br>
 
 
 <a id='Data-Structures-1'></a>
@@ -555,7 +555,7 @@ sample(gdemo([1.5, 2]), SMC(1000))
 ### <a id='Libtask.TArray' href='#Libtask.TArray'>#</a> **`Libtask.TArray`** &mdash; *Type*.
 
 
-```
+```julia
 TArray{T}(dims, ...)
 ```
 
@@ -585,7 +585,7 @@ Array(ta)                   # convert to 4-element Array{Int64,1}: [1, 2, 3, 4]
 ### <a id='Libtask.tzeros' href='#Libtask.tzeros'>#</a> **`Libtask.tzeros`** &mdash; *Function*.
 
 
-```
+```julia
  tzeros(dims, ...)
 ```
 
