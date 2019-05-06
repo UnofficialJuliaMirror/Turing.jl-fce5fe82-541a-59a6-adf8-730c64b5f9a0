@@ -38,7 +38,7 @@ function model_generator(x = nothing, y = nothing)
     pvars, dvars = Turing.get_vars(Tuple{:x, :y}, (x = x, y = y))
     data = Turing.get_data(dvars, (x = x, y = y))
     defaults = Turing.get_default_values(dvars, (x = default_x, y = nothing))
-    
+
     inner_function(sampler::Turing.AbstractSampler, model) = inner_function(model)
     function inner_function(model)
         return inner_function(Turing.VarInfo(), Turing.SampleFromPrior(), model)
@@ -72,7 +72,7 @@ end
 Generating a model: `model_generator(x_value)::Model`.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/core/compiler.jl#L158-L214' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/core/compiler.jl#L158-L214' class='documenter-source'>source</a><br>
 
 
 <a id='Samplers-1'></a>
@@ -94,7 +94,7 @@ Generic interface for implementing inference algorithms. An implementation of an
 Turing translates models to chunks that call the modelling functions at specified points. The dispatch is based on the value of a `sampler` variable. To include a new inference algorithm implements the requirements mentioned above in a separate file, then include that file at the end of this one.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/Turing.jl#L82-L95' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/Turing.jl#L82-L95' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.Gibbs' href='#Turing.Inference.Gibbs'>#</a> **`Turing.Inference.Gibbs`** &mdash; *Type*.
 
@@ -127,7 +127,7 @@ Tips:
 methods like Particle Gibbs. You can increase the effectiveness of particle sampling by including more particles in the particle sampler.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/inference/gibbs.jl#L5-L30' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/inference/gibbs.jl#L5-L30' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.HMC' href='#Turing.Inference.HMC'>#</a> **`Turing.Inference.HMC`** &mdash; *Type*.
 
@@ -165,7 +165,7 @@ sample(gdemo([1.5, 2]), HMC(1000, 0.01, 10))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/inference/hmc.jl#L5-L34' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/inference/hmc.jl#L5-L34' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.HMCDA' href='#Turing.Inference.HMCDA'>#</a> **`Turing.Inference.HMCDA`** &mdash; *Type*.
 
@@ -195,7 +195,7 @@ For more information, please view the following paper ([arXiv link](https://arxi
   * Hoffman, Matthew D., and Andrew Gelman. "The No-U-turn sampler: adaptively setting path lengths in Hamiltonian Monte Carlo." Journal of Machine Learning Research 15, no. 1 (2014): 1593-1623.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/inference/hmc.jl#L65-L89' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/inference/hmc.jl#L65-L89' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.IPMCMC' href='#Turing.Inference.IPMCMC'>#</a> **`Turing.Inference.IPMCMC`** &mdash; *Type*.
 
@@ -221,25 +221,12 @@ Arguments:
   * `n_nodes::Int` : The number of nodes running SMC and CSMC.
   * `n_csmc_nodes::Int` : The number of CSMC nodes.
 
-Example:
-
-```julia
-# Define a simple Normal model with unknown mean and variance.
-@model gdemo(x) = begin
-  s ~ InverseGamma(2,3)
-  m ~ Normal(0,sqrt(s))
-  x[1] ~ Normal(m, sqrt(s))
-  x[2] ~ Normal(m, sqrt(s))
-  return s, m
-end
-
-sample(gdemo([1.5, 2]), IPMCMC(100, 100, 4, 2))
 ```
 
 A paper on this can be found [here](https://arxiv.org/abs/1602.05128).
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/inference/ipmcmc.jl#L1-L38' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/inference/AdvancedSMC.jl#L467-L490' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.IS' href='#Turing.Inference.IS'>#</a> **`Turing.Inference.IS`** &mdash; *Type*.
 
@@ -278,7 +265,7 @@ sample(gdemo([1.5, 2]), IS(1000))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/inference/is.jl#L1-L33' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/inference/is.jl#L1-L33' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.MH' href='#Turing.Inference.MH'>#</a> **`Turing.Inference.MH`** &mdash; *Type*.
 
@@ -311,7 +298,7 @@ chn = sample(gdemo([1.5, 2]), MH(1000))
 ```
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/inference/mh.jl#L1-L26' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/inference/mh.jl#L1-L26' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.NUTS' href='#Turing.Inference.NUTS'>#</a> **`Turing.Inference.NUTS`** &mdash; *Type*.
 
@@ -338,7 +325,7 @@ Arguments:
   * `init_ϵ::Float64` : Inital step size; 0 means automatically search by Turing.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/inference/hmc.jl#L137-L157' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/inference/hmc.jl#L137-L157' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.PG' href='#Turing.Inference.PG'>#</a> **`Turing.Inference.PG`** &mdash; *Type*.
 
@@ -357,23 +344,8 @@ Usage:
 PG(100, 100)
 ```
 
-Example:
 
-```julia
-# Define a simple Normal model with unknown mean and variance.
-@model gdemo(x) = begin
-  s ~ InverseGamma(2,3)
-  m ~ Normal(0, sqrt(s))
-  x[1] ~ Normal(m, sqrt(s))
-  x[2] ~ Normal(m, sqrt(s))
-  return s, m
-end
-
-sample(gdemo([1.5, 2]), PG(100, 100))
-```
-
-
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/inference/pgibbs.jl#L1-L29' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/inference/AdvancedSMC.jl#L86-L99' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.PMMH' href='#Turing.Inference.PMMH'>#</a> **`Turing.Inference.PMMH`** &mdash; *Type*.
 
@@ -402,7 +374,7 @@ Arguments:
 sample space specification.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/inference/pmmh.jl#L5-L27' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/inference/AdvancedSMC.jl#L276-L298' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.SGHMC' href='#Turing.Inference.SGHMC'>#</a> **`Turing.Inference.SGHMC`** &mdash; *Type*.
 
@@ -426,7 +398,7 @@ Arguments:
   * `momentum_decay::Float64` : Momentum decay variable.
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/inference/sghmc.jl#L10-L27' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/inference/sghmc.jl#L10-L27' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.SGLD' href='#Turing.Inference.SGLD'>#</a> **`Turing.Inference.SGLD`** &mdash; *Type*.
 
@@ -453,7 +425,7 @@ Reference:
 Welling, M., & Teh, Y. W. (2011).  Bayesian learning via stochastic gradient Langevin dynamics. In Proceedings of the 28th international conference on machine learning (ICML-11) (pp. 681-688).
 
 
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/inference/sghmc.jl#L115-L135' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/inference/sghmc.jl#L115-L135' class='documenter-source'>source</a><br>
 
 ### <a id='Turing.Inference.SMC' href='#Turing.Inference.SMC'>#</a> **`Turing.Inference.SMC`** &mdash; *Type*.
 
@@ -472,23 +444,8 @@ Usage:
 SMC(1000)
 ```
 
-Example:
 
-```julia
-# Define a simple Normal model with unknown mean and variance.
-@model gdemo(x) = begin
-  s ~ InverseGamma(2,3)
-  m ~ Normal(0, sqrt(s))
-  x[1] ~ Normal(m, sqrt(s))
-  x[2] ~ Normal(m, sqrt(s))
-  return s, m
-end
-
-sample(gdemo([1.5, 2]), SMC(1000))
-```
-
-
-<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/cd971d5cdb904e6fdb4652943f7aa3b2382145bc/src/inference/smc.jl#L1-L29' class='documenter-source'>source</a><br>
+<a target='_blank' href='https://github.com/TuringLang/Turing.jl/blob/a4f78b61d3129329e197d15629104fd6e1f4c412/src/inference/AdvancedSMC.jl#L9-L22' class='documenter-source'>source</a><br>
 
 
 <a id='Data-Structures-1'></a>
