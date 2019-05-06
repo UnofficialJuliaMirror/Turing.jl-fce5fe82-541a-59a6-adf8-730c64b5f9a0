@@ -8,6 +8,7 @@ jobs:
     - env: STAGE=numerical
     - env: STAGE=stan
     - env: STAGE=dynamichmc
+    - env: STAGE=documentation
   include:
     - stage: test
       os: linux
@@ -32,7 +33,6 @@ jobs:
         - julia --check-bounds=yes -e 'using Pkg;
                    Pkg.test("Turing"; coverage=true)'
     - stage: numerical
-      allow_failures: true
       julia: 1.0
       os: linux
       env: STAGE=numerical
@@ -41,7 +41,6 @@ jobs:
         - julia --check-bounds=yes -e 'using Pkg;
                    Pkg.test("Turing"; coverage=true)'
     - stage: numerical
-      allow_failures: true
       julia: 1.1
       os: linux
       env: STAGE=numerical
@@ -68,7 +67,6 @@ jobs:
         - julia --check-bounds=yes -e 'using Pkg;
                    Pkg.test("Turing"; coverage=true)'
     - stage: stan
-      allow_failures: true
       os: linux
       julia: 1.0
       env: STAGE=stan
@@ -77,7 +75,6 @@ jobs:
         - julia --check-bounds=yes -e 'using Pkg;
                    Pkg.test("Turing"; coverage=true)'
     - stage: stan
-      allow_failures: true
       os: linux
       julia: 1.1
       env: STAGE=stan
@@ -86,7 +83,6 @@ jobs:
         - julia --check-bounds=yes -e 'using Pkg;
                    Pkg.test("Turing"; coverage=true)'
     - stage: dynamichmc
-      allow_failures: true
       os: linux
       julia: 1.0
       env: STAGE=dynamichmc
@@ -95,7 +91,6 @@ jobs:
          - julia --check-bounds=yes -e 'using Pkg;
                     Pkg.test("Turing"; coverage=true)'
     - stage: dynamichmc
-      allow_failures: true
       os: linux
       julia: 1.1
       env: STAGE=dynamichmc
