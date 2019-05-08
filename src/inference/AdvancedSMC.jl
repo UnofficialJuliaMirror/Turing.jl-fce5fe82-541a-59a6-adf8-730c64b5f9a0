@@ -38,6 +38,7 @@ function Sampler(alg::SMC, s::Selector)
     return Sampler(alg, info, s)
 end
 
+# Step function for iterative SMC, used by IPMCMC.
 function step(model, spl::Sampler{<:SMC}, vi::VarInfo)
     particles = ParticleContainer{Trace}(model)
     vi.num_produce = 0;  # Reset num_produce before new sweep\.
@@ -61,8 +62,11 @@ function step(model, spl::Sampler{<:SMC}, vi::VarInfo)
     return particles[indx].vi, true
 end
 
-## wrapper for smc: run the sampler, collect results.
-function sample(model::Model, alg::SMC)
+
+function sample(
+    model::Model,
+    alg::SMC
+)
     spl = Sampler(alg)
 
     particles = ParticleContainer{Trace}(model)
@@ -149,12 +153,13 @@ function step(model, spl::Sampler{<:PG}, vi::VarInfo)
     return particles[indx].vi, true
 end
 
-function sample(  model::Model,
-                  alg::PG;
-                  save_state=false,         # flag for state saving
-                  resume_from=nothing,      # chain to continue
-                  reuse_spl_n=0             # flag for spl re-using
-                )
+function sample(
+    model::Model,
+    alg::PG;
+    save_state=false,         # flag for state saving
+    resume_from=nothing,      # chain to continue
+    reuse_spl_n=0             # flag for spl re-using
+)
 
     spl = reuse_spl_n > 0 ?
           resume_from.info[:spl] :
@@ -212,11 +217,12 @@ function sample(  model::Model,
     return c
 end
 
-function assume(  spl::Sampler{T},
-                  dist::Distribution,
-                  vn::VarName,
-                  _::VarInfo
-                ) where T<:Union{PG,SMC}
+function assume(
+    spl::Sampler{A},
+    dist::Distribution,
+    vn::VarName,
+    _::VarInfo
+) where A<:Union{PG,SMC}
 
     vi = current_trace().vi
     if isempty(spl.alg.space) || vn.sym in spl.alg.space
@@ -246,25 +252,31 @@ function assume(  spl::Sampler{T},
     return r, zero(Real)
 end
 
-function assume(  spl::Sampler{A},
-                  dists::Vector{D},
-                  vn::VarName,
-                  var::Any,
-                  vi::VarInfo
-                ) where {A<:Union{PG,SMC},D<:Distribution}
+function assume(
+    spl::Sampler{A},
+    dists::Vector{D},
+    vn::VarName,
+    var::Any,
+    vi::VarInfo
+) where {A<:Union{PG,SMC},D<:Distribution}
     error("[Turing] PG and SMC doesn't support vectorizing assume statement")
 end
 
-function observe(spl::Sampler{T}, dist::Distribution, value, vi) where T<:Union{PG,SMC}
+function observe(
+    spl::Sampler{T},
+    dist::Distribution,
+    value, vi
+) where T<:Union{PG,SMC}
     produce(logpdf(dist, value))
     return zero(Real)
 end
 
-function observe( spl::Sampler{A},
-                  ds::Vector{D},
-                  value::Any,
-                  vi::VarInfo
-                ) where {A<:Union{PG,SMC},D<:Distribution}
+function observe(
+    spl::Sampler{A},
+    ds::Vector{D},
+    value::Any,
+    vi::VarInfo
+) where {A<:Union{PG,SMC},D<:Distribution}
     error("[Turing] PG and SMC doesn't support vectorizing observe statement")
 end
 
@@ -297,9 +309,9 @@ Arguments:
 sample space specification.
 """
 mutable struct PMMH{T, A<:Tuple} <: InferenceAlgorithm
-    n_iters               ::    Int               # number of iterations
-    algs                  ::    A                 # Proposals for state & parameters
-    space                 ::    Set{T}            # sampling space, emtpy means all
+    n_iters::Int            # Number of iterations
+    algs::A                 # Proposals for state & parameters
+    space::Set{T}           # Sampling space, emtpy means all
 end
 function PMMH(n_iters::Int, smc_alg::SMC, parameter_algs...)
     return PMMH(n_iters, tuple(parameter_algs..., smc_alg), Set())
@@ -388,13 +400,13 @@ function step(model, spl::Sampler{<:PMMH}, vi::VarInfo, is_first::Bool)
     return vi, is_accept
 end
 
-function sample(  model::Model,
-                  alg::PMMH;
-                  save_state=false,         # flag for state saving
-                  resume_from=nothing,      # chain to continue
-                  reuse_spl_n=0             # flag for spl re-using
-                )
-
+function sample(
+    model::Model,
+    alg::PMMH;
+    save_state=false,         # flag for state saving
+    resume_from=nothing,      # chain to continue
+    reuse_spl_n=0             # flag for spl re-using
+)
     spl = Sampler(alg, model)
     if resume_from != nothing
         spl.selector = resume_from.info[:spl].selector
@@ -489,12 +501,12 @@ Arguments:
 A paper on this can be found [here](https://arxiv.org/abs/1602.05128).
 """
 mutable struct IPMCMC{T, F} <: InferenceAlgorithm
-  n_particles           ::    Int         # number of particles used
-  n_iters               ::    Int         # number of iterations
-  n_nodes               ::    Int         # number of nodes running SMC and CSMC
-  n_csmc_nodes          ::    Int         # number of nodes CSMC
-  resampler             ::    F           # function to resample
-  space                 ::    Set{T}      # sampling space, emtpy means all
+  n_particles::Int     # number of particles used
+  n_iters::Int         # number of iterations
+  n_nodes::Int         # number of nodes running SMC and CSMC
+  n_csmc_nodes::Int    # number of nodes CSMC
+  resampler::F         # function to resample
+  space::Set{T}        # sampling space, emtpy means all
 end
 IPMCMC(n1::Int, n2::Int) = IPMCMC(n1, n2, 32, 16, resample_systematic, Set())
 IPMCMC(n1::Int, n2::Int, n3::Int) = IPMCMC(n1, n2, n3, Int(ceil(n3/2)), resample_systematic, Set())
@@ -610,7 +622,10 @@ end
 # Code adapted from: http://uk.mathworks.com/matlabcentral/fileexchange/24968-resampling-methods-for-particle-filtering
 
 # Default resampling scheme
-function resample(w::AbstractVector{<:Real}, num_particles::Integer=length(w))
+function resample(
+    w::AbstractVector{<:Real},
+    num_particles::Integer=length(w)
+)
     return resample_systematic(w, num_particles)
 end
 
@@ -627,12 +642,17 @@ function randcat(p::AbstractVector{T}) where T<:Real
     return s
 end
 
-function resample_multinomial(w::AbstractVector{<:Real}, num_particles::Integer)
+function resample_multinomial(
+    w::AbstractVector{<:Real},
+    num_particles::Integer
+)
     return rand(Distributions.sampler(Categorical(w)), num_particles)
 end
 
-function resample_residual(w::AbstractVector{<:Real}, num_particles::Integer)
-
+function resample_residual(
+    w::AbstractVector{<:Real},
+    num_particles::Integer
+)
     M = length(w)
 
     # "Repetition counts" (plus the random part, later on):
@@ -660,8 +680,10 @@ function resample_residual(w::AbstractVector{<:Real}, num_particles::Integer)
     return append!(indx1, rand(Distributions.sampler(Categorical(w)), M_rdn))
 end
 
-function resample_stratified(w::AbstractVector{<:Real}, num_particles::Integer)
-
+function resample_stratified(
+    w::AbstractVector{<:Real},
+    num_particles::Integer
+)
     Q, N = cumsum(w), num_particles
 
     T = Array{Float64}(undef, N + 1)
@@ -682,7 +704,10 @@ function resample_stratified(w::AbstractVector{<:Real}, num_particles::Integer)
     return indx
 end
 
-function resample_systematic(w::AbstractVector{<:Real}, num_particles::Integer)
+function resample_systematic(
+    w::AbstractVector{<:Real},
+    num_particles::Integer
+)
 
     Q, N = cumsum(w), num_particles
 
