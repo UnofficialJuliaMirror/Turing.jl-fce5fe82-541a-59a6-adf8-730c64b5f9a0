@@ -14,6 +14,7 @@ using Statistics, LinearAlgebra, ProgressMeter
 using Markdown, Libtask, MacroTools
 @reexport using Distributions, MCMCChains, Libtask
 using Tracker: Tracker
+using Zygote: Zygote
 
 import Base: ~, ==, convert, hash, promote_rule, rand, getindex, setindex!
 import Distributions: sample, Sampleable

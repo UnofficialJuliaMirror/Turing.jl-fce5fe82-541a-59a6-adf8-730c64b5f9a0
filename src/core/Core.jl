@@ -4,6 +4,7 @@ using MacroTools, Libtask, ForwardDiff, Random
 using Distributions, LinearAlgebra
 using ..Utilities, Reexport
 using Tracker: Tracker
+using Zygote: Zygote
 using ..Turing: Turing, Model, runmodel!,
     AbstractSampler, Sampler, SampleFromPrior
 

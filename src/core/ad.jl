@@ -4,7 +4,7 @@
 
 const ADBACKEND = Ref(:forward_diff)
 function setadbackend(backend_sym)
-    @assert backend_sym == :forward_diff || backend_sym == :reverse_diff
+    @assert backend_sym in (:forward_diff, :reverse_diff, :tracker, :zygote)
     backend_sym == :forward_diff && CHUNKSIZE[] == 0 && setchunksize(40)
     ADBACKEND[] = backend_sym
 end
@@ -35,13 +35,17 @@ getchunksize(::Type{Nothing}) = CHUNKSIZE[]
 
 struct TrackerAD <: ADBackend end
 
+struct ZygoteAD <: ADBackend end
+
 ADBackend() = ADBackend(ADBACKEND[])
 ADBackend(T::Symbol) = ADBackend(Val(T))
 function ADBackend(::Val{T}) where {T}
     if T === :forward_diff
         return ForwardDiffAD{CHUNKSIZE[]}
-    else
+    elseif T === :reverse_diff || T === :tracker
         return TrackerAD
+    else
+        return ZygoteAD
     end
 end
 
@@ -78,8 +82,10 @@ function gradient_logp(
     ad_type = getADtype(TS)
     if ad_type <: ForwardDiffAD
         return gradient_logp_forward(θ, vi, model, sampler)
-    else ad_type <: TrackerAD
-        return gradient_logp_reverse(θ, vi, model, sampler)
+    elseif ad_type <: TrackerAD
+        return gradient_logp_reverse(θ, vi, model, sampler, TrackerAD())
+    else
+        return gradient_logp_reverse(θ, vi, model, sampler, ZygoteAD())
     end
 end
 
@@ -126,16 +132,18 @@ gradient_logp_reverse(
     vi::VarInfo,
     model::Model,
     sampler::AbstractSampler=SampleFromPrior(),
+    backend::ADBackend
 )
 
 Computes the value of the log joint of `θ` and its gradient for the model
-specified by `(vi, sampler, model)` using reverse-mode AD from Tracker.jl.
+specified by `(vi, sampler, model)` using reverse-mode AD from the specified `backend`, e.g. `TrackerAD()` which uses `Tracker.jl` or `ZygoteAD()` which uses `Zygote.jl`.
 """
 function gradient_logp_reverse(
     θ::AbstractVector{<:Real},
     vi::VarInfo,
     model::Model,
     sampler::AbstractSampler=SampleFromPrior(),
+    backend::ADBackend = TrackerAD()
 )
     logp_old = vi.logp
 
@@ -147,11 +155,17 @@ function gradient_logp_reverse(
         return logp
     end
 
-    # Compute forward and reverse passes.
-    l_tracked, ȳ = Tracker.forward(f, θ)
-    l, ∂l∂θ = Tracker.data(l_tracked), Tracker.data(ȳ(1)[1])
+    if backend isa TrackerAD
+        l_tracked, ȳ = Tracker.forward(f, θ)
+        l, ∂l∂θ = Tracker.data(l_tracked), Tracker.data(ȳ(1)[1])
+    else
+        # Compute forward and reverse passes.
+        l, ȳ = Zygote.forward(f, θ)
+        ∂l∂θ = ȳ(1)[1]
+    end
     # Remove tracking info from variables in model (because mutable state).
     vi.logp = logp_old
+
     # Return non-tracked gradient value
     return l, ∂l∂θ
 end
@@ -181,6 +195,10 @@ Tracker.@grad function binomlogpdf(n::Int, p::Tracker.TrackedReal, x::Int)
     return binomlogpdf(n, Tracker.data(p), x),
         Δ->(nothing, Δ * (x / p - (n - x) / (1 - p)), nothing)
 end
+Zygote.@adjoint function binomlogpdf(n, p, x)
+    return binomlogpdf(n, p, x),
+        Δ->(nothing, Δ * (x / p - (n - x) / (1 - p)), nothing)
+end
 
 import StatsFuns: nbinomlogpdf
 # Note the definition of NegativeBinomial in Julia is not the same as Wikipedia's.
@@ -204,12 +222,21 @@ Tracker.@grad function nbinomlogpdf(r::Tracker.TrackedReal, p::Real, k::Int)
     return nbinomlogpdf(Tracker.data(r), Tracker.data(p), k),
         Δ->(Δ * _nbinomlogpdf_grad_1(r, p, k), Tracker._zero(p), nothing)
 end
+Zygote.@adjoint function nbinomlogpdf(r, p, k)
+    return nbinomlogpdf(r, p, k),
+        Δ->(Δ * _nbinomlogpdf_grad_1(r, p, k), 
+        Δ * _nbinomlogpdf_grad_2(r, p, k), nothing)
+end
 
 import StatsFuns: poislogpdf
 poislogpdf(v::Tracker.TrackedReal, x::Int) = Tracker.track(poislogpdf, v, x)
 Tracker.@grad function poislogpdf(v::Tracker.TrackedReal, x::Int)
       return poislogpdf(Tracker.data(v), x),
           Δ->(Δ * (x/v - 1), nothing)
+end
+Zygote.@adjoint function poislogpdf(v, x)
+    return poislogpdf(v, x),
+        Δ->(Δ * (x/v - 1), nothing)
 end
 
 function binomlogpdf(n::Int, p::ForwardDiff.Dual{T}, x::Int) where {T}
