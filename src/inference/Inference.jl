@@ -184,6 +184,8 @@ function observe(spl::A,
 
 end
 
+using KissThreading
+
 function observe(spl::A,
     dists::Vector{T},
     value::Any,
@@ -194,7 +196,10 @@ function observe(spl::A,
     @assert isa(dist, UnivariateDistribution) || isa(dist, MultivariateDistribution) "Turing.observe: vectorizing matrix distribution is not supported"
     if isa(dist, UnivariateDistribution)  # only univariate distributions support broadcast operation (logpdf.) by Distributions.jl
         # acclogp!(vi, sum(logpdf.(Ref(dist), value)))
-        sum(logpdf.(Ref(dist), value))
+        v0 = logpdf(dist, value[1])
+        return @views tmapreduce(+, value[2:end], init=v0) do v
+            logpdf(dist, v)
+        end
     else
         # acclogp!(vi, sum(logpdf(dist, value)))
         sum(logpdf(dist, value))
