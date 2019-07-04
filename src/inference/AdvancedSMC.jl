@@ -128,11 +128,16 @@ function effectiveSampleSize(pc :: ParticleContainer)
     ess = 1.0 / sum(Ws .^ 2) # sum(Ws) ^ 2 = 1.0, because weights are normalised
 end
 
-increase_logweight(pc :: ParticleContainer, t :: Int, logw :: Float64) =
-    (pc.logWs[t]  += logw)
+function increase_logweight(
+    pc :: ParticleContainer,
+    t  :: Int,
+    logw :: Float64
+) = (pc.logWs[t]  += logw)
 
-increase_logevidence(pc :: ParticleContainer, logw :: Float64) =
-    (pc.logE += logw)
+function increase_logevidence(
+    pc   :: ParticleContainer,
+    logw :: Float64
+) = (pc.logE += logw)
 
 
 function resample!(
