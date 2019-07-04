@@ -11,7 +11,7 @@ include("RandomVariables.jl")
 @reexport using .RandomVariables
 
 include("compiler.jl")
-include("container.jl")
+include("Traces.jl")
 include("ad.jl")
 
 export  @model,
