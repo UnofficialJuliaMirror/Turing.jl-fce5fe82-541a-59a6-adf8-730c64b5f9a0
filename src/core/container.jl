@@ -245,21 +245,3 @@ function resample!(
 
     pc
 end
-
-
-########### Auxilary Functions ###################
-
-# ParticleContainer: particles ==> (weight, results)
-function getsample(pc :: ParticleContainer, i :: Int, w :: Float64 = 0.)
-    p = pc.vals[i]
-    predicts = Sample(p.vi).value
-    predicts[:le] = pc.logE
-    return Sample(w, predicts)
-end
-
-function getsample(pc :: ParticleContainer)
-    w = pc.logE
-    Ws, z = weights(pc)
-    s = map((i)->getsample(pc, i, Ws[i]), 1:length(pc))
-    return exp.(w), s
-end
