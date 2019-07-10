@@ -1,5 +1,7 @@
 # Simulate data
-using Distributions
+using Distributions, Turing
+
+Turing.setadbackend(:reverse_diff)
 
 V = 5   # vocab
 K = 3   # topic
@@ -31,7 +33,6 @@ for m = 1:M, i=1:doc_length[m]
 end
 
 # LDA
-using Turing
 
 struct CategoricalReal<: Distributions.DiscreteUnivariateDistribution
     p
