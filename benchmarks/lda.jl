@@ -61,6 +61,13 @@ end
 
 mf = lda_collapsed(K, V, M, N, w, doc, beta, alpha)
 
-# c3= sample(mf, Turing.NUTS(2000, 0.65))
-# c3= sample(mf, HMCDA(2000, 0.65, 1.0))
-c3 = sample(mf, HMC(2000, 0.01, 10))
+# c3= sample(mf, NUTS(2000, 0.65));
+# c3= sample(mf, HMCDA(2000, 0.65, 1.0));
+c3 = sample(mf, HMC(2000, 0.01, 1));
+
+# julia> c3= sample(mf, HMC(2000, 0.01, 10))
+# ┌ Info: Finished 2000 sampling steps in 574.492034088 (s)
+# │   typeof(h.metric) = AdvancedHMC.Adaptation.UnitEuclideanMetric{Float64}
+# │   typeof(τ) = AdvancedHMC.StaticTrajectory{AdvancedHMC.Leapfrog{Float64}}
+# │   EBFMI(Hs) = 125.1832457754953
+# └   mean(αs) = 0.9988664272956684
