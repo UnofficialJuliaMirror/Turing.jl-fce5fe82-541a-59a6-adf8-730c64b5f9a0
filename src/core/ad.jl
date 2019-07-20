@@ -145,14 +145,11 @@ function gradient_logp_reverse(
     sampler::AbstractSampler=SampleFromPrior(),
     backend::ADBackend = TrackerAD()
 )
-    logp_old = vi.logp[]
-
     # Specify objective function.
     function f(θ)
         new_vi = VarInfo(vi, sampler, θ)
-        logp = runmodel!(model, new_vi, sampler).logp[]
-        vi.logp[] = Tracker.data(logp)
-        return logp
+        runmodel!(model, new_vi, sampler)
+        return new_vi.logp[]
     end
 
     if backend isa TrackerAD
@@ -163,9 +160,6 @@ function gradient_logp_reverse(
         l, ȳ = Zygote.forward(f, θ)
         ∂l∂θ = ȳ(1)[1]
     end
-    # Remove tracking info from variables in model (because mutable state).
-    vi.logp[] = logp_old
-
     # Return non-tracked gradient value
     return l, ∂l∂θ
 end

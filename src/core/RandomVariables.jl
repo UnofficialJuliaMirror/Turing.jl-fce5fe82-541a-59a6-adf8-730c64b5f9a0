@@ -2,7 +2,7 @@ module RandomVariables
 
 using ...Turing: Turing, CACHERESET, CACHEIDCS, CACHERANGES, Model,
     AbstractSampler, Sampler, SampleFromPrior, SampleFromUniform,
-    Selector, getspace
+    Selector, getspace, Zygote
 using ...Utilities: vectorize, reconstruct, reconstruct!
 using Bijectors: SimplexDistribution, link, invlink
 using Distributions
@@ -690,12 +690,16 @@ probability in `vi`.
 """
 function runmodel!(model::Model, vi::AbstractVarInfo, spl::AbstractSampler = SampleFromPrior())
     setlogp!(vi, 0)
-    if spl isa Sampler && haskey(spl.info, :eval_num)
-        spl.info[:eval_num] += 1
-    end
+    increment_eval_num!(spl)
     model(vi, spl)
     return vi
 end
+function increment_eval_num!(spl)
+    if spl isa Sampler && haskey(spl.info, :eval_num)
+        spl.info[:eval_num] += 1
+    end
+end
+Zygote.@adjoint increment_eval_num!(x) = increment_eval_num!(x), _ -> nothing
 
 VarInfo(meta=Metadata()) = VarInfo(meta, Ref{Real}(0.0), Ref(0))
 
