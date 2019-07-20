@@ -42,7 +42,7 @@ x = [1.5, 2.0, 13.0, 2.1, 0.0]
 model = gdemo(x)
 vi = Turing.VarInfo()
 model(vi, Turing.SampleFromPrior())
-vi.flags["trans"] = [true, false]
+vi.metadata.flags["trans"] = [true, false]
 
 # Evaluate surface at coordinates.
 function evaluate(m1, m2)

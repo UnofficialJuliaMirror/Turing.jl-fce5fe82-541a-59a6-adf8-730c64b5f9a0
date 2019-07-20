@@ -189,7 +189,7 @@ function observe(spl::A,
     value::Any,
     vi::VarInfo) where {A<:Union{SampleFromPrior, SampleFromUniform}}
 
-    vi.num_produce += one(vi.num_produce)
+    vi.num_produce[] += one(vi.num_produce[])
     Turing.DEBUG && @debug "dist = $dist"
     Turing.DEBUG && @debug "value = $value"
 

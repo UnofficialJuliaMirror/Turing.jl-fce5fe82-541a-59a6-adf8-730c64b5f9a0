@@ -190,7 +190,7 @@ function VarInfo(old_vi::UntypedVarInfo, spl, x::AbstractVector)
 end
 function VarInfo(old_vi::TypedVarInfo, spl, x::AbstractVector)
     md = newmetadata(old_vi.metadata, spl, x, 0)
-    VarInfo(md, Base.RefValue{eltype(x)}(old_vi.logp), Ref(old_vi.num_produce))
+    VarInfo(md, Base.RefValue{eltype(x)}(old_vi.logp[]), Ref(old_vi.num_produce[]))
 end
 function newmetadata(metadata::NamedTuple{names}, spl, x, offset) where {names}
     # Check if the named tuple is empty and end the recursion
@@ -280,17 +280,17 @@ const VarView = Union{Int, UnitRange, Vector{Int}}
 
 Returns a view `vi.vals[vview]`.
 """
-getval(vi::UntypedVarInfo, vview::VarView) = view(vi.vals, vview)
+getval(vi::UntypedVarInfo, vview::VarView) = view(vi.metadata.vals, vview)
 
 """
 `setval!(vi::UntypedVarInfo, val, vview::Union{Int, UnitRange, Vector{Int}})`
 
 Sets the value of `vi.vals[vview]` to `val`.
 """
-setval!(vi::UntypedVarInfo, val, vview::VarView) = vi.vals[vview] = val
+setval!(vi::UntypedVarInfo, val, vview::VarView) = vi.metadata.vals[vview] = val
 function setval!(vi::UntypedVarInfo, val, vview::Vector{UnitRange})
     if length(vview) > 0
-        vi.vals[[i for arr in vview for i in arr]] = val
+        vi.metadata.vals[[i for arr in vview for i in arr]] = val
     end
     return val
 end
@@ -300,7 +300,7 @@ end
 
 Returns the index of `vn` in `vi.metadata.vns`.
 """
-getidx(vi::UntypedVarInfo, vn::VarName) = vi.idcs[vn]
+getidx(vi::UntypedVarInfo, vn::VarName) = vi.metadata.idcs[vn]
 
 """
 `getidx(vi::TypedVarInfo, vn::VarName{sym})`
@@ -316,7 +316,7 @@ end
 
 Returns the index range of `vn` in `vi.metadata.vals`.
 """
-getrange(vi::UntypedVarInfo, vn::VarName) = vi.ranges[getidx(vi, vn)]
+getrange(vi::UntypedVarInfo, vn::VarName) = vi.metadata.ranges[getidx(vi, vn)]
 
 """
 `getrange(vi::TypedVarInfo, vn::VarName{sym})`
@@ -341,7 +341,7 @@ end
 
 Returns the distribution from which `vn` was sampled in `vi`.
 """
-getdist(vi::UntypedVarInfo, vn::VarName) = vi.dists[getidx(vi, vn)]
+getdist(vi::UntypedVarInfo, vn::VarName) = vi.metadata.dists[getidx(vi, vn)]
 function getdist(vi::TypedVarInfo, vn::VarName{sym}) where sym
     getfield(vi.metadata, sym).dists[getidx(vi, vn)]
 end
@@ -351,7 +351,7 @@ end
 
 Returns the value(s) of `vn`. The values may or may not be transformed to Eucledian space.
 """
-getval(vi::UntypedVarInfo, vn::VarName) = view(vi.vals, getrange(vi, vn))
+getval(vi::UntypedVarInfo, vn::VarName) = view(vi.metadata.vals, getrange(vi, vn))
 function getval(vi::TypedVarInfo, vn::VarName{sym}) where sym
     view(getfield(vi.metadata, sym).vals, getrange(vi, vn))
 end
@@ -362,7 +362,7 @@ end
 Sets the value(s) of `vn` in `vi.metadata` to `val`. The values may or may not be
 transformed to Eucledian space.
 """
-setval!(vi::UntypedVarInfo, val, vn::VarName) = vi.vals[getrange(vi, vn)] = val
+setval!(vi::UntypedVarInfo, val, vn::VarName) = vi.metadata.vals[getrange(vi, vn)] = val
 function setval!(vi::TypedVarInfo, val, vn::VarName{sym}) where sym
     getfield(vi.metadata, sym).vals[getrange(vi, vn)] = val
 end
@@ -373,7 +373,7 @@ end
 Returns all the value(s) of `vns`. The values may or may not be transformed to Eucledian
 space.
 """
-getval(vi::UntypedVarInfo, vns::Vector{<:VarName}) = view(vi.vals, getranges(vi, vns))
+getval(vi::UntypedVarInfo, vns::Vector{<:VarName}) = view(vi.metadata.vals, getranges(vi, vns))
 function getval(vi::TypedVarInfo, vns::Vector{VarName{sym}}) where sym
     view(getfield(vi.metadata, sym).vals, getranges(vi, vns))
 end
@@ -384,7 +384,7 @@ end
 Returns the values of all the variables in `vi`. The values may or may not be
 transformed to Eucledian space.
 """
-getall(vi::UntypedVarInfo) = vi.vals
+getall(vi::UntypedVarInfo) = vi.metadata.vals
 getall(vi::TypedVarInfo) = vcat(_getall(vi.metadata)...)
 @inline function _getall(metadata::NamedTuple{names}) where {names}
     # Check if NamedTuple is empty and end recursion
@@ -401,7 +401,7 @@ end
 Sets the values of all the variables in `vi` to `val`. The values may or may not be
 transformed to Eucledian space.
 """
-setall!(vi::UntypedVarInfo, val) = vi.vals .= val
+setall!(vi::UntypedVarInfo, val) = vi.metadata.vals .= val
 setall!(vi::TypedVarInfo, val) = _setall!(vi.metadata, val)
 @inline function _setall!(metadata::NamedTuple{names}, val, start = 0) where {names}
     # Check if `metadata` is empty and end recursion
@@ -427,7 +427,7 @@ getsym(vn::VarName{sym}) where sym = sym
 
 Returns the set of sampler selectors associated with `vn` in `vi`.
 """
-getgid(vi::UntypedVarInfo, vn::VarName) = vi.gids[getidx(vi, vn)]
+getgid(vi::UntypedVarInfo, vn::VarName) = vi.metadata.gids[getidx(vi, vn)]
 function getgid(vi::TypedVarInfo, vn::VarName{sym}) where sym
     getfield(vi.metadata, sym).gids[getidx(vi, vn)]
 end
@@ -446,14 +446,14 @@ end
 
 Returns a tuple of the unique symbols of random variables sampled in `vi`.
 """
-syms(vi::UntypedVarInfo) = Tuple(unique!(map(vn -> vn.sym, vi.vns)))  # get all symbols
+syms(vi::UntypedVarInfo) = Tuple(unique!(map(vn -> vn.sym, vi.metadata.vns)))  # get all symbols
 syms(vi::TypedVarInfo) = keys(vi.metadata)
 
 # Get all indices of variables belonging to SampleFromPrior:
 #   if the gid/selector of a var is an empty Set, then that var is assumed to be assigned to
 #   the SampleFromPrior sampler
 function _getidcs(vi::UntypedVarInfo, ::SampleFromPrior)
-    return filter(i -> isempty(vi.gids[i]) , 1:length(vi.gids))
+    return filter(i -> isempty(vi.metadata.gids[i]) , 1:length(vi.metadata.gids))
 end
 # Get a NamedTuple of all the indices belonging to SampleFromPrior, one for each symbol
 function _getidcs(vi::TypedVarInfo, ::SampleFromPrior)
@@ -490,8 +490,8 @@ function _getidcs(vi::AbstractVarInfo, spl::Sampler)
     end
 end
 function _getidcs(vi::UntypedVarInfo, s::Selector, space::Tuple)
-    filter(i -> (s in vi.gids[i] || isempty(vi.gids[i])) &&
-        (isempty(space) || in(vi.vns[i], space)), 1:length(vi.gids))
+    filter(i -> (s in vi.metadata.gids[i] || isempty(vi.metadata.gids[i])) &&
+        (isempty(space) || in(vi.metadata.vns[i], space)), 1:length(vi.metadata.gids))
 end
 function _getidcs(vi::TypedVarInfo, s::Selector, space::Tuple)
     return _getidcs(vi.metadata, s, space)
@@ -514,7 +514,7 @@ end
 end
 
 # Get all vns of variables belonging to spl
-_getvns(vi::UntypedVarInfo, spl::AbstractSampler) = view(vi.vns, _getidcs(vi, spl))
+_getvns(vi::UntypedVarInfo, spl::AbstractSampler) = view(vi.metadata.vns, _getidcs(vi, spl))
 function _getvns(vi::TypedVarInfo, spl::AbstractSampler)
     # Get a NamedTuple of the indices of variables belonging to `spl`, one entry for each symbol
     idcs = _getidcs(vi, spl)
@@ -552,7 +552,7 @@ end
     _getranges(vi, _getidcs(vi, s, space))
 end
 @inline function _getranges(vi::UntypedVarInfo, idcs::Vector{Int})
-    mapreduce(i -> vi.ranges[i], vcat, idcs, init=Int[])
+    mapreduce(i -> vi.metadata.ranges[i], vcat, idcs, init=Int[])
 end
 @inline _getranges(vi::TypedVarInfo, idcs::NamedTuple) = _getranges(vi.metadata, idcs)
 @inline function _getranges(metadata::NamedTuple{names}, idcs::NamedTuple) where {names}
@@ -574,7 +574,7 @@ end
 Sets `vn`'s value for `flag` to `true` in `vi`.
 """
 function set_flag!(vi::UntypedVarInfo, vn::VarName, flag::String)
-    return vi.flags[flag][getidx(vi, vn)] = true
+    return vi.metadata.flags[flag][getidx(vi, vn)] = true
 end
 function set_flag!(vi::TypedVarInfo, vn::VarName{sym}, flag::String) where {sym}
     return getfield(vi.metadata, sym).flags[flag][getidx(vi, vn)] = true
@@ -718,27 +718,27 @@ function TypedVarInfo(vi::UntypedVarInfo)
     syms_tuple = Tuple(syms(vi))
     for s in syms_tuple
         # Find all indices in `vns` with symbol `s`
-        inds = findall(vn -> vn.sym == s, vi.vns)
+        inds = findall(vn -> vn.sym == s, vi.metadata.vns)
         n = length(inds)
         # New `vns`
-        sym_vns = getindex.((vi.vns,), inds)
+        sym_vns = getindex.((vi.metadata.vns,), inds)
         # New idcs
         sym_idcs = Dict(a => i for (i, a) in enumerate(sym_vns))
         # New dists
-        sym_dists = getindex.((vi.dists,), inds)
+        sym_dists = getindex.((vi.metadata.dists,), inds)
         # New gids, can make a resizeable FillArray
-        sym_gids = getindex.((vi.gids,), inds)
+        sym_gids = getindex.((vi.metadata.gids,), inds)
         @assert length(sym_gids) <= 1 ||
             all(x -> x == sym_gids[1], @view sym_gids[2:end])
         # New orders
-        sym_orders = getindex.((vi.orders,), inds)
+        sym_orders = getindex.((vi.metadata.orders,), inds)
         # New flags
-        sym_flags = Dict(a => vi.flags[a][inds] for a in keys(vi.flags))
+        sym_flags = Dict(a => vi.metadata.flags[a][inds] for a in keys(vi.metadata.flags))
 
         # Extract new ranges and vals
-        _ranges = getindex.((vi.ranges,), inds)
+        _ranges = getindex.((vi.metadata.ranges,), inds)
         # `copy.()` is a workaround to reduce the eltype from Real to Int or Float64
-        _vals = [copy.(vi.vals[_ranges[i]]) for i in 1:n]
+        _vals = [copy.(vi.metadata.vals[_ranges[i]]) for i in 1:n]
         sym_ranges = Vector{eltype(_ranges)}(undef, n)
         start = 0
         for i in 1:n
@@ -751,12 +751,13 @@ function TypedVarInfo(vi::UntypedVarInfo)
                                     sym_dists, sym_gids, sym_orders, sym_flags)
             )
     end
-    logp = vi.logp
-    num_produce = vi.num_produce
+    logp = vi.logp[]
+    num_produce = vi.num_produce[]
     nt = NamedTuple{syms_tuple}(Tuple(new_metas))
     return VarInfo(nt, Ref(logp), Ref(num_produce))
 end
 
+#=
 function getproperty(vi::VarInfo, f::Symbol)
     f === :logp && return getfield(vi, :logp)[]
     f === :num_produce && return getfield(vi, :num_produce)[]
@@ -764,10 +765,11 @@ function getproperty(vi::VarInfo, f::Symbol)
     return getfield(getfield(vi, :metadata), f)
 end
 function setproperty!(vi::VarInfo, f::Symbol, x)
-    f === :logp && return getfield(vi, :logp)[] = x
+    f === :logp && return getfield(vi, :logp)[] = convert(typeof(vi.logp), x)
     f === :num_produce && return getfield(vi, :num_produce)[] = x
     return setfield!(vi, f, x)
 end
+=#
 
 """
 `empty!(vi::VarInfo)`
@@ -778,8 +780,8 @@ zeros. This is useful when using a sampling algorithm that assumes an empty
 """
 function empty!(vi::VarInfo)
     _empty!(vi.metadata)
-    vi.logp = 0
-    vi.num_produce = 0
+    vi.logp[] = 0
+    vi.num_produce[] = 0
     return vi
 end
 @inline _empty!(metadata::Metadata) = empty!(metadata)
@@ -800,14 +802,14 @@ end
 
 Returns an iterator over `vi.vns`.
 """
-keys(vi::UntypedVarInfo) = keys(vi.idcs)
+keys(vi::UntypedVarInfo) = keys(vi.metadata.idcs)
 
 """
 `setgid!(vi::VarInfo, gid::Selector, vn::VarName)`
 
 Adds `gid` to the set of sampler selectors associated with `vn` in `vi`.
 """
-setgid!(vi::UntypedVarInfo, gid::Selector, vn::VarName) = push!(vi.gids[getidx(vi, vn)], gid)
+setgid!(vi::UntypedVarInfo, gid::Selector, vn::VarName) = push!(vi.metadata.gids[getidx(vi, vn)], gid)
 function setgid!(vi::TypedVarInfo, gid::Selector, vn::VarName{sym}) where sym
     push!(getfield(vi.metadata, sym).gids[getidx(vi, vn)], gid)
 end
@@ -826,7 +828,7 @@ istrans(vi::AbstractVarInfo, vn::VarName) = is_flagged(vi, vn, "trans")
 Returns the log of the joint probability of the observed data and parameters sampled in
 `vi`.
 """
-getlogp(vi::AbstractVarInfo) = vi.logp
+getlogp(vi::AbstractVarInfo) = vi.logp[]
 
 """
 `setlogp!(vi::VarInfo, logp::Real)`
@@ -834,7 +836,7 @@ getlogp(vi::AbstractVarInfo) = vi.logp
 Sets the log of the joint probability of the observed data and parameters sampled in
 `vi` to `logp`.
 """
-setlogp!(vi::AbstractVarInfo, logp::Real) = vi.logp = logp
+@inline setlogp!(vi::AbstractVarInfo, logp::Real) = getfield(vi, :logp)[] = logp
 
 """
 `acclogp!(vi::VarInfo, logp::Real)`
@@ -842,7 +844,7 @@ setlogp!(vi::AbstractVarInfo, logp::Real) = vi.logp = logp
 Adds `logp` to the value of the log of the joint probability of the observed data and
 parameters sampled in `vi`.
 """
-acclogp!(vi::AbstractVarInfo, logp::Real) = vi.logp += logp
+acclogp!(vi::AbstractVarInfo, logp::Real) = getfield(vi, :logp)[] += logp
 
 """
 `resetlogp!(vi::VarInfo)`
@@ -857,7 +859,7 @@ resetlogp!(vi::AbstractVarInfo) = setlogp!(vi, 0.0)
 
 Returns true if `vi` is empty and false otherwise.
 """
-isempty(vi::UntypedVarInfo) = isempty(vi.idcs)
+isempty(vi::UntypedVarInfo) = isempty(vi.metadata.idcs)
 isempty(vi::TypedVarInfo) = _isempty(vi.metadata)
 @inline function _isempty(metadata::NamedTuple{names}) where {names}
     # Checks if `metadata` is empty to end the recursion
@@ -1066,7 +1068,7 @@ end
 
 Returns `true` if `vn` has been sampled in `vi` and `false` otherwise.
 """
-haskey(vi::UntypedVarInfo, vn::VarName) = haskey(vi.idcs, vn)
+haskey(vi::UntypedVarInfo, vn::VarName) = haskey(vi.metadata.idcs, vn)
 function haskey(vi::TypedVarInfo, vn::VarName{sym}) where {sym}
     metadata = vi.metadata
     Tmeta = typeof(metadata)
@@ -1078,14 +1080,14 @@ function show(io::IO, vi::UntypedVarInfo)
     /=======================================================================
     | VarInfo
     |-----------------------------------------------------------------------
-    | Varnames  :   $(string(vi.vns))
-    | Range     :   $(vi.ranges)
-    | Vals      :   $(vi.vals)
-    | GIDs      :   $(vi.gids)
-    | Orders    :   $(vi.orders)
-    | Logp      :   $(vi.logp)
-    | #produce  :   $(vi.num_produce)
-    | flags     :   $(vi.flags)
+    | Varnames  :   $(string(vi.metadata.vns))
+    | Range     :   $(vi.metadata.ranges)
+    | Vals      :   $(vi.metadata.vals)
+    | GIDs      :   $(vi.metadata.gids)
+    | Orders    :   $(vi.metadata.orders)
+    | Logp      :   $(vi.logp[])
+    | #produce  :   $(vi.num_produce[])
+    | flags     :   $(vi.metadata.flags)
     \\=======================================================================
     """
     print(io, vi_str)
@@ -1131,16 +1133,16 @@ function push!(vi::UntypedVarInfo, vn::VarName, r::Any, dist::Distribution, gids
 
     val = vectorize(dist, r)
 
-    vi.idcs[vn] = length(vi.idcs) + 1
-    push!(vi.vns, vn)
-    l = length(vi.vals); n = length(val)
-    push!(vi.ranges, l+1:l+n)
-    append!(vi.vals, val)
-    push!(vi.dists, dist)
-    push!(vi.gids, gidset)
-    push!(vi.orders, vi.num_produce)
-    push!(vi.flags["del"], false)
-    push!(vi.flags["trans"], false)
+    vi.metadata.idcs[vn] = length(vi.metadata.idcs) + 1
+    push!(vi.metadata.vns, vn)
+    l = length(vi.metadata.vals); n = length(val)
+    push!(vi.metadata.ranges, l+1:l+n)
+    append!(vi.metadata.vals, val)
+    push!(vi.metadata.dists, dist)
+    push!(vi.metadata.gids, gidset)
+    push!(vi.metadata.orders, vi.num_produce[])
+    push!(vi.metadata.flags["del"], false)
+    push!(vi.metadata.flags["trans"], false)
 
     return vi
 end
@@ -1164,7 +1166,7 @@ function push!(
     append!(meta.vals, val)
     push!(meta.dists, dist)
     push!(meta.gids, gidset)
-    push!(meta.orders, vi.num_produce)
+    push!(meta.orders, vi.num_produce[])
     push!(meta.flags["del"], false)
     push!(meta.flags["trans"], false)
 
@@ -1178,15 +1180,15 @@ Sets the `order` of `vn` in `vi` to `index`, where `order` is the number of `obs
 statements run before sampling `vn`.
 """
 function setorder!(vi::UntypedVarInfo, vn::VarName, index::Int)
-    if vi.orders[vi.idcs[vn]] != index
-        vi.orders[vi.idcs[vn]] = index
+    if vi.metadata.orders[vi.metadata.idcs[vn]] != index
+        vi.metadata.orders[vi.metadata.idcs[vn]] = index
     end
     return vi
 end
 function setorder!(mvi::TypedVarInfo, vn::VarName{sym}, index::Int) where {sym}
     vi = getfield(mvi.metadata, sym)
-    if vi.orders[vi.idcs[vn]] != index
-        vi.orders[vi.idcs[vn]] = index
+    if vi.metadata.orders[vi.metadata.idcs[vn]] != index
+        vi.metadata.orders[vi.metadata.idcs[vn]] = index
     end
     return mvi
 end
@@ -1201,7 +1203,7 @@ end
 Returns `true` if `vn` has a true value for `flag` in `vi`, and `false` otherwise.
 """
 function is_flagged(vi::UntypedVarInfo, vn::VarName, flag::String)
-    return vi.flags[flag][getidx(vi, vn)]
+    return vi.metadata.flags[flag][getidx(vi, vn)]
 end
 function is_flagged(vi::TypedVarInfo, vn::VarName{sym}, flag::String) where {sym}
     return getfield(vi.metadata, sym).flags[flag][getidx(vi, vn)]
@@ -1213,7 +1215,7 @@ end
 Sets `vn`'s value for `flag` to `false` in `vi`.
 """
 function unset_flag!(vi::UntypedVarInfo, vn::VarName, flag::String)
-    return vi.flags[flag][getidx(vi, vn)] = false
+    return vi.metadata.flags[flag][getidx(vi, vn)] = false
 end
 function unset_flag!(vi::TypedVarInfo, vn::VarName{sym}, flag::String) where {sym}
     return getfield(vi.metadata, sym).flags[flag][getidx(vi, vn)] = false
@@ -1227,14 +1229,14 @@ Sets the `"del"` flag of variables in `vi` with `order > vi.num_produce` to `tru
 function set_retained_vns_del_by_spl!(vi::UntypedVarInfo, spl::Sampler)
     # Get the indices of `vns` that belong to `spl` as a vector
     gidcs = _getidcs(vi, spl)
-    if vi.num_produce == 0
+    if vi.num_produce[] == 0
         for i = length(gidcs):-1:1
-          vi.flags["del"][gidcs[i]] = true
+          vi.metadata.flags["del"][gidcs[i]] = true
         end
     else
-        for i in 1:length(vi.orders)
-            if i in gidcs && vi.orders[i] > vi.num_produce
-                vi.flags["del"][i] = true
+        for i in 1:length(vi.metadata.orders)
+            if i in gidcs && vi.metadata.orders[i] > vi.num_produce[]
+                vi.metadata.flags["del"][i] = true
             end
         end
     end
@@ -1243,7 +1245,7 @@ end
 function set_retained_vns_del_by_spl!(vi::TypedVarInfo, spl::Sampler)
     # Get the indices of `vns` that belong to `spl` as a NamedTuple, one entry for each symbol
     gidcs = _getidcs(vi, spl)
-    return _set_retained_vns_del_by_spl!(vi.metadata, gidcs, vi.num_produce)
+    return _set_retained_vns_del_by_spl!(vi.metadata, gidcs, vi.num_produce[])
 end
 @inline function _set_retained_vns_del_by_spl!(metadata::NamedTuple{names}, gidcs, num_produce) where {names}
     # Check if `metadata` is empty to end the recursion

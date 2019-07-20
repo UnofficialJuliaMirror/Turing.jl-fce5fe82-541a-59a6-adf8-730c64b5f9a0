@@ -49,7 +49,7 @@ function generate_observe(observation, dist, model_info)
             isa($dist, Distribution)
         end
         @assert isdist @error($(wrong_dist_errormsg(@__LINE__)))
-        $vi.logp += Turing.observe($sampler, $dist, $observation, $vi)
+        $vi.logp[] += Turing.observe($sampler, $dist, $observation, $vi)
     end
 end
 
@@ -100,7 +100,7 @@ function generate_assume(var::Union{Symbol, Expr}, dist, model_info)
         else
             Turing.assume($sampler, $dist, $varname, $vi)
         end
-        $vi.logp += $lp
+        $vi.logp[] += $lp
     end
 end
 
@@ -434,7 +434,7 @@ function build_output(model_info)
                 )
 
                 $unwrap_data_expr
-                $vi_name.logp = zero(Real)
+                $vi_name.logp[] = zero(Real)
                 $main_body
             end
             $model_name = Turing.Model{$pvars_name, $dvars_name}($inner_function_name, $data_name, $defaults_name)

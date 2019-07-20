@@ -81,7 +81,7 @@ priors = 0 # See "new grammar" test.
         # unit test model macro
         expr = Turing.generate_observe(:x, :y, model_info)
         @test expr.head == :block
-        @test :(vi.logp += Turing.observe(sampler, y, x, vi)) in expr.args
+        @test :(vi.logp[] += Turing.observe(sampler, y, x, vi)) in expr.args
 
         @model testmodel_comp(x, y) = begin
             s ~ InverseGamma(2,3)

@@ -28,9 +28,9 @@ vi.flags["trans"] = [true, false]
 
 # Define a function to optimize.
 function evaluate(m1, m2)
-    vi.vals .= [m1, m2]
+    vi.metadata.vals .= [m1, m2]
     model(vi, Turing.SampleFromPrior())
-    -vi.logp
+    -vi.logp[]
 end
 
 function plot_sampler(chain)

@@ -65,8 +65,8 @@ include(dir*"/test/test_utils/AllUtils.jl")
 
         function test_base!(vi)
             empty!(vi)
-            @test vi.logp == 0
-            @test vi.num_produce == 0
+            @test vi.logp[] == 0
+            @test vi.num_produce[] == 0
 
             vn = VarName(gensym(), :x, "", 1)
             dist = Normal(0, 1)
@@ -170,15 +170,15 @@ include(dir*"/test/test_utils/AllUtils.jl")
         vi = VarInfo()
         model(vi, SampleFromUniform())
 
-        @test all(i->~istrans(vi, vi.vns[i]), 1:length(vi.vns))
+        @test all(i->~istrans(vi, vi.metadata.vns[i]), 1:length(vi.metadata.vns))
         alg = HMC(1000, 0.1, 5)
         spl = Sampler(alg)
-        v = copy(vi.vals)
+        v = copy(vi.metadata.vals)
         link!(vi, spl)
-        @test all(i->istrans(vi, vi.vns[i]), 1:length(vi.vns))
+        @test all(i->istrans(vi, vi.metadata.vns[i]), 1:length(vi.metadata.vns))
         invlink!(vi, spl)
-        @test all(i->~istrans(vi, vi.vns[i]), 1:length(vi.vns))
-        @test vi.vals == v
+        @test all(i->~istrans(vi, vi.metadata.vns[i]), 1:length(vi.metadata.vns))
+        @test vi.metadata.vals == v
 
         vi = TypedVarInfo(vi)
         alg = HMC(1000, 0.1, 5)
@@ -205,9 +205,9 @@ include(dir*"/test/test_utils/AllUtils.jl")
         gid2 = Selector(2, :HMC)
 
         push!(vi, vn, r, dist, gid1)
-        @test vi.gids[vi.idcs[vn]] == Set([gid1])
+        @test vi.metadata.gids[vi.metadata.idcs[vn]] == Set([gid1])
         setgid!(vi, gid2, vn)
-        @test vi.gids[vi.idcs[vn]] == Set([gid1, gid2])
+        @test vi.metadata.gids[vi.metadata.idcs[vn]] == Set([gid1, gid2])
 
         vi = empty!(TypedVarInfo(vi))
         push!(vi, vn, r, dist, gid1)
@@ -225,7 +225,7 @@ include(dir*"/test/test_utils/AllUtils.jl")
                 unset_flag!(vi, vn, "del")
                 r = rand(dist)
                 vi[vn] = Turing.vectorize(dist, r)
-                Turing.setorder!(vi, vn, vi.num_produce)
+                Turing.setorder!(vi, vn, vi.num_produce[])
                 r
             else
                 Turing.updategid!(vi, vn, spl)
@@ -250,19 +250,19 @@ include(dir*"/test/test_utils/AllUtils.jl")
 
         # First iteration, variables are added to vi
         # variables samples in order: z1,a1,z2,a2,z3
-        vi.num_produce += 1
+        vi.num_produce[] += 1
         randr(vi, vn_z1, dists[1], spl1)
         randr(vi, vn_a1, dists[2], spl1)
-        vi.num_produce += 1
+        vi.num_produce[] += 1
         randr(vi, vn_b, dists[2], spl2)
         randr(vi, vn_z2, dists[1], spl1)
         randr(vi, vn_a2, dists[2], spl1)
-        vi.num_produce += 1
+        vi.num_produce[] += 1
         randr(vi, vn_z3, dists[1], spl1)
-        @test vi.orders == [1, 1, 2, 2, 2, 3]
-        @test vi.num_produce == 3
+        @test vi.metadata.orders == [1, 1, 2, 2, 2, 3]
+        @test vi.num_produce[] == 3
 
-        vi.num_produce = 0
+        vi.num_produce[] = 0
         set_retained_vns_del_by_spl!(vi, spl1)
         @test is_flagged(vi, vn_z1, "del")
         @test is_flagged(vi, vn_a1, "del")
@@ -270,35 +270,35 @@ include(dir*"/test/test_utils/AllUtils.jl")
         @test is_flagged(vi, vn_a2, "del")
         @test is_flagged(vi, vn_z3, "del")
 
-        vi.num_produce += 1
+        vi.num_produce[] += 1
         randr(vi, vn_z1, dists[1], spl1)
         randr(vi, vn_a1, dists[2], spl1)
-        vi.num_produce += 1
+        vi.num_produce[] += 1
         randr(vi, vn_z2, dists[1], spl1)
-        vi.num_produce += 1
+        vi.num_produce[] += 1
         randr(vi, vn_z3, dists[1], spl1)
         randr(vi, vn_a2, dists[2], spl1)
         @test vi.orders == [1, 1, 2, 2, 3, 3]
-        @test vi.num_produce == 3
+        @test vi.num_produce[] == 3
 
         vi = empty!(TypedVarInfo(vi))
         # First iteration, variables are added to vi
         # variables samples in order: z1,a1,z2,a2,z3
-        vi.num_produce += 1
+        vi.num_produce[] += 1
         randr(vi, vn_z1, dists[1], spl1)
         randr(vi, vn_a1, dists[2], spl1)
-        vi.num_produce += 1
+        vi.num_produce[] += 1
         randr(vi, vn_b, dists[2], spl2)
         randr(vi, vn_z2, dists[1], spl1)
         randr(vi, vn_a2, dists[2], spl1)
-        vi.num_produce += 1
+        vi.num_produce[] += 1
         randr(vi, vn_z3, dists[1], spl1)
         @test vi.metadata.z.orders == [1, 2, 3]
         @test vi.metadata.a.orders == [1, 2]
         @test vi.metadata.b.orders == [2]
-        @test vi.num_produce == 3
+        @test vi.num_produce[] == 3
 
-        vi.num_produce = 0
+        vi.num_produce[] = 0
         set_retained_vns_del_by_spl!(vi, spl1)
         @test is_flagged(vi, vn_z1, "del")
         @test is_flagged(vi, vn_a1, "del")
@@ -306,18 +306,18 @@ include(dir*"/test/test_utils/AllUtils.jl")
         @test is_flagged(vi, vn_a2, "del")
         @test is_flagged(vi, vn_z3, "del")
 
-        vi.num_produce += 1
+        vi.num_produce[] += 1
         randr(vi, vn_z1, dists[1], spl1)
         randr(vi, vn_a1, dists[2], spl1)
-        vi.num_produce += 1
+        vi.num_produce[] += 1
         randr(vi, vn_z2, dists[1], spl1)
-        vi.num_produce += 1
+        vi.num_produce[] += 1
         randr(vi, vn_z3, dists[1], spl1)
         randr(vi, vn_a2, dists[2], spl1)
         @test vi.metadata.z.orders == [1, 2, 3]
         @test vi.metadata.a.orders == [1, 3]
         @test vi.metadata.b.orders == [2]
-        @test vi.num_produce == 3
+        @test vi.num_produce[] == 3
     end
     @turing_testset "replay" begin
         # Generate synthesised data
@@ -465,11 +465,11 @@ include(dir*"/test/test_utils/AllUtils.jl")
         vi = VarInfo()
         g_demo_f(vi, SampleFromPrior())
         vi, _ = Turing.Inference.step(g_demo_f, pg, vi)
-        @test vi.gids == [Set([pg.selector]), Set([pg.selector]), Set([pg.selector]),
+        @test vi.metadata.gids == [Set([pg.selector]), Set([pg.selector]), Set([pg.selector]),
                         Set{Selector}(), Set{Selector}()]
 
         g_demo_f(vi, hmc)
-        @test vi.gids == [Set([pg.selector]), Set([pg.selector]), Set([pg.selector]),
+        @test vi.metadata.gids == [Set([pg.selector]), Set([pg.selector]), Set([pg.selector]),
                         Set([hmc.selector]), Set([hmc.selector])]
 
         g = Turing.Sampler(Gibbs(1000, PG(10, 2, :x, :y, :z), HMC(1, 0.4, 8, :w, :u)), g_demo_f)

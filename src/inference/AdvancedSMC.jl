@@ -42,7 +42,7 @@ end
 
 function step(model, spl::Sampler{<:SMC}, vi::VarInfo)
     particles = ParticleContainer{Trace}(model)
-    vi.num_produce = 0;  # Reset num_produce before new sweep\.
+    vi.num_produce[] = 0;  # Reset num_produce before new sweep\.
     set_retained_vns_del_by_spl!(vi, spl)
     resetlogp!(vi)
 
@@ -125,7 +125,7 @@ step(model, spl::Sampler{<:PG}, vi::VarInfo, _) = step(model, spl, vi)
 function step(model, spl::Sampler{<:PG}, vi::VarInfo)
     particles = ParticleContainer{Trace{typeof(spl), typeof(vi), typeof(model)}}(model)
 
-    vi.num_produce = 0;  # Reset num_produce before new sweep\.
+    vi.num_produce[] = 0;  # Reset num_produce before new sweep\.
     ref_particle = isempty(vi) ?
                   nothing :
                   forkr(Trace(model, spl, vi))
@@ -231,7 +231,7 @@ function assume(  spl::Sampler{T},
             r = rand(dist)
             vi[vn] = vectorize(dist, r)
             setgid!(vi, spl.selector, vn)
-            setorder!(vi, vn, vi.num_produce)
+            setorder!(vi, vn, vi.num_produce[])
         else
             updategid!(vi, vn, spl)
             r = vi[vn]
@@ -534,7 +534,7 @@ function step(model, spl::Sampler{<:IPMCMC}, VarInfos::Array{VarInfo}, is_first:
 
     # Run SMC & CSMC nodes
     for j in 1:spl.alg.n_nodes
-        VarInfos[j].num_produce = 0
+        VarInfos[j].num_produce[] = 0
         VarInfos[j] = step(model, spl.info[:samplers][j], VarInfos[j])[1]
         log_zs[j] = spl.info[:samplers][j].info[:logevidence][end]
     end

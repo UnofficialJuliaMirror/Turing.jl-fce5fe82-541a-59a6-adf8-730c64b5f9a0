@@ -107,11 +107,11 @@ function gradient_logp_forward(
     sampler::AbstractSampler=SampleFromPrior(),
 )
     # Define function to compute log joint.
-    logp_old = vi.logp
+    logp_old = vi.logp[]
     function f(θ)
         new_vi = VarInfo(vi, sampler, θ)
-        logp = runmodel!(model, new_vi, sampler).logp
-        vi.logp = ForwardDiff.value(logp)
+        logp = runmodel!(model, new_vi, sampler).logp[]
+        vi.logp[] = ForwardDiff.value(logp)
         return logp
     end
 
@@ -120,8 +120,8 @@ function gradient_logp_forward(
     chunk = ForwardDiff.Chunk(min(length(θ), chunk_size))
     config = ForwardDiff.GradientConfig(f, θ, chunk)
     ∂l∂θ = ForwardDiff.gradient!(similar(θ), f, θ, config)
-    l = vi.logp
-    vi.logp = logp_old
+    l = vi.logp[]
+    vi.logp[] = logp_old
 
     return l, ∂l∂θ
 end
@@ -145,13 +145,13 @@ function gradient_logp_reverse(
     sampler::AbstractSampler=SampleFromPrior(),
     backend::ADBackend = TrackerAD()
 )
-    logp_old = vi.logp
+    logp_old = vi.logp[]
 
     # Specify objective function.
     function f(θ)
         new_vi = VarInfo(vi, sampler, θ)
-        logp = runmodel!(model, new_vi, sampler).logp
-        vi.logp = Tracker.data(logp)
+        logp = runmodel!(model, new_vi, sampler).logp[]
+        vi.logp[] = Tracker.data(logp)
         return logp
     end
 
@@ -164,7 +164,7 @@ function gradient_logp_reverse(
         ∂l∂θ = ȳ(1)[1]
     end
     # Remove tracking info from variables in model (because mutable state).
-    vi.logp = logp_old
+    vi.logp[] = logp_old
 
     # Return non-tracked gradient value
     return l, ∂l∂θ

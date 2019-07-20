@@ -396,7 +396,7 @@ function step(
     lj_func = gen_logπ(vi, spl, model)
     metric = gen_metric(length(vi[spl]), spl)
 
-    θ, lj = vi[spl], vi.logp
+    θ, lj = vi[spl], vi.logp[]
 
     θ_new, lj_new, is_accept, α = hmc_step(θ, lj_func, grad_func, ϵ, spl.alg, metric)
 
@@ -515,10 +515,8 @@ gradient at `θ` for the model specified by `(vi, spl, model)`.
 """
 function gen_∂logπ∂θ(vi::VarInfo, spl::Sampler, model)
     function ∂logπ∂θ(x)::Vector{Float64}
-        x_old, lj_old = vi[spl], vi.logp
-        _, deriv = gradient_logp(x, vi, model, spl)
-        vi[spl] = x_old
-        setlogp!(vi, lj_old)
+        new_vi = VarInfo(vi, spl, x)
+        _, deriv = gradient_logp(x, new_vi, model, spl)
         return deriv
     end
     return ∂logπ∂θ
@@ -532,12 +530,9 @@ Generate a function that takes `θ` and returns logpdf at `θ` for the model spe
 """
 function gen_logπ(vi::VarInfo, spl::Sampler, model)
     function logπ(x)::Float64
-        x_old, lj_old = vi[spl], vi.logp
-        vi[spl] = x
-        runmodel!(model, vi, spl)
-        lj = vi.logp
-        vi[spl] = x_old
-        setlogp!(vi, lj_old)
+        new_vi = VarInfo(vi, spl, x)
+        runmodel!(model, new_vi, spl)
+        lj = new_vi.logp[]
         return lj
     end
     return logπ
