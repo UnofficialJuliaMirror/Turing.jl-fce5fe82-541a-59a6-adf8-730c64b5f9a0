@@ -314,7 +314,12 @@ end
 
 # Tracker's implementation of ldiv isn't good. We'll use Zygote's instead.
 const TrackedVecOrMat = Union{Tracker.TrackedVector, Tracker.TrackedMatrix}
-zygote_ldiv(A::AbstractMatrix, B::AbstractVecOrMat) = A \ B
+function zygote_ldiv(A::AbstractMatrix, B::AbstractVecOrMat)
+    T = typeof((zero(eltype(A))*zero(eltype(B)) + zero(eltype(A))*zero(eltype(B)))/one(eltype(A)))
+    BB = similar(B, T)
+    copyto!(BB, B)
+    ldiv!(A, BB)
+end
 function zygote_ldiv(A::Tracker.TrackedMatrix, B::TrackedVecOrMat)
     return Tracker.track(zygote_ldiv, A, B)
 end
@@ -366,8 +371,12 @@ function Distributions.logpdf(d::TuringMvNormal, x::AbstractVector)
 end
 
 function Distributions.logpdf(d::MvNormal, x::Union{Tracker.TrackedVector, Tracker.TrackedMatrix})
-    logpdf(TuringMvNormal(d.μ, d.Σ.chol), x)
+    logpdf(TuringMvNormal(d.μ, getchol(d.Σ)), x)
 end
+
+getchol(m::PDMats.AbstractPDMat) = m.chol
+getchol(m::PDMats.PDiagMat) = cholesky(Diagonal(m.diag))
+getchol(m::PDMats.ScalMat) = cholesky(Diagonal(fill(m.value, m.dim)))
 
 # Deal with ambiguities.
 function Base.:*(
