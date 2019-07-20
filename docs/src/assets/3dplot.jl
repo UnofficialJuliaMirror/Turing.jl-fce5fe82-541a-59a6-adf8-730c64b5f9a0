@@ -24,7 +24,7 @@ y = 2
 model = gdemo(x, y)
 vi = Turing.VarInfo()
 model(vi, Turing.SampleFromPrior())
-vi.flags["trans"] = [true, false]
+vi.metadata.flags["trans"] = [true, false]
 
 # Define a function to optimize.
 function evaluate(m1, m2)
