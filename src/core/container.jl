@@ -43,8 +43,8 @@ function Trace(m::Model, spl::T, vi::AbstractVarInfo) where {T <: AbstractSample
     res = Trace{T}(m, spl, deepcopy(vi));
     # CTask(()->f());
     res.vi.num_produce = 0
-    res.task = CTask( () -> begin vi_new=m(vi, spl); produce(Val{:done}); vi_new; end )
-    if isa(res.task.storage, Nothing)
+    res.task = CTask(() -> m(vi, spl))
+    if res.task.storage isa Nothing
         res.task.storage = IdDict()
     end
     res.task.storage[:turing_trace] = res # create a backward reference in task_local_storage
@@ -52,7 +52,14 @@ function Trace(m::Model, spl::T, vi::AbstractVarInfo) where {T <: AbstractSample
 end
 
 # step to the next observe statement, return log likelihood
-Libtask.consume(t::Trace) = (t.vi.num_produce += 1; consume(t.task))
+function Libtask.consume(t::Trace)
+    t.vi.num_produce += 1
+    s = consume(t.task)
+    if istaskdone(t.task)
+        s = Val{:done}
+    end
+    return s
+end
 
 # Task copying version of fork for Trace.
 function fork(trace :: Trace, is_ref :: Bool = false)
@@ -166,14 +173,16 @@ function Libtask.consume(pc :: ParticleContainer)
         elseif score == Val{:done}
             num_done += 1
         else
-            error("[consume]: error in running particle filter.")
+            error("[consume]: error in running particle filter: likelihood=$(score)")
         end
     end
 
     if num_done == length(pc)
         res = Val{:done}
     elseif num_done != 0
-        error("[consume]: mis-aligned execution traces, num_particles= $(n), num_done=$(num_done).")
+        # The posterior for models with random number of observations is not well-defined.
+        error("[consume]: mis-aligned execution traces, num_particles= $(n),
+            num_done=$(num_done). Please make sure the number of observations is NOT random.")
     else
         # update incremental likelihoods
         _, z2      = weights(pc)
