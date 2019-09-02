@@ -31,8 +31,7 @@ end
 # NOTE: this function is called by `forkr`
 function Trace(f::Function, m::Model, spl::T, vi::AbstractVarInfo) where {T <: AbstractSampler}
     res = Trace{T}(m, spl, deepcopy(vi));
-    # CTask(()->f());
-    res.task = CTask( () -> begin res=f(); produce(Val{:done}); res; end )
+    res.task = CTask(() -> m(vi, spl)) # CTask(()->f());
     if isa(res.task.storage, Nothing)
         res.task.storage = IdDict()
     end
@@ -41,9 +40,8 @@ function Trace(f::Function, m::Model, spl::T, vi::AbstractVarInfo) where {T <: A
 end
 function Trace(m::Model, spl::T, vi::AbstractVarInfo) where {T <: AbstractSampler}
     res = Trace{T}(m, spl, deepcopy(vi));
-    # CTask(()->f());
     res.vi.num_produce = 0
-    res.task = CTask(() -> m(vi, spl))
+    res.task = CTask(() -> m(vi, spl)) # CTask(()->f());
     if res.task.storage isa Nothing
         res.task.storage = IdDict()
     end
