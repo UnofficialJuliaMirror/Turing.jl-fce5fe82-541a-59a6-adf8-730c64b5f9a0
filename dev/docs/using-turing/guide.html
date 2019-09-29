@@ -625,7 +625,7 @@
 
 <p><code class="highlighter-rouge">x ~ distr</code> where <code class="highlighter-rouge">x</code> is a symbol and <code class="highlighter-rouge">distr</code> is a distribution. If <code class="highlighter-rouge">x</code> is undefined in the model function, inside the probabilistic program, this puts a random variable named <code class="highlighter-rouge">x</code>, distributed according to <code class="highlighter-rouge">distr</code>, in the current scope. <code class="highlighter-rouge">distr</code> can be a value of any type that implements <code class="highlighter-rouge">rand(distr)</code>, which samples a value from the distribution <code class="highlighter-rouge">distr</code>. If <code class="highlighter-rouge">x</code> is defined, this is used for conditioning in a style similar to <a href="https://probprog.github.io/anglican/index.html">Anglican</a> (another PPL). In this case, <code class="highlighter-rouge">x</code> is an observed value, assumed to have been drawn from the distribution <code class="highlighter-rouge">distr</code>. The likelihood is computed using <code class="highlighter-rouge">logpdf(distr,y)</code>. The observe statements should be arranged so that every possible run traverses all of them in exactly the same order. This is equivalent to demanding that they are not placed inside stochastic control flow.</p>
 
-<p>Available inference methods include  Importance Sampling (IS), Sequential Monte Carlo (SMC), Particle Gibbs (PG), Hamiltonian Monte Carlo (HMC), Hamiltonian Monte Carlo with Dual Averaging (HMCDA) and The No-U-Turn Sampler (NUTS).</p>
+<p>Available inference methods include Importance Sampling (IS), Sequential Monte Carlo (SMC), Particle Gibbs (PG), Hamiltonian Monte Carlo (HMC), Hamiltonian Monte Carlo with Dual Averaging (HMCDA) and The No-U-Turn Sampler (NUTS).</p>
 
 <p><a id="Simple-Gaussian-Demo-1"></a></p>
 
@@ -651,12 +651,12 @@
 <p>We can perform inference by using the <code class="highlighter-rouge">sample</code> function, the first argument of which is our probabalistic program and the second of which is a sampler. More information on each sampler is located in the <a href="/dev/docs/library">API</a>.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#  Run sampler, collect results.</span>
-<span class="n">c1</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">SMC</span><span class="x">(</span><span class="mi">1000</span><span class="x">))</span>
-<span class="n">c2</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">PG</span><span class="x">(</span><span class="mi">10</span><span class="x">,</span><span class="mi">1000</span><span class="x">))</span>
-<span class="n">c3</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">HMC</span><span class="x">(</span><span class="mi">1000</span><span class="x">,</span> <span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">))</span>
-<span class="n">c4</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">Gibbs</span><span class="x">(</span><span class="mi">1000</span><span class="x">,</span> <span class="n">PG</span><span class="x">(</span><span class="mi">10</span><span class="x">,</span> <span class="mi">2</span><span class="x">,</span> <span class="x">:</span><span class="n">m</span><span class="x">),</span> <span class="n">HMC</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="x">:</span><span class="n">s</span><span class="x">)))</span>
-<span class="n">c5</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">HMCDA</span><span class="x">(</span><span class="mi">1000</span><span class="x">,</span> <span class="mf">0.15</span><span class="x">,</span> <span class="mf">0.65</span><span class="x">))</span>
-<span class="n">c6</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">NUTS</span><span class="x">(</span><span class="mi">1000</span><span class="x">,</span>  <span class="mf">0.65</span><span class="x">))</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">SMC</span><span class="x">(),</span> <span class="mi">1000</span><span class="x">)</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">PG</span><span class="x">(</span><span class="mi">10</span><span class="x">),</span> <span class="mi">1000</span><span class="x">)</span>
+<span class="n">c3</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">),</span> <span class="mi">1000</span><span class="x">)</span>
+<span class="n">c4</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">Gibbs</span><span class="x">(</span><span class="n">PG</span><span class="x">(</span><span class="mi">10</span><span class="x">,</span> <span class="x">:</span><span class="n">m</span><span class="x">),</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="x">:</span><span class="n">s</span><span class="x">)),</span> <span class="mi">1000</span><span class="x">)</span>
+<span class="n">c5</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">HMCDA</span><span class="x">(</span><span class="mf">0.15</span><span class="x">,</span> <span class="mf">0.65</span><span class="x">),</span> <span class="mi">1000</span><span class="x">)</span>
+<span class="n">c6</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">NUTS</span><span class="x">(</span><span class="mf">0.65</span><span class="x">),</span> <span class="mi">1000</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p>The <code class="highlighter-rouge">MCMCChains</code> module (which is re-exported by Turing) provides plotting tools for the <code class="highlighter-rouge">Chain</code> objects returned by a <code class="highlighter-rouge">sample</code> function. See the <a href="https://github.com/TuringLang/MCMCChains.jl">MCMCChains</a> repository for more information on the suite of tools available for diagnosing MCMC chains.</p>
@@ -719,7 +719,7 @@
   <span class="k">return</span> <span class="n">y</span>
 <span class="k">end</span>
 
-<span class="n">sample</span><span class="x">(</span><span class="n">model_function</span><span class="x">(</span><span class="mi">10</span><span class="x">),</span> <span class="n">SMC</span><span class="x">(</span><span class="mi">100</span><span class="x">))</span>
+<span class="n">sample</span><span class="x">(</span><span class="n">model_function</span><span class="x">(</span><span class="mi">10</span><span class="x">),</span> <span class="n">SMC</span><span class="x">(),</span> <span class="mi">100</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p>But if we switch the <code class="highlighter-rouge">s ~ Poisson(1)</code> and <code class="highlighter-rouge">y ~ Normal(s, 1)</code> lines, the model will no longer sample correctly:</p>
@@ -731,7 +731,7 @@
   <span class="k">return</span> <span class="n">y</span>
 <span class="k">end</span>
 
-<span class="n">sample</span><span class="x">(</span><span class="n">model_function</span><span class="x">(</span><span class="mi">10</span><span class="x">),</span> <span class="n">SMC</span><span class="x">(</span><span class="mi">100</span><span class="x">))</span>
+<span class="n">sample</span><span class="x">(</span><span class="n">model_function</span><span class="x">(</span><span class="mi">10</span><span class="x">),</span> <span class="n">SMC</span><span class="x">(),</span> <span class="mi">100</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p><a id="Sampling-Multiple-Chains-1"></a></p>
@@ -768,8 +768,8 @@
 <p>Assign the function without inputs to a variable, and Turing will produce a sample from the prior distribution.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Samples from p(x,y)</span>
-<span class="n">g_prior_sampler</span> <span class="o">=</span> <span class="n">gdemo</span><span class="x">()</span>
-<span class="n">g_prior_sampler</span><span class="x">()</span>
+<span class="n">g_prior_sample</span> <span class="o">=</span> <span class="n">gdemo</span><span class="x">()</span>
+<span class="n">g_prior_sample</span><span class="x">()</span>
 </code></pre></div></div>
 
 <p>Output:</p>
@@ -797,7 +797,7 @@
 
 <span class="c"># Treat x as a vector of missing values.</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">fill</span><span class="x">(</span><span class="n">missing</span><span class="x">,</span> <span class="mi">2</span><span class="x">))</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">model</span><span class="x">,</span> <span class="n">HMC</span><span class="x">(</span><span class="mi">500</span><span class="x">,</span> <span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">))</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">model</span><span class="x">,</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">),</span> <span class="mi">500</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p>The above case tells the model compiler the dimensions of the values it needs to generate. The generated values for <code class="highlighter-rouge">x</code> can be extracted from the <code class="highlighter-rouge">Chains</code> object using <code class="highlighter-rouge">c[:x]</code>.</p>
@@ -814,7 +814,7 @@
 
 <span class="c"># Warning: This will provide an error!</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">gdemo</span><span class="x">([</span><span class="n">missing</span><span class="x">,</span> <span class="mf">2.4</span><span class="x">])</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">model</span><span class="x">,</span> <span class="n">HMC</span><span class="x">(</span><span class="mi">500</span><span class="x">,</span> <span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">))</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">model</span><span class="x">,</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">),</span> <span class="mi">500</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p>If this is functionality you need, you may need to define each parameter as a separate variable, as below:</p>
@@ -829,7 +829,7 @@
 
 <span class="c"># Equivalent to sampling p( x1 | x2 = 1.5).</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">missing</span><span class="x">,</span> <span class="mf">1.5</span><span class="x">)</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">model</span><span class="x">,</span> <span class="n">HMC</span><span class="x">(</span><span class="mi">500</span><span class="x">,</span> <span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">))</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">model</span><span class="x">,</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">),</span> <span class="mi">500</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p><a id="Using-Argument-Defaults-1"></a></p>
@@ -865,14 +865,14 @@ x_i \sim \text{Normal}(m, \sqrt{s}), \space i = 1\dots10 :$</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># The values 1.5 and 2.0 will be observed by the sampler.</span>
 <span class="n">m</span> <span class="o">=</span> <span class="n">generative</span><span class="x">([</span><span class="mf">1.5</span><span class="x">,</span><span class="mf">2.0</span><span class="x">])</span>
-<span class="n">chain</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">m</span><span class="x">,</span> <span class="n">HMC</span><span class="x">(</span><span class="mi">1000</span><span class="x">,</span> <span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">))</span>
+<span class="n">chain</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">m</span><span class="x">,</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">),</span> <span class="mi">1000</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p>We can generate observations by providing no arguments in the <code class="highlighter-rouge">sample</code> call.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># This call will generate a vector of 10 values</span>
 <span class="c"># every sampler iteration.</span>
-<span class="n">generated</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">generative</span><span class="x">(),</span> <span class="n">HMC</span><span class="x">(</span><span class="mi">1000</span><span class="x">,</span> <span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">))</span>
+<span class="n">generated</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">generative</span><span class="x">(),</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">),</span> <span class="mi">1000</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p>The generated quantities can then be accessed by pulling them out of the chain. To access all the <code class="highlighter-rouge">x</code> values, we first subset the chain using <code class="highlighter-rouge">generated[:x]</code></p>
@@ -956,7 +956,7 @@ x_i \sim \text{Normal}(m, \sqrt{s}), \space i = 1\dots10 :$</p>
 
 <span class="n">simple_choice_f</span> <span class="o">=</span> <span class="n">simple_choice</span><span class="x">([</span><span class="mf">1.5</span><span class="x">,</span> <span class="mf">2.0</span><span class="x">,</span> <span class="mf">0.3</span><span class="x">])</span>
 
-<span class="n">chn</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">simple_choice_f</span><span class="x">,</span> <span class="n">Gibbs</span><span class="x">(</span><span class="mi">1000</span><span class="x">,</span> <span class="n">HMC</span><span class="x">(</span><span class="mi">1</span><span class="x">,</span> <span class="mf">0.2</span><span class="x">,</span> <span class="mi">3</span><span class="x">,</span> <span class="x">:</span><span class="n">p</span><span class="x">),</span> <span class="n">PG</span><span class="x">(</span><span class="mi">20</span><span class="x">,</span> <span class="mi">1</span><span class="x">,</span> <span class="x">:</span><span class="n">z</span><span class="x">)))</span>
+<span class="n">chn</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">simple_choice_f</span><span class="x">,</span> <span class="n">Gibbs</span><span class="x">(</span><span class="n">HMC</span><span class="x">(</span><span class="mf">0.2</span><span class="x">,</span> <span class="mi">3</span><span class="x">,</span> <span class="x">:</span><span class="n">p</span><span class="x">),</span> <span class="n">PG</span><span class="x">(</span><span class="mi">20</span><span class="x">,</span> <span class="x">:</span><span class="n">z</span><span class="x">)),</span> <span class="mi">1000</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p>The <code class="highlighter-rouge">Gibbs</code> sampler can be used to specify unique automatic differentation backends for different variable spaces. Please see the <a href="/dev/docs/using-turing/autodiff">Automatic Differentiation</a> article for more.</p>

@@ -611,7 +611,7 @@
 
 <h1 id="using-dynamichmc">Using DynamicHMC</h1>
 
-<p>Turing supports the use of <a href="https://github.com/tpapp/DynamicHMC.jl">DynamicHMC</a> as a sampler through the use of the <code class="highlighter-rouge">DynamicNUTS</code> function. This is a <a href="https://github.com/TuringLang/Turing.jl/issues/559">faster</a> version of Turing’s native <code class="highlighter-rouge">NUTS</code> implementation.</p>
+<p>Turing supports the use of <a href="https://github.com/tpapp/DynamicHMC.jl">DynamicHMC</a> as a sampler through the <code class="highlighter-rouge">DynamicNUTS</code> function.</p>
 
 <p><code class="highlighter-rouge">DynamicNUTS</code> is not appropriate for use in compositional inference. If you intend to use <a href="http://turing.ml/docs/library/#-turinggibbs--type">Gibbs</a> sampling, you must use Turing’s native <code class="highlighter-rouge">NUTS</code> function.</p>
 
@@ -631,7 +631,7 @@
 <span class="k">end</span>
 
 <span class="c"># Pull 2,000 samples using DynamicNUTS.</span>
-<span class="n">chn</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mf">2.0</span><span class="x">),</span> <span class="n">DynamicNUTS</span><span class="x">(</span><span class="mi">2000</span><span class="x">))</span>
+<span class="n">chn</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mf">2.0</span><span class="x">),</span> <span class="n">DynamicNUTS</span><span class="x">(),</span> <span class="mi">2000</span><span class="x">)</span>
 </code></pre></div></div>
 
 

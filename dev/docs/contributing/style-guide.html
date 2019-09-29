@@ -854,6 +854,19 @@ au FileType julia setlocal colorcolumn=93 " Highlights column 93 to help maintai
 </code></pre></div></div>
 
 <ul>
+  <li>When using parametric types:</li>
+</ul>
+
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Yes:</span>
+<span class="n">f</span><span class="x">(</span><span class="n">a</span><span class="o">::</span><span class="n">AbstractArray</span><span class="x">{</span><span class="n">T</span><span class="x">,</span> <span class="n">N</span><span class="x">})</span> <span class="n">where</span> <span class="x">{</span><span class="n">T</span><span class="o">&lt;:</span><span class="n">Real</span><span class="x">,</span> <span class="n">N</span><span class="x">}</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">g</span><span class="x">(</span><span class="n">a</span><span class="o">::</span><span class="n">AbstractArray</span><span class="x">{</span><span class="o">&lt;:</span><span class="n">Real</span><span class="x">,</span> <span class="n">N</span><span class="x">})</span> <span class="n">where</span> <span class="x">{</span><span class="n">N</span><span class="x">}</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="c"># No:</span>
+<span class="n">f</span><span class="x">(</span><span class="n">a</span><span class="o">::</span><span class="n">AbstractArray</span><span class="x">{</span><span class="n">T</span><span class="x">,</span> <span class="n">N</span><span class="x">})</span> <span class="n">where</span> <span class="x">{</span><span class="n">T</span> <span class="o">&lt;:</span> <span class="n">Real</span><span class="x">,</span> <span class="n">N</span><span class="x">}</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">g</span><span class="x">(</span><span class="n">a</span><span class="o">::</span><span class="n">AbstractArray</span><span class="x">{</span><span class="o">&lt;:</span> <span class="n">Real</span><span class="x">,</span> <span class="n">N</span><span class="x">})</span> <span class="n">where</span> <span class="x">{</span><span class="n">N</span><span class="x">}</span> <span class="o">=</span> <span class="o">...</span>
+</code></pre></div></div>
+
+<ul>
   <li>Always surround these binary operators with a single space on either side: assignment ($=$), <a href="https://docs.julialang.org/en/latest/manual/mathematical-operations/#Updating-operators-1">updating operators</a> ($+=$, $-=$, etc.), <a href="https://docs.julialang.org/en/latest/manual/mathematical-operations/#Numeric-Comparisons-1">numeric comparisons operators</a> ($==$, $&lt;$, $&gt;$, $!=$, etc.). Note that this guideline does not apply when performing assignment in method definitions.</li>
 </ul>
 

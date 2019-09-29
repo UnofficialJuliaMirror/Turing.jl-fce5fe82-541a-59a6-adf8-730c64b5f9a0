@@ -636,10 +636,14 @@
 <span class="k">end</span>
 
 <span class="c"># Sample using Gibbs and varying autodiff backends.</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span>
-  <span class="n">Gibbs</span><span class="x">(</span><span class="mi">1000</span><span class="x">,</span>
-    <span class="n">HMC</span><span class="x">{</span><span class="n">Turing</span><span class="o">.</span><span class="n">ForwardDiffAD</span><span class="x">{</span><span class="mi">1</span><span class="x">}}(</span><span class="mi">2</span><span class="x">,</span> <span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="x">:</span><span class="n">m</span><span class="x">),</span>
-    <span class="n">HMC</span><span class="x">{</span><span class="n">Turing</span><span class="o">.</span><span class="n">TrackerAD</span><span class="x">}(</span><span class="mi">2</span><span class="x">,</span> <span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="x">:</span><span class="n">s</span><span class="x">)))</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span>
+	<span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span>
+  	<span class="n">Gibbs</span><span class="x">(</span>
+    	<span class="n">HMC</span><span class="x">{</span><span class="n">Turing</span><span class="o">.</span><span class="n">ForwardDiffAD</span><span class="x">{</span><span class="mi">1</span><span class="x">}}(</span><span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="x">:</span><span class="n">m</span><span class="x">),</span>
+        <span class="n">HMC</span><span class="x">{</span><span class="n">Turing</span><span class="o">.</span><span class="n">TrackerAD</span><span class="x">}(</span><span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="x">:</span><span class="n">s</span><span class="x">)</span>
+    <span class="x">),</span>
+    <span class="mi">1000</span>
+<span class="x">)</span>
 </code></pre></div></div>
 
 <p>Generally, <code class="highlighter-rouge">TrackerAD</code> is faster when sampling from variables of high dimensionality (greater than 20) and <code class="highlighter-rouge">ForwardDiffAD</code> is more efficient for lower-dimension variables. This functionality allows those who are performance sensistive to fine tune their automatic differentiation for their specific models.</p>
