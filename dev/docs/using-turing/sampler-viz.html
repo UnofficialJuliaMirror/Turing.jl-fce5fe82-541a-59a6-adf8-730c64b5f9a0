@@ -623,16 +623,16 @@
 
 <p>The Turing model definition used here is not especially practical, but it is designed in such a way as to produce visually interesting posterior surfaces to show how different samplers move along the distribution.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">using</span> <span class="n">Plots</span>
-<span class="n">using</span> <span class="n">StatsPlots</span>
-<span class="n">using</span> <span class="n">Turing</span>
-<span class="n">using</span> <span class="n">Bijectors</span>
-<span class="n">using</span> <span class="n">Random</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">Plots</span>
+<span class="k">using</span> <span class="n">StatsPlots</span>
+<span class="k">using</span> <span class="n">Turing</span>
+<span class="k">using</span> <span class="n">Bijectors</span>
+<span class="k">using</span> <span class="n">Random</span>
 
 <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="x">(</span><span class="mi">0</span><span class="x">)</span>
 
 <span class="c"># Define a strange model.</span>
-<span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="n">s</span> <span class="o">~</span> <span class="n">InverseGamma</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">3</span><span class="x">)</span>
     <span class="n">m</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
     <span class="n">bumps</span> <span class="o">=</span> <span class="n">sin</span><span class="x">(</span><span class="n">m</span><span class="x">)</span> <span class="o">+</span> <span class="n">cos</span><span class="x">(</span><span class="n">m</span><span class="x">)</span>
@@ -650,7 +650,7 @@
 <span class="n">model</span> <span class="o">=</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">)</span>
 <span class="n">vi</span> <span class="o">=</span> <span class="n">Turing</span><span class="o">.</span><span class="n">VarInfo</span><span class="x">()</span>
 <span class="n">model</span><span class="x">(</span><span class="n">vi</span><span class="x">,</span> <span class="n">Turing</span><span class="o">.</span><span class="n">SampleFromPrior</span><span class="x">())</span>
-<span class="n">vi</span><span class="o">.</span><span class="n">flags</span><span class="x">[</span><span class="s">"trans"</span><span class="x">]</span> <span class="o">=</span> <span class="x">[</span><span class="n">true</span><span class="x">,</span> <span class="n">false</span><span class="x">]</span>
+<span class="n">vi</span><span class="o">.</span><span class="n">flags</span><span class="x">[</span><span class="s">"trans"</span><span class="x">]</span> <span class="o">=</span> <span class="x">[</span><span class="nb">true</span><span class="x">,</span> <span class="nb">false</span><span class="x">]</span>
 
 <span class="c"># Evaluate surface at coordinates.</span>
 <span class="k">function</span><span class="nf"> evaluate</span><span class="x">(</span><span class="n">m1</span><span class="x">,</span> <span class="n">m2</span><span class="x">)</span>
@@ -661,8 +661,8 @@
 
 <span class="k">function</span><span class="nf"> plot_sampler</span><span class="x">(</span><span class="n">chain</span><span class="x">)</span>
     <span class="c"># Extract values from chain.</span>
-    <span class="n">val</span> <span class="o">=</span> <span class="n">get</span><span class="x">(</span><span class="n">chain</span><span class="x">,</span> <span class="x">[:</span><span class="n">s</span><span class="x">,</span> <span class="x">:</span><span class="n">m</span><span class="x">,</span> <span class="x">:</span><span class="n">lp</span><span class="x">])</span>
-    <span class="n">ss</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="x">(</span><span class="n">Ref</span><span class="x">(</span><span class="n">InverseGamma</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">3</span><span class="x">)),</span> <span class="n">val</span><span class="o">.</span><span class="n">s</span><span class="x">)</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="n">get</span><span class="x">(</span><span class="n">chain</span><span class="x">,</span> <span class="x">[</span><span class="o">:</span><span class="n">s</span><span class="x">,</span> <span class="o">:</span><span class="n">m</span><span class="x">,</span> <span class="o">:</span><span class="n">lp</span><span class="x">])</span>
+    <span class="n">ss</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="x">(</span><span class="kt">Ref</span><span class="x">(</span><span class="n">InverseGamma</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">3</span><span class="x">)),</span> <span class="n">val</span><span class="o">.</span><span class="n">s</span><span class="x">)</span>
     <span class="n">ms</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">m</span>
     <span class="n">lps</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">lp</span>
 
@@ -679,15 +679,15 @@
     <span class="c"># Make surface plot.</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">surface</span><span class="x">(</span><span class="n">σ_rng</span><span class="x">,</span> <span class="n">μ_rng</span><span class="x">,</span> <span class="n">evaluate</span><span class="x">,</span>
           <span class="n">camera</span><span class="o">=</span><span class="x">(</span><span class="mi">30</span><span class="x">,</span> <span class="mi">65</span><span class="x">),</span>
-          <span class="n">ticks</span><span class="o">=</span><span class="n">nothing</span><span class="x">,</span>
-          <span class="n">colorbar</span><span class="o">=</span><span class="n">false</span><span class="x">,</span>
-          <span class="n">color</span><span class="o">=</span><span class="x">:</span><span class="n">inferno</span><span class="x">)</span>
+          <span class="n">ticks</span><span class="o">=</span><span class="nb">nothing</span><span class="x">,</span>
+          <span class="n">colorbar</span><span class="o">=</span><span class="nb">false</span><span class="x">,</span>
+          <span class="n">color</span><span class="o">=:</span><span class="n">inferno</span><span class="x">)</span>
 
-    <span class="n">line_range</span> <span class="o">=</span> <span class="mi">1</span><span class="x">:</span><span class="n">length</span><span class="x">(</span><span class="n">ms</span><span class="x">)</span>
+    <span class="n">line_range</span> <span class="o">=</span> <span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="x">(</span><span class="n">ms</span><span class="x">)</span>
 
     <span class="n">plot3d!</span><span class="x">(</span><span class="n">ss</span><span class="x">[</span><span class="n">line_range</span><span class="x">],</span> <span class="n">ms</span><span class="x">[</span><span class="n">line_range</span><span class="x">],</span> <span class="o">-</span><span class="n">lps</span><span class="x">[</span><span class="n">line_range</span><span class="x">],</span>
-        <span class="n">lc</span> <span class="o">=</span><span class="x">:</span><span class="n">viridis</span><span class="x">,</span> <span class="n">line_z</span><span class="o">=</span><span class="n">collect</span><span class="x">(</span><span class="n">line_range</span><span class="x">),</span>
-        <span class="n">legend</span><span class="o">=</span><span class="n">false</span><span class="x">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="n">false</span><span class="x">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="x">)</span>
+        <span class="n">lc</span> <span class="o">=:</span><span class="n">viridis</span><span class="x">,</span> <span class="n">line_z</span><span class="o">=</span><span class="n">collect</span><span class="x">(</span><span class="n">line_range</span><span class="x">),</span>
+        <span class="n">legend</span><span class="o">=</span><span class="nb">false</span><span class="x">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="nb">false</span><span class="x">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="x">)</span>
 
     <span class="k">return</span> <span class="n">p</span>
 <span class="k">end</span><span class="x">;</span>
@@ -703,7 +703,7 @@
 
 <p>Gibbs sampling tends to exhibit a “jittery” trajectory. The example below combines <code class="highlighter-rouge">HMC</code> and <code class="highlighter-rouge">PG</code> sampling to traverse the posterior.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">model</span><span class="x">,</span> <span class="n">Gibbs</span><span class="x">(</span><span class="n">HMC</span><span class="x">(</span><span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="x">:</span><span class="n">s</span><span class="x">),</span> <span class="n">PG</span><span class="x">(</span><span class="mi">20</span><span class="x">,</span> <span class="x">:</span><span class="n">m</span><span class="x">)),</span> <span class="mi">1000</span><span class="x">)</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">model</span><span class="x">,</span> <span class="n">Gibbs</span><span class="x">(</span><span class="n">HMC</span><span class="x">(</span><span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="o">:</span><span class="n">s</span><span class="x">),</span> <span class="n">PG</span><span class="x">(</span><span class="mi">20</span><span class="x">,</span> <span class="o">:</span><span class="n">m</span><span class="x">)),</span> <span class="mi">1000</span><span class="x">)</span>
 <span class="n">plot_sampler</span><span class="x">(</span><span class="n">c</span><span class="x">)</span>
 </code></pre></div></div>
 

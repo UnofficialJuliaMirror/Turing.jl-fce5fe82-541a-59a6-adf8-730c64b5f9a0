@@ -616,20 +616,20 @@
 <p>We begin by importing all the necessary libraries.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Import Turing and Distributions.</span>
-<span class="n">using</span> <span class="n">Turing</span><span class="x">,</span> <span class="n">Distributions</span>
+<span class="k">using</span> <span class="n">Turing</span><span class="x">,</span> <span class="n">Distributions</span>
 
 <span class="c"># Import RDatasets.</span>
-<span class="n">using</span> <span class="n">RDatasets</span>
+<span class="k">using</span> <span class="n">RDatasets</span>
 
 <span class="c"># Import MCMCChains, Plots, and StatPlots for visualizations and diagnostics.</span>
-<span class="n">using</span> <span class="n">MCMCChains</span><span class="x">,</span> <span class="n">Plots</span><span class="x">,</span> <span class="n">StatsPlots</span>
+<span class="k">using</span> <span class="n">MCMCChains</span><span class="x">,</span> <span class="n">Plots</span><span class="x">,</span> <span class="n">StatsPlots</span>
 
 <span class="c"># Set a seed for reproducibility.</span>
-<span class="n">using</span> <span class="n">Random</span>
+<span class="k">using</span> <span class="n">Random</span>
 <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="x">(</span><span class="mi">0</span><span class="x">);</span>
 
 <span class="c"># Hide the progress prompt while sampling.</span>
-<span class="n">Turing</span><span class="o">.</span><span class="n">turnprogress</span><span class="x">(</span><span class="n">false</span><span class="x">);</span>
+<span class="n">Turing</span><span class="o">.</span><span class="n">turnprogress</span><span class="x">(</span><span class="nb">false</span><span class="x">);</span>
 </code></pre></div></div>
 
 <p>We will use the <code class="highlighter-rouge">mtcars</code> dataset from the <a href="https://github.com/johnmyleswhite/RDatasets.jl">RDatasets</a> package. <code class="highlighter-rouge">mtcars</code> contains a variety of statistics on different car models, including their miles per gallon, number of cylinders, and horsepower, among others.</p>
@@ -678,8 +678,8 @@
 <span class="k">function</span><span class="nf"> split_data</span><span class="x">(</span><span class="n">df</span><span class="x">,</span> <span class="n">at</span> <span class="o">=</span> <span class="mf">0.70</span><span class="x">)</span>
     <span class="x">(</span><span class="n">r</span><span class="x">,</span> <span class="n">_</span><span class="x">)</span> <span class="o">=</span> <span class="n">size</span><span class="x">(</span><span class="n">df</span><span class="x">)</span>
     <span class="n">index</span> <span class="o">=</span> <span class="kt">Int</span><span class="x">(</span><span class="n">round</span><span class="x">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">at</span><span class="x">))</span>
-    <span class="n">train</span> <span class="o">=</span> <span class="n">df</span><span class="x">[</span><span class="mi">1</span><span class="x">:</span><span class="n">index</span><span class="x">,</span> <span class="x">:]</span>
-    <span class="n">test</span>  <span class="o">=</span> <span class="n">df</span><span class="x">[(</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="x">):</span><span class="k">end</span><span class="x">,</span> <span class="x">:]</span>
+    <span class="n">train</span> <span class="o">=</span> <span class="n">df</span><span class="x">[</span><span class="mi">1</span><span class="o">:</span><span class="n">index</span><span class="x">,</span> <span class="o">:</span><span class="x">]</span>
+    <span class="n">test</span>  <span class="o">=</span> <span class="n">df</span><span class="x">[(</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="x">)</span><span class="o">:</span><span class="k">end</span><span class="x">,</span> <span class="o">:</span><span class="x">]</span>
     <span class="k">return</span> <span class="n">train</span><span class="x">,</span> <span class="n">test</span>
 <span class="k">end</span>
 
@@ -691,15 +691,15 @@
 <span class="n">test_cut</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="x">(</span><span class="n">test</span><span class="x">)</span>
 
 <span class="c"># Create our labels. These are the values we are trying to predict.</span>
-<span class="n">train_label</span> <span class="o">=</span> <span class="n">train</span><span class="x">[:,</span> <span class="x">:</span><span class="n">MPG</span><span class="x">]</span>
-<span class="n">test_label</span> <span class="o">=</span> <span class="n">test</span><span class="x">[:,</span> <span class="x">:</span><span class="n">MPG</span><span class="x">]</span>
+<span class="n">train_label</span> <span class="o">=</span> <span class="n">train</span><span class="x">[</span><span class="o">:</span><span class="x">,</span> <span class="o">:</span><span class="n">MPG</span><span class="x">]</span>
+<span class="n">test_label</span> <span class="o">=</span> <span class="n">test</span><span class="x">[</span><span class="o">:</span><span class="x">,</span> <span class="o">:</span><span class="n">MPG</span><span class="x">]</span>
 
 <span class="c"># Get the list of columns to keep.</span>
-<span class="n">remove_names</span> <span class="o">=</span> <span class="n">filter</span><span class="x">(</span><span class="n">x</span><span class="o">-&gt;!</span><span class="k">in</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="x">[:</span><span class="n">MPG</span><span class="x">,</span> <span class="x">:</span><span class="n">Model</span><span class="x">]),</span> <span class="n">names</span><span class="x">(</span><span class="n">data</span><span class="x">))</span>
+<span class="n">remove_names</span> <span class="o">=</span> <span class="n">filter</span><span class="x">(</span><span class="n">x</span><span class="o">-&gt;!</span><span class="k">in</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="x">[</span><span class="o">:</span><span class="n">MPG</span><span class="x">,</span> <span class="o">:</span><span class="n">Model</span><span class="x">]),</span> <span class="n">names</span><span class="x">(</span><span class="n">data</span><span class="x">))</span>
 
 <span class="c"># Filter the test and train sets.</span>
-<span class="n">train</span> <span class="o">=</span> <span class="n">Matrix</span><span class="x">(</span><span class="n">train</span><span class="x">[:,</span><span class="n">remove_names</span><span class="x">]);</span>
-<span class="n">test</span> <span class="o">=</span> <span class="n">Matrix</span><span class="x">(</span><span class="n">test</span><span class="x">[:,</span><span class="n">remove_names</span><span class="x">]);</span>
+<span class="n">train</span> <span class="o">=</span> <span class="kt">Matrix</span><span class="x">(</span><span class="n">train</span><span class="x">[</span><span class="o">:</span><span class="x">,</span><span class="n">remove_names</span><span class="x">]);</span>
+<span class="n">test</span> <span class="o">=</span> <span class="kt">Matrix</span><span class="x">(</span><span class="n">test</span><span class="x">[</span><span class="o">:</span><span class="x">,</span><span class="n">remove_names</span><span class="x">]);</span>
 
 <span class="c"># A handy helper function to rescale our dataset.</span>
 <span class="k">function</span><span class="nf"> standardize</span><span class="x">(</span><span class="n">x</span><span class="x">)</span>
@@ -737,20 +737,20 @@ $$</p>
 <p>For <script type="math/tex">\sigma^2</script>, we assign a prior of <code class="highlighter-rouge">TruncatedNormal(0,100,0,Inf)</code>. This is consistent with <a href="http://www.stat.columbia.edu/~gelman/research/published/taumain.pdf">Andrew Gelman’s recommendations</a> on noninformative priors for variance. The intercept term (<script type="math/tex">\alpha</script>) is assumed to be normally distributed with a mean of zero and a variance of three. This represents our assumptions that miles per gallon can be explained mostly by our assorted variables, but a high variance term indicates our uncertainty about that. Each coefficient is assumed to be normally distributed with a mean of zero and a variance of 10. We do not know that our coefficients are different from zero, and we don’t know which ones are likely to be the most important, so the variance term is quite high. Lastly, each observation <script type="math/tex">y_i</script> is distributed according to the calculated <code class="highlighter-rouge">mu</code> term given by <script type="math/tex">\alpha + \boldsymbol{\beta}^T\boldsymbol{X_i}</script>.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Bayesian linear regression.</span>
-<span class="nd">@model</span> <span class="n">linear_regression</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">,</span> <span class="n">n_obs</span><span class="x">,</span> <span class="n">n_vars</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<span class="nd">@model</span> <span class="n">linear_regression</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">,</span> <span class="n">n_obs</span><span class="x">,</span> <span class="n">n_vars</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="c"># Set variance prior.</span>
-    <span class="n">σ₂</span> <span class="o">~</span> <span class="n">TruncatedNormal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span><span class="mi">100</span><span class="x">,</span> <span class="mi">0</span><span class="x">,</span> <span class="kt">Inf</span><span class="x">)</span>
+    <span class="n">σ₂</span> <span class="o">~</span> <span class="n">TruncatedNormal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span><span class="mi">100</span><span class="x">,</span> <span class="mi">0</span><span class="x">,</span> <span class="nb">Inf</span><span class="x">)</span>
     
     <span class="c"># Set intercept prior.</span>
     <span class="n">intercept</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="mi">3</span><span class="x">)</span>
     
     <span class="c"># Set the priors on our coefficients.</span>
-    <span class="n">coefficients</span> <span class="o">=</span> <span class="n">Array</span><span class="x">{</span><span class="n">Real</span><span class="x">}(</span><span class="n">undef</span><span class="x">,</span> <span class="n">n_vars</span><span class="x">)</span>
+    <span class="n">coefficients</span> <span class="o">=</span> <span class="kt">Array</span><span class="x">{</span><span class="kt">Real</span><span class="x">}(</span><span class="nb">undef</span><span class="x">,</span> <span class="n">n_vars</span><span class="x">)</span>
     <span class="n">coefficients</span> <span class="o">~</span> <span class="x">[</span><span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="mi">10</span><span class="x">)]</span>
     
     <span class="c"># Calculate all the mu terms.</span>
     <span class="n">mu</span> <span class="o">=</span> <span class="n">intercept</span> <span class="o">.+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">coefficients</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="x">:</span><span class="n">n_obs</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">:</span><span class="n">n_obs</span>
         <span class="n">y</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="n">mu</span><span class="x">[</span><span class="n">i</span><span class="x">],</span> <span class="n">σ₂</span><span class="x">)</span>
     <span class="k">end</span>
 <span class="k">end</span><span class="x">;</span>
@@ -860,7 +860,7 @@ Quantiles
 <p>A satisfactory test of our model is to evaluate how well it predicts. Importantly, we want to compare our model to existing tools like OLS. The code below uses the <a href="">GLM.jl</a> package to generate a traditional OLS multivariate regression on the same data as our probabalistic model.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Import the GLM package.</span>
-<span class="n">using</span> <span class="n">GLM</span>
+<span class="k">using</span> <span class="n">GLM</span>
 
 <span class="c"># Perform multivariate OLS.</span>
 <span class="n">ols</span> <span class="o">=</span> <span class="n">lm</span><span class="x">(</span><span class="nd">@formula</span><span class="x">(</span><span class="n">MPG</span> <span class="o">~</span> <span class="n">Cyl</span> <span class="o">+</span> <span class="n">Disp</span> <span class="o">+</span> <span class="n">HP</span> <span class="o">+</span> <span class="n">DRat</span> <span class="o">+</span> <span class="n">WT</span> <span class="o">+</span> <span class="n">QSec</span> <span class="o">+</span> <span class="n">VS</span> <span class="o">+</span> <span class="n">AM</span> <span class="o">+</span> <span class="n">Gear</span> <span class="o">+</span> <span class="n">Carb</span><span class="x">),</span> <span class="n">train_cut</span><span class="x">)</span>
@@ -874,7 +874,7 @@ Quantiles
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Make a prediction given an input vector.</span>
 <span class="k">function</span><span class="nf"> prediction</span><span class="x">(</span><span class="n">chain</span><span class="x">,</span> <span class="n">x</span><span class="x">)</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">get_params</span><span class="x">(</span><span class="n">chain</span><span class="x">[</span><span class="mi">200</span><span class="x">:</span><span class="k">end</span><span class="x">,</span> <span class="x">:,</span> <span class="x">:])</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">get_params</span><span class="x">(</span><span class="n">chain</span><span class="x">[</span><span class="mi">200</span><span class="o">:</span><span class="k">end</span><span class="x">,</span> <span class="o">:</span><span class="x">,</span> <span class="o">:</span><span class="x">])</span>
     <span class="n">α</span> <span class="o">=</span> <span class="n">mean</span><span class="x">(</span><span class="n">p</span><span class="o">.</span><span class="n">intercept</span><span class="x">)</span>
     <span class="n">β</span> <span class="o">=</span> <span class="n">collect</span><span class="x">(</span><span class="n">mean</span><span class="o">.</span><span class="x">(</span><span class="n">p</span><span class="o">.</span><span class="n">coefficients</span><span class="x">))</span>
     <span class="k">return</span>  <span class="n">α</span> <span class="o">.+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">β</span>

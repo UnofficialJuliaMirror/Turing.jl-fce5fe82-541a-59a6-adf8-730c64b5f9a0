@@ -625,10 +625,10 @@
 
 <p>Turing supports intermixed automatic differentiation methods for different variable spaces. The snippet below shows using <code class="highlighter-rouge">ForwardDiff</code> to sample the mean (<code class="highlighter-rouge">m</code>) parameter, and using the Tracker-based <code class="highlighter-rouge">TrackerAD</code> autodiff for the variance (<code class="highlighter-rouge">s</code>) parameter:</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">using</span> <span class="n">Turing</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">Turing</span>
 
 <span class="c"># Define a simple Normal model with unknown mean and variance.</span>
-<span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="n">s</span> <span class="o">~</span> <span class="n">InverseGamma</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">3</span><span class="x">)</span>
     <span class="n">m</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
     <span class="n">x</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="n">m</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
@@ -639,8 +639,8 @@
 <span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span>
 	<span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span>
   	<span class="n">Gibbs</span><span class="x">(</span>
-    	<span class="n">HMC</span><span class="x">{</span><span class="n">Turing</span><span class="o">.</span><span class="n">ForwardDiffAD</span><span class="x">{</span><span class="mi">1</span><span class="x">}}(</span><span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="x">:</span><span class="n">m</span><span class="x">),</span>
-        <span class="n">HMC</span><span class="x">{</span><span class="n">Turing</span><span class="o">.</span><span class="n">TrackerAD</span><span class="x">}(</span><span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="x">:</span><span class="n">s</span><span class="x">)</span>
+    	<span class="n">HMC</span><span class="x">{</span><span class="n">Turing</span><span class="o">.</span><span class="n">ForwardDiffAD</span><span class="x">{</span><span class="mi">1</span><span class="x">}}(</span><span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="o">:</span><span class="n">m</span><span class="x">),</span>
+        <span class="n">HMC</span><span class="x">{</span><span class="n">Turing</span><span class="o">.</span><span class="n">TrackerAD</span><span class="x">}(</span><span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="o">:</span><span class="n">s</span><span class="x">)</span>
     <span class="x">),</span>
     <span class="mi">1000</span>
 <span class="x">)</span>

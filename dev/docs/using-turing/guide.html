@@ -634,11 +634,11 @@
 <p>Below is a simple Gaussian demo illustrate the basic usage of Turing.jl.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Import packages.</span>
-<span class="n">using</span> <span class="n">Turing</span>
-<span class="n">using</span> <span class="n">StatsPlots</span>
+<span class="k">using</span> <span class="n">Turing</span>
+<span class="k">using</span> <span class="n">StatsPlots</span>
 
 <span class="c"># Define a simple Normal model with unknown mean and variance.</span>
-<span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
   <span class="n">s</span> <span class="o">~</span> <span class="n">InverseGamma</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">3</span><span class="x">)</span>
   <span class="n">m</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
   <span class="n">x</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="n">m</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
@@ -654,7 +654,7 @@
 <span class="n">c1</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">SMC</span><span class="x">(),</span> <span class="mi">1000</span><span class="x">)</span>
 <span class="n">c2</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">PG</span><span class="x">(</span><span class="mi">10</span><span class="x">),</span> <span class="mi">1000</span><span class="x">)</span>
 <span class="n">c3</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">),</span> <span class="mi">1000</span><span class="x">)</span>
-<span class="n">c4</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">Gibbs</span><span class="x">(</span><span class="n">PG</span><span class="x">(</span><span class="mi">10</span><span class="x">,</span> <span class="x">:</span><span class="n">m</span><span class="x">),</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="x">:</span><span class="n">s</span><span class="x">)),</span> <span class="mi">1000</span><span class="x">)</span>
+<span class="n">c4</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">Gibbs</span><span class="x">(</span><span class="n">PG</span><span class="x">(</span><span class="mi">10</span><span class="x">,</span> <span class="o">:</span><span class="n">m</span><span class="x">),</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.1</span><span class="x">,</span> <span class="mi">5</span><span class="x">,</span> <span class="o">:</span><span class="n">s</span><span class="x">)),</span> <span class="mi">1000</span><span class="x">)</span>
 <span class="n">c5</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">HMCDA</span><span class="x">(</span><span class="mf">0.15</span><span class="x">,</span> <span class="mf">0.65</span><span class="x">),</span> <span class="mi">1000</span><span class="x">)</span>
 <span class="n">c6</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">gdemo</span><span class="x">(</span><span class="mf">1.5</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">NUTS</span><span class="x">(</span><span class="mf">0.65</span><span class="x">),</span> <span class="mi">1000</span><span class="x">)</span>
 </code></pre></div></div>
@@ -690,7 +690,7 @@
 
 <p>In the following example, the defined model is conditioned to the date (arg<em>1 = 1, arg</em>2 = 2) by passing (1, 2) to the model function.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">model_name</span><span class="x">(</span><span class="n">arg_1</span><span class="x">,</span> <span class="n">arg_2</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">model_name</span><span class="x">(</span><span class="n">arg_1</span><span class="x">,</span> <span class="n">arg_2</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
   <span class="o">...</span>
 <span class="k">end</span>
 </code></pre></div></div>
@@ -703,7 +703,7 @@
 
 <p>The returned chain contains samples of the variables in the model.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">var_1</span> <span class="o">=</span> <span class="n">mean</span><span class="x">(</span><span class="n">chn</span><span class="x">[:</span><span class="n">var_1</span><span class="x">])</span> <span class="c"># Taking the mean of a variable named var_1.</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">var_1</span> <span class="o">=</span> <span class="n">mean</span><span class="x">(</span><span class="n">chn</span><span class="x">[</span><span class="o">:</span><span class="n">var_1</span><span class="x">])</span> <span class="c"># Taking the mean of a variable named var_1.</span>
 </code></pre></div></div>
 
 <p>The key (<code class="highlighter-rouge">:var_1</code>) can be a <code class="highlighter-rouge">Symbol</code> or a <code class="highlighter-rouge">String</code>. For example, to fetch <code class="highlighter-rouge">x[1]</code>, one can use <code class="highlighter-rouge">chn[Symbol("x[1]")</code> or <code class="highlighter-rouge">chn["x[1]"]</code>.</p>
@@ -713,7 +713,7 @@
 <p>Turing does not have a declarative form. More generally, the order in which you place the lines of a <code class="highlighter-rouge">@model</code> macro matters. For example, the following example works:</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Define a simple Normal model with unknown mean and variance.</span>
-<span class="nd">@model</span> <span class="n">model_function</span><span class="x">(</span><span class="n">y</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<span class="nd">@model</span> <span class="n">model_function</span><span class="x">(</span><span class="n">y</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
   <span class="n">s</span> <span class="o">~</span> <span class="n">Poisson</span><span class="x">(</span><span class="mi">1</span><span class="x">)</span>
   <span class="n">y</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="n">s</span><span class="x">,</span> <span class="mi">1</span><span class="x">)</span>
   <span class="k">return</span> <span class="n">y</span>
@@ -725,7 +725,7 @@
 <p>But if we switch the <code class="highlighter-rouge">s ~ Poisson(1)</code> and <code class="highlighter-rouge">y ~ Normal(s, 1)</code> lines, the model will no longer sample correctly:</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Define a simple Normal model with unknown mean and variance.</span>
-<span class="nd">@model</span> <span class="n">model_function</span><span class="x">(</span><span class="n">y</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<span class="nd">@model</span> <span class="n">model_function</span><span class="x">(</span><span class="n">y</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
   <span class="n">y</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="n">s</span><span class="x">,</span> <span class="mi">1</span><span class="x">)</span>
   <span class="n">s</span> <span class="o">~</span> <span class="n">Poisson</span><span class="x">(</span><span class="mi">1</span><span class="x">)</span>
   <span class="k">return</span> <span class="n">y</span>
@@ -738,17 +738,21 @@
 
 <h3 id="sampling-multiple-chains">Sampling Multiple Chains</h3>
 
-<p>If you wish to run multiple chains, you can do so with the <code class="highlighter-rouge">mapreduce</code> function:</p>
+<p>If you have Julia 1.3 or greater, you may use <code class="highlighter-rouge">psample</code> to sample multiple chains in a multithreaded way:</p>
+
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Generate 4 chains, each with 1,000 samples.</span>
+<span class="n">chains</span> <span class="o">=</span> <span class="n">psample</span><span class="x">(</span><span class="n">model</span><span class="x">,</span> <span class="n">sampler</span><span class="x">,</span> <span class="mi">1000</span><span class="x">,</span> <span class="mi">4</span><span class="x">)</span>
+</code></pre></div></div>
+
+<p>For older versions of Julia, <code class="highlighter-rouge">psample</code> may not function correctly. If you wish to run multiple chains, you can do so with the <code class="highlighter-rouge">mapreduce</code> function:</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Replace num_chains below with however many chains you wish to sample.</span>
-<span class="n">chains</span> <span class="o">=</span> <span class="n">mapreduce</span><span class="x">(</span><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">sample</span><span class="x">(</span><span class="n">model_fun</span><span class="x">,</span> <span class="n">sampler</span><span class="x">),</span> <span class="n">chainscat</span><span class="x">,</span> <span class="mi">1</span><span class="x">:</span><span class="n">num_chains</span><span class="x">)</span>
+<span class="n">chains</span> <span class="o">=</span> <span class="n">mapreduce</span><span class="x">(</span><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">sample</span><span class="x">(</span><span class="n">model_fun</span><span class="x">,</span> <span class="n">sampler</span><span class="x">,</span> <span class="mi">1000</span><span class="x">),</span> <span class="n">chainscat</span><span class="x">,</span> <span class="mi">1</span><span class="o">:</span><span class="n">num_chains</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p>The <code class="highlighter-rouge">chains</code> variable now contains a <code class="highlighter-rouge">Chains</code> object which can be indexed by chain. To pull out the first chain from the <code class="highlighter-rouge">chains</code> object, use <code class="highlighter-rouge">chains[:,:,1]</code>.</p>
 
 <p>Having multiple chains in the same object is valuable for evaluating convergence. Some diagnostic functions like <code class="highlighter-rouge">gelmandiag</code> require multiple chains.</p>
-
-<p>Please note that Turing does not have native support for chains sampled in parallel.</p>
 
 <p><a id="Sampling-from-an-Unconditional-Distribution-(The-Prior)-1"></a></p>
 
@@ -756,7 +760,7 @@
 
 <p>Turing allows you to sample from a declared model’s prior by calling the model without specifying inputs or a sampler. In the below example, we specify a <code class="highlighter-rouge">gdemo</code> model which returns two variables, <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code>. The model includes <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code> as arguments, but calling the function without passing in <code class="highlighter-rouge">x</code> or <code class="highlighter-rouge">y</code> means that Turing’s compiler will assume they are missing values to draw from the relevant distribution. The <code class="highlighter-rouge">return</code> statement is necessary to retrieve the sampled <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code> values.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
   <span class="n">s</span> <span class="o">~</span> <span class="n">InverseGamma</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">3</span><span class="x">)</span>
   <span class="n">m</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
   <span class="n">x</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="n">m</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
@@ -787,7 +791,7 @@
 
 <p>Values that are <code class="highlighter-rouge">missing</code> are treated as parameters to be estimated. This can be useful if you want to simulate draws for that parameter, or if you are sampling from a conditional distribution. Turing v0.6.7 supports the following syntax:</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="n">s</span> <span class="o">~</span> <span class="n">InverseGamma</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">3</span><span class="x">)</span>
     <span class="n">m</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
     <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">eachindex</span><span class="x">(</span><span class="n">x</span><span class="x">)</span>
@@ -796,7 +800,7 @@
 <span class="k">end</span>
 
 <span class="c"># Treat x as a vector of missing values.</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">fill</span><span class="x">(</span><span class="n">missing</span><span class="x">,</span> <span class="mi">2</span><span class="x">))</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">fill</span><span class="x">(</span><span class="nb">missing</span><span class="x">,</span> <span class="mi">2</span><span class="x">))</span>
 <span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">model</span><span class="x">,</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">),</span> <span class="mi">500</span><span class="x">)</span>
 </code></pre></div></div>
 
@@ -804,7 +808,7 @@
 
 <p>Currently, Turing does not support vector-valued inputs containing mixed <code class="highlighter-rouge">missing</code> and non-missing values, i.e. vectors of type <code class="highlighter-rouge">Union{Missing, T}</code> where <code class="highlighter-rouge">T</code> is any type. The following <strong>will not work</strong>:</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="n">s</span> <span class="o">~</span> <span class="n">InverseGamma</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">3</span><span class="x">)</span>
     <span class="n">m</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
     <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">eachindex</span><span class="x">(</span><span class="n">x</span><span class="x">)</span>
@@ -813,13 +817,13 @@
 <span class="k">end</span>
 
 <span class="c"># Warning: This will provide an error!</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">gdemo</span><span class="x">([</span><span class="n">missing</span><span class="x">,</span> <span class="mf">2.4</span><span class="x">])</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">gdemo</span><span class="x">([</span><span class="nb">missing</span><span class="x">,</span> <span class="mf">2.4</span><span class="x">])</span>
 <span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">model</span><span class="x">,</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">),</span> <span class="mi">500</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p>If this is functionality you need, you may need to define each parameter as a separate variable, as below:</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x1</span><span class="x">,</span> <span class="n">x2</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">x1</span><span class="x">,</span> <span class="n">x2</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="n">s</span> <span class="o">~</span> <span class="n">InverseGamma</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">3</span><span class="x">)</span>
     <span class="n">m</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
     <span class="c"># Note that x1 and x2 are no longer vector-valued.</span>
@@ -828,7 +832,7 @@
 <span class="k">end</span>
 
 <span class="c"># Equivalent to sampling p( x1 | x2 = 1.5).</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">gdemo</span><span class="x">(</span><span class="n">missing</span><span class="x">,</span> <span class="mf">1.5</span><span class="x">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">gdemo</span><span class="x">(</span><span class="nb">missing</span><span class="x">,</span> <span class="mf">1.5</span><span class="x">)</span>
 <span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">model</span><span class="x">,</span> <span class="n">HMC</span><span class="x">(</span><span class="mf">0.01</span><span class="x">,</span> <span class="mi">5</span><span class="x">),</span> <span class="mi">500</span><span class="x">)</span>
 </code></pre></div></div>
 
@@ -848,13 +852,13 @@ x_i \sim \text{Normal}(m, \sqrt{s}), \space i = 1\dots10 :$</p>
 
 <p>Each $x_i$ can be generated by Turing. In the model below, if <code class="highlighter-rouge">x</code> is not provided when the function is called, <code class="highlighter-rouge">x</code> will default to <code class="highlighter-rouge">Vector{Real}(undef, 10)</code>, a 10-element array of <code class="highlighter-rouge">Real</code> values. The sampler will then treat <code class="highlighter-rouge">x</code> as a parameter and generate those quantities.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">using</span> <span class="n">Turing</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">Turing</span>
 
 <span class="c"># Declare a model with a default value.</span>
-<span class="nd">@model</span> <span class="n">generative</span><span class="x">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">Vector</span><span class="x">{</span><span class="n">Real</span><span class="x">}(</span><span class="n">undef</span><span class="x">,</span> <span class="mi">10</span><span class="x">))</span> <span class="o">=</span> <span class="n">begin</span>
+<span class="nd">@model</span> <span class="n">generative</span><span class="x">(</span><span class="n">x</span> <span class="o">=</span> <span class="kt">Vector</span><span class="x">{</span><span class="kt">Real</span><span class="x">}(</span><span class="nb">undef</span><span class="x">,</span> <span class="mi">10</span><span class="x">))</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="n">s</span> <span class="o">~</span> <span class="n">InverseGamma</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">3</span><span class="x">)</span>
     <span class="n">m</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="x">:</span><span class="n">length</span><span class="x">(</span><span class="n">x</span><span class="x">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="x">(</span><span class="n">x</span><span class="x">)</span>
         <span class="n">x</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="n">m</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
     <span class="k">end</span>
     <span class="k">return</span> <span class="n">s</span><span class="x">,</span> <span class="n">m</span>
@@ -877,7 +881,7 @@ x_i \sim \text{Normal}(m, \sqrt{s}), \space i = 1\dots10 :$</p>
 
 <p>The generated quantities can then be accessed by pulling them out of the chain. To access all the <code class="highlighter-rouge">x</code> values, we first subset the chain using <code class="highlighter-rouge">generated[:x]</code></p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">xs</span> <span class="o">=</span> <span class="n">generated</span><span class="x">[:</span><span class="n">x</span><span class="x">]</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">xs</span> <span class="o">=</span> <span class="n">generated</span><span class="x">[</span><span class="o">:</span><span class="n">x</span><span class="x">]</span>
 </code></pre></div></div>
 
 <p>You can access the values inside a chain several ways:</p>
@@ -904,10 +908,10 @@ x_i \sim \text{Normal}(m, \sqrt{s}), \space i = 1\dots10 :$</p>
 
 <p>Currently, the actual <em>value</em> of the default argument does not matter. Only the dimensions and type of a non-atomic value are relevant. Turing uses default values to pre-allocate vectors when they are treated as parameters, because if the value is not provided, the model will not know the size or type of a vector. Consider the following model:</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">generator</span><span class="x">(</span><span class="n">x</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">generator</span><span class="x">(</span><span class="n">x</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
   <span class="n">s</span> <span class="o">~</span> <span class="n">InverseGamma</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">3</span><span class="x">)</span>
   <span class="n">m</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="x">:</span><span class="n">length</span><span class="x">(</span><span class="n">x</span><span class="x">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="x">(</span><span class="n">x</span><span class="x">)</span>
       <span class="n">x</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="n">m</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
   <span class="k">end</span>
   <span class="k">return</span> <span class="n">s</span><span class="x">,</span> <span class="n">m</span>
@@ -918,10 +922,10 @@ x_i \sim \text{Normal}(m, \sqrt{s}), \space i = 1\dots10 :$</p>
 
 <p>A sensible default value might be:</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">generator</span><span class="x">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">zeros</span><span class="x">(</span><span class="mi">10</span><span class="x">))</span> <span class="o">=</span> <span class="n">begin</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">generator</span><span class="x">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">zeros</span><span class="x">(</span><span class="mi">10</span><span class="x">))</span> <span class="o">=</span> <span class="k">begin</span>
   <span class="n">s</span> <span class="o">~</span> <span class="n">InverseGamma</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">3</span><span class="x">)</span>
   <span class="n">m</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="x">:</span><span class="n">length</span><span class="x">(</span><span class="n">x</span><span class="x">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="x">(</span><span class="n">x</span><span class="x">)</span>
       <span class="n">x</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="n">m</span><span class="x">,</span> <span class="n">sqrt</span><span class="x">(</span><span class="n">s</span><span class="x">))</span>
   <span class="k">end</span>
   <span class="k">return</span> <span class="n">s</span><span class="x">,</span> <span class="n">m</span>
@@ -942,10 +946,10 @@ x_i \sim \text{Normal}(m, \sqrt{s}), \space i = 1\dots10 :$</p>
 
 <p>Turing.jl provides a Gibbs interface to combine different samplers. For example, one can combine an <code class="highlighter-rouge">HMC</code> sampler with a <code class="highlighter-rouge">PG</code> sampler to run inference for different parameters in a single model as below.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">simple_choice</span><span class="x">(</span><span class="n">xs</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">simple_choice</span><span class="x">(</span><span class="n">xs</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
   <span class="n">p</span> <span class="o">~</span> <span class="n">Beta</span><span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">2</span><span class="x">)</span>
   <span class="n">z</span> <span class="o">~</span> <span class="n">Bernoulli</span><span class="x">(</span><span class="n">p</span><span class="x">)</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="x">:</span><span class="n">length</span><span class="x">(</span><span class="n">xs</span><span class="x">)</span>
+  <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="x">(</span><span class="n">xs</span><span class="x">)</span>
     <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="mi">1</span>
       <span class="n">xs</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="mi">1</span><span class="x">)</span>
     <span class="k">else</span>
@@ -956,7 +960,7 @@ x_i \sim \text{Normal}(m, \sqrt{s}), \space i = 1\dots10 :$</p>
 
 <span class="n">simple_choice_f</span> <span class="o">=</span> <span class="n">simple_choice</span><span class="x">([</span><span class="mf">1.5</span><span class="x">,</span> <span class="mf">2.0</span><span class="x">,</span> <span class="mf">0.3</span><span class="x">])</span>
 
-<span class="n">chn</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">simple_choice_f</span><span class="x">,</span> <span class="n">Gibbs</span><span class="x">(</span><span class="n">HMC</span><span class="x">(</span><span class="mf">0.2</span><span class="x">,</span> <span class="mi">3</span><span class="x">,</span> <span class="x">:</span><span class="n">p</span><span class="x">),</span> <span class="n">PG</span><span class="x">(</span><span class="mi">20</span><span class="x">,</span> <span class="x">:</span><span class="n">z</span><span class="x">)),</span> <span class="mi">1000</span><span class="x">)</span>
+<span class="n">chn</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">simple_choice_f</span><span class="x">,</span> <span class="n">Gibbs</span><span class="x">(</span><span class="n">HMC</span><span class="x">(</span><span class="mf">0.2</span><span class="x">,</span> <span class="mi">3</span><span class="x">,</span> <span class="o">:</span><span class="n">p</span><span class="x">),</span> <span class="n">PG</span><span class="x">(</span><span class="mi">20</span><span class="x">,</span> <span class="o">:</span><span class="n">z</span><span class="x">)),</span> <span class="mi">1000</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p>The <code class="highlighter-rouge">Gibbs</code> sampler can be used to specify unique automatic differentation backends for different variable spaces. Please see the <a href="/dev/docs/using-turing/autodiff">Automatic Differentiation</a> article for more.</p>
@@ -994,19 +998,19 @@ x_i \sim \text{Normal}(m, \sqrt{s}), \space i = 1\dots10 :$</p>
 <p>Here is an example of how the <code class="highlighter-rouge">TArray</code> (using a <code class="highlighter-rouge">TArray</code> constructor function called <code class="highlighter-rouge">tzeros</code>) can be applied in this way:</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Turing model definition.</span>
-<span class="nd">@model</span> <span class="n">BayesHmm</span><span class="x">(</span><span class="n">y</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<span class="nd">@model</span> <span class="n">BayesHmm</span><span class="x">(</span><span class="n">y</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="c"># Declare a TArray with a length of N.</span>
     <span class="n">s</span> <span class="o">=</span> <span class="n">tzeros</span><span class="x">(</span><span class="kt">Int</span><span class="x">,</span> <span class="n">N</span><span class="x">)</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">Vector</span><span class="x">{</span><span class="n">Real</span><span class="x">}(</span><span class="n">undef</span><span class="x">,</span> <span class="n">K</span><span class="x">)</span>
-    <span class="n">T</span> <span class="o">=</span> <span class="n">Vector</span><span class="x">{</span><span class="n">Vector</span><span class="x">{</span><span class="n">Real</span><span class="x">}}(</span><span class="n">undef</span><span class="x">,</span> <span class="n">K</span><span class="x">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="x">:</span><span class="n">K</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="kt">Vector</span><span class="x">{</span><span class="kt">Real</span><span class="x">}(</span><span class="nb">undef</span><span class="x">,</span> <span class="n">K</span><span class="x">)</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="kt">Vector</span><span class="x">{</span><span class="kt">Vector</span><span class="x">{</span><span class="kt">Real</span><span class="x">}}(</span><span class="nb">undef</span><span class="x">,</span> <span class="n">K</span><span class="x">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">:</span><span class="n">K</span>
         <span class="n">T</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span> <span class="n">Dirichlet</span><span class="x">(</span><span class="n">ones</span><span class="x">(</span><span class="n">K</span><span class="x">)</span><span class="o">/</span><span class="n">K</span><span class="x">)</span>
         <span class="n">m</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="n">i</span><span class="x">,</span> <span class="mf">0.01</span><span class="x">)</span>
     <span class="k">end</span>
 
     <span class="c"># Draw from a distribution for each element in s.</span>
     <span class="n">s</span><span class="x">[</span><span class="mi">1</span><span class="x">]</span> <span class="o">~</span> <span class="n">Categorical</span><span class="x">(</span><span class="n">K</span><span class="x">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span><span class="x">:</span><span class="n">N</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">2</span><span class="o">:</span><span class="n">N</span>
         <span class="n">s</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span> <span class="n">Categorical</span><span class="x">(</span><span class="n">vec</span><span class="x">(</span><span class="n">T</span><span class="x">[</span><span class="n">s</span><span class="x">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="x">]]))</span>
         <span class="n">y</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="n">m</span><span class="x">[</span><span class="n">s</span><span class="x">[</span><span class="n">i</span><span class="x">]],</span> <span class="mf">0.1</span><span class="x">)</span>
     <span class="k">end</span>

@@ -613,7 +613,7 @@
 
 <p>More specifically, we are interested in discovering the grouping illustrated in figure below. This example consists of 2-D data points, i.e. <script type="math/tex">\boldsymbol{x} = \{x_i\}_{i=1}^N \,, x_i \in \mathcal{R}^2</script>, which are distributed according to Gaussian distributions. For simplicity, we use isotropic Gaussian distributions but this assumption can easily be relaxed by introducing additional parameters.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">using</span> <span class="n">Distributions</span><span class="x">,</span> <span class="n">StatsPlots</span><span class="x">,</span> <span class="n">Random</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">Distributions</span><span class="x">,</span> <span class="n">StatsPlots</span><span class="x">,</span> <span class="n">Random</span>
 
 <span class="c"># Set a random seed.</span>
 <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="x">(</span><span class="mi">3</span><span class="x">)</span>
@@ -625,10 +625,10 @@
 <span class="n">μs</span> <span class="o">=</span> <span class="x">[</span><span class="o">-</span><span class="mf">3.5</span><span class="x">,</span> <span class="mf">0.0</span><span class="x">]</span>
 
 <span class="c"># Construct the data points.</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">mapreduce</span><span class="x">(</span><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">rand</span><span class="x">(</span><span class="n">MvNormal</span><span class="x">([</span><span class="n">μs</span><span class="x">[</span><span class="n">c</span><span class="x">],</span> <span class="n">μs</span><span class="x">[</span><span class="n">c</span><span class="x">]],</span> <span class="mf">1.</span><span class="x">),</span> <span class="n">N</span><span class="x">),</span> <span class="n">hcat</span><span class="x">,</span> <span class="mi">1</span><span class="x">:</span><span class="mi">2</span><span class="x">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">mapreduce</span><span class="x">(</span><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">rand</span><span class="x">(</span><span class="n">MvNormal</span><span class="x">([</span><span class="n">μs</span><span class="x">[</span><span class="n">c</span><span class="x">],</span> <span class="n">μs</span><span class="x">[</span><span class="n">c</span><span class="x">]],</span> <span class="mf">1.</span><span class="x">),</span> <span class="n">N</span><span class="x">),</span> <span class="n">hcat</span><span class="x">,</span> <span class="mi">1</span><span class="o">:</span><span class="mi">2</span><span class="x">)</span>
 
 <span class="c"># Visualization.</span>
-<span class="n">scatter</span><span class="x">(</span><span class="n">x</span><span class="x">[</span><span class="mi">1</span><span class="x">,:],</span> <span class="n">x</span><span class="x">[</span><span class="mi">2</span><span class="x">,:],</span> <span class="n">legend</span> <span class="o">=</span> <span class="n">false</span><span class="x">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s">"Synthetic Dataset"</span><span class="x">)</span>
+<span class="n">scatter</span><span class="x">(</span><span class="n">x</span><span class="x">[</span><span class="mi">1</span><span class="x">,</span><span class="o">:</span><span class="x">],</span> <span class="n">x</span><span class="x">[</span><span class="mi">2</span><span class="x">,</span><span class="o">:</span><span class="x">],</span> <span class="n">legend</span> <span class="o">=</span> <span class="nb">false</span><span class="x">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s">"Synthetic Dataset"</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p><img src="../figures/1_GaussianMixtureModel_1_1.png" alt="" /></p>
@@ -654,16 +654,16 @@ $$</p>
 
 <p>For more details on Gaussian mixture models, we refer to Christopher M. Bishop, <em>Pattern Recognition and Machine Learning</em>, Section 9.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">using</span> <span class="n">Turing</span><span class="x">,</span> <span class="n">MCMCChains</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">Turing</span><span class="x">,</span> <span class="n">MCMCChains</span>
 
 <span class="c"># Turn off the progress monitor.</span>
-<span class="n">Turing</span><span class="o">.</span><span class="n">turnprogress</span><span class="x">(</span><span class="n">false</span><span class="x">)</span>
+<span class="n">Turing</span><span class="o">.</span><span class="n">turnprogress</span><span class="x">(</span><span class="nb">false</span><span class="x">)</span>
 </code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>false
 </code></pre></div></div>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">GaussianMixtureModel</span><span class="x">(</span><span class="n">x</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@model</span> <span class="n">GaussianMixtureModel</span><span class="x">(</span><span class="n">x</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
     
     <span class="n">D</span><span class="x">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">size</span><span class="x">(</span><span class="n">x</span><span class="x">)</span>
 
@@ -685,10 +685,10 @@ $$</p>
     <span class="n">w</span> <span class="o">=</span> <span class="x">[</span><span class="mf">0.5</span><span class="x">,</span> <span class="mf">0.5</span><span class="x">]</span>
     
     <span class="c"># Draw assignments for each datum and generate it from a multivariate normal.</span>
-    <span class="n">k</span> <span class="o">=</span> <span class="n">Vector</span><span class="x">{</span><span class="kt">Int</span><span class="x">}(</span><span class="n">undef</span><span class="x">,</span> <span class="n">N</span><span class="x">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="x">:</span><span class="n">N</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="kt">Vector</span><span class="x">{</span><span class="kt">Int</span><span class="x">}(</span><span class="nb">undef</span><span class="x">,</span> <span class="n">N</span><span class="x">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">N</span>
         <span class="n">k</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span> <span class="n">Categorical</span><span class="x">(</span><span class="n">w</span><span class="x">)</span>
-        <span class="n">x</span><span class="x">[:,</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span><span class="err"> </span><span class="n">MvNormal</span><span class="x">([</span><span class="n">μ</span><span class="x">[</span><span class="n">k</span><span class="x">[</span><span class="n">i</span><span class="x">]],</span> <span class="n">μ</span><span class="x">[</span><span class="n">k</span><span class="x">[</span><span class="n">i</span><span class="x">]]],</span> <span class="mf">1.</span><span class="x">)</span>
+        <span class="n">x</span><span class="x">[</span><span class="o">:</span><span class="x">,</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span><span class="err"> </span><span class="n">MvNormal</span><span class="x">([</span><span class="n">μ</span><span class="x">[</span><span class="n">k</span><span class="x">[</span><span class="n">i</span><span class="x">]],</span> <span class="n">μ</span><span class="x">[</span><span class="n">k</span><span class="x">[</span><span class="n">i</span><span class="x">]]],</span> <span class="mf">1.</span><span class="x">)</span>
     <span class="k">end</span>
     <span class="k">return</span> <span class="n">k</span>
 <span class="k">end</span>
@@ -702,7 +702,7 @@ $$</p>
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Set the automatic differentiation backend to forward differentiation.</span>
 <span class="c"># Note, this is temporary while the reverse differentiation functionality</span>
 <span class="c"># is being improved.</span>
-<span class="n">Turing</span><span class="o">.</span><span class="n">setadbackend</span><span class="x">(:</span><span class="n">forward_diff</span><span class="x">)</span>
+<span class="n">Turing</span><span class="o">.</span><span class="n">setadbackend</span><span class="x">(</span><span class="o">:</span><span class="n">forward_diff</span><span class="x">)</span>
 </code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>:forward_diff
@@ -715,8 +715,8 @@ $$</p>
 
 <p>Note that we use a <code class="highlighter-rouge">Gibbs</code> sampler to combine both samplers for Bayesian inference in our model. We are also calling <code class="highlighter-rouge">mapreduce</code> to generate multiple chains, particularly so we test for convergence. The <code class="highlighter-rouge">chainscat</code> function simply adds multiple chains together.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gmm_sampler</span> <span class="o">=</span> <span class="n">Gibbs</span><span class="x">(</span><span class="mi">100</span><span class="x">,</span> <span class="n">PG</span><span class="x">(</span><span class="mi">100</span><span class="x">,</span> <span class="mi">1</span><span class="x">,</span> <span class="x">:</span><span class="n">k</span><span class="x">),</span> <span class="n">HMC</span><span class="x">(</span><span class="mi">1</span><span class="x">,</span> <span class="mf">0.05</span><span class="x">,</span> <span class="mi">10</span><span class="x">,</span> <span class="x">:</span><span class="n">μ1</span><span class="x">,</span> <span class="x">:</span><span class="n">μ2</span><span class="x">))</span>
-<span class="n">tchain</span> <span class="o">=</span> <span class="n">mapreduce</span><span class="x">(</span><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">sample</span><span class="x">(</span><span class="n">gmm_model</span><span class="x">,</span> <span class="n">gmm_sampler</span><span class="x">),</span> <span class="n">chainscat</span><span class="x">,</span> <span class="mi">1</span><span class="x">:</span><span class="mi">3</span><span class="x">);</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">gmm_sampler</span> <span class="o">=</span> <span class="n">Gibbs</span><span class="x">(</span><span class="mi">100</span><span class="x">,</span> <span class="n">PG</span><span class="x">(</span><span class="mi">100</span><span class="x">,</span> <span class="mi">1</span><span class="x">,</span> <span class="o">:</span><span class="n">k</span><span class="x">),</span> <span class="n">HMC</span><span class="x">(</span><span class="mi">1</span><span class="x">,</span> <span class="mf">0.05</span><span class="x">,</span> <span class="mi">10</span><span class="x">,</span> <span class="o">:</span><span class="n">μ1</span><span class="x">,</span> <span class="o">:</span><span class="n">μ2</span><span class="x">))</span>
+<span class="n">tchain</span> <span class="o">=</span> <span class="n">mapreduce</span><span class="x">(</span><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">sample</span><span class="x">(</span><span class="n">gmm_model</span><span class="x">,</span> <span class="n">gmm_sampler</span><span class="x">),</span> <span class="n">chainscat</span><span class="x">,</span> <span class="mi">1</span><span class="o">:</span><span class="mi">3</span><span class="x">);</span>
 </code></pre></div></div>
 
 <h2 id="visualize-the-density-region-of-the-mixture-model">Visualize the Density Region of the Mixture Model</h2>
@@ -726,7 +726,7 @@ $$</p>
 <p>In particular, in this example we consider the sample values of the location parameter for the two clusters.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ids</span> <span class="o">=</span> <span class="n">findall</span><span class="x">(</span><span class="n">map</span><span class="x">(</span><span class="n">name</span> <span class="o">-&gt;</span> <span class="n">occursin</span><span class="x">(</span><span class="s">"μ"</span><span class="x">,</span> <span class="n">name</span><span class="x">),</span> <span class="n">names</span><span class="x">(</span><span class="n">tchain</span><span class="x">)));</span>
-<span class="n">p</span><span class="o">=</span><span class="n">plot</span><span class="x">(</span><span class="n">tchain</span><span class="x">[:,</span> <span class="n">ids</span><span class="x">,</span> <span class="x">:],</span> <span class="n">legend</span><span class="o">=</span><span class="n">true</span><span class="x">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="x">[</span><span class="s">"Mu 1"</span> <span class="s">"Mu 2"</span><span class="x">],</span> <span class="n">colordim</span><span class="o">=</span><span class="x">:</span><span class="n">parameter</span><span class="x">)</span>
+<span class="n">p</span><span class="o">=</span><span class="n">plot</span><span class="x">(</span><span class="n">tchain</span><span class="x">[</span><span class="o">:</span><span class="x">,</span> <span class="n">ids</span><span class="x">,</span> <span class="o">:</span><span class="x">],</span> <span class="n">legend</span><span class="o">=</span><span class="nb">true</span><span class="x">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="x">[</span><span class="s">"Mu 1"</span> <span class="s">"Mu 2"</span><span class="x">],</span> <span class="n">colordim</span><span class="o">=:</span><span class="n">parameter</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p><img src="../figures/1_GaussianMixtureModel_7_1.png" alt="" /></p>
@@ -735,7 +735,7 @@ $$</p>
 
 <p>For the moment, we will just use the first chain to ensure the validity of our inference.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">tchain</span> <span class="o">=</span> <span class="n">tchain</span><span class="x">[:,</span> <span class="x">:,</span> <span class="mi">1</span><span class="x">];</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">tchain</span> <span class="o">=</span> <span class="n">tchain</span><span class="x">[</span><span class="o">:</span><span class="x">,</span> <span class="o">:</span><span class="x">,</span> <span class="mi">1</span><span class="x">];</span>
 </code></pre></div></div>
 
 <p>As the samples for the location parameter for both clusters are unimodal, we can safely visualize the density region of our model using the average location.</p>
@@ -754,9 +754,9 @@ $$</p>
 </code></pre></div></div>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">contour</span><span class="x">(</span><span class="n">range</span><span class="x">(</span><span class="o">-</span><span class="mi">5</span><span class="x">,</span> <span class="n">stop</span> <span class="o">=</span> <span class="mi">3</span><span class="x">),</span> <span class="n">range</span><span class="x">(</span><span class="o">-</span><span class="mi">6</span><span class="x">,</span> <span class="n">stop</span> <span class="o">=</span> <span class="mi">2</span><span class="x">),</span> 
-    <span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">)</span> <span class="o">-&gt;</span> <span class="n">predict</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">,</span> <span class="x">[</span><span class="mf">0.5</span><span class="x">,</span> <span class="mf">0.5</span><span class="x">],</span> <span class="x">[</span><span class="n">mean</span><span class="x">(</span><span class="n">tchain</span><span class="x">[:</span><span class="n">μ1</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">),</span> <span class="n">mean</span><span class="x">(</span><span class="n">tchain</span><span class="x">[:</span><span class="n">μ2</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">)])</span>
+    <span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">)</span> <span class="o">-&gt;</span> <span class="n">predict</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">,</span> <span class="x">[</span><span class="mf">0.5</span><span class="x">,</span> <span class="mf">0.5</span><span class="x">],</span> <span class="x">[</span><span class="n">mean</span><span class="x">(</span><span class="n">tchain</span><span class="x">[</span><span class="o">:</span><span class="n">μ1</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">),</span> <span class="n">mean</span><span class="x">(</span><span class="n">tchain</span><span class="x">[</span><span class="o">:</span><span class="n">μ2</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">)])</span>
 <span class="x">)</span>
-<span class="n">scatter!</span><span class="x">(</span><span class="n">x</span><span class="x">[</span><span class="mi">1</span><span class="x">,:],</span> <span class="n">x</span><span class="x">[</span><span class="mi">2</span><span class="x">,:],</span> <span class="n">legend</span> <span class="o">=</span> <span class="n">false</span><span class="x">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s">"Synthetic Dataset"</span><span class="x">)</span>
+<span class="n">scatter!</span><span class="x">(</span><span class="n">x</span><span class="x">[</span><span class="mi">1</span><span class="x">,</span><span class="o">:</span><span class="x">],</span> <span class="n">x</span><span class="x">[</span><span class="mi">2</span><span class="x">,</span><span class="o">:</span><span class="x">],</span> <span class="n">legend</span> <span class="o">=</span> <span class="nb">false</span><span class="x">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s">"Synthetic Dataset"</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p><img src="../figures/1_GaussianMixtureModel_10_1.png" alt="" /></p>
@@ -765,9 +765,9 @@ $$</p>
 
 <p>Finally, we can inspect the assignments of the data points infered using Turing. As we can see, the dataset is partitioned into two distinct groups.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">assignments</span> <span class="o">=</span> <span class="n">collect</span><span class="x">(</span><span class="n">skipmissing</span><span class="x">(</span><span class="n">mean</span><span class="x">(</span><span class="n">tchain</span><span class="x">[:</span><span class="n">k</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">,</span> <span class="n">dims</span><span class="o">=</span><span class="mi">1</span><span class="x">)</span><span class="o">.</span><span class="n">data</span><span class="x">))</span>
-<span class="n">scatter</span><span class="x">(</span><span class="n">x</span><span class="x">[</span><span class="mi">1</span><span class="x">,:],</span> <span class="n">x</span><span class="x">[</span><span class="mi">2</span><span class="x">,:],</span> 
-    <span class="n">legend</span> <span class="o">=</span> <span class="n">false</span><span class="x">,</span> 
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">assignments</span> <span class="o">=</span> <span class="n">collect</span><span class="x">(</span><span class="n">skipmissing</span><span class="x">(</span><span class="n">mean</span><span class="x">(</span><span class="n">tchain</span><span class="x">[</span><span class="o">:</span><span class="n">k</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">,</span> <span class="n">dims</span><span class="o">=</span><span class="mi">1</span><span class="x">)</span><span class="o">.</span><span class="n">data</span><span class="x">))</span>
+<span class="n">scatter</span><span class="x">(</span><span class="n">x</span><span class="x">[</span><span class="mi">1</span><span class="x">,</span><span class="o">:</span><span class="x">],</span> <span class="n">x</span><span class="x">[</span><span class="mi">2</span><span class="x">,</span><span class="o">:</span><span class="x">],</span> 
+    <span class="n">legend</span> <span class="o">=</span> <span class="nb">false</span><span class="x">,</span> 
     <span class="n">title</span> <span class="o">=</span> <span class="s">"Assignments on Synthetic Dataset"</span><span class="x">,</span> 
     <span class="n">zcolor</span> <span class="o">=</span> <span class="n">assignments</span><span class="x">)</span>
 </code></pre></div></div>

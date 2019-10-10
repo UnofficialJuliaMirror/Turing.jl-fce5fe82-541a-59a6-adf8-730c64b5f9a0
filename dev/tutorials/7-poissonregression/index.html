@@ -618,17 +618,17 @@
 <p>We start by importing the required libraries.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#Import Turing, Distributions and DataFrames</span>
-<span class="n">using</span> <span class="n">Turing</span><span class="x">,</span> <span class="n">Distributions</span><span class="x">,</span> <span class="n">DataFrames</span><span class="x">,</span> <span class="n">Distributed</span>
+<span class="k">using</span> <span class="n">Turing</span><span class="x">,</span> <span class="n">Distributions</span><span class="x">,</span> <span class="n">DataFrames</span><span class="x">,</span> <span class="n">Distributed</span>
 
 <span class="c"># Import MCMCChain, Plots, and StatsPlots for visualizations and diagnostics.</span>
-<span class="n">using</span> <span class="n">MCMCChains</span><span class="x">,</span> <span class="n">Plots</span><span class="x">,</span> <span class="n">StatsPlots</span>
+<span class="k">using</span> <span class="n">MCMCChains</span><span class="x">,</span> <span class="n">Plots</span><span class="x">,</span> <span class="n">StatsPlots</span>
 
 <span class="c"># Set a seed for reproducibility.</span>
-<span class="n">using</span> <span class="n">Random</span>
+<span class="k">using</span> <span class="n">Random</span>
 <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="x">(</span><span class="mi">12</span><span class="x">);</span>
 
 <span class="c"># Turn off progress monitor.</span>
-<span class="n">Turing</span><span class="o">.</span><span class="n">turnprogress</span><span class="x">(</span><span class="n">false</span><span class="x">)</span>
+<span class="n">Turing</span><span class="o">.</span><span class="n">turnprogress</span><span class="x">(</span><span class="nb">false</span><span class="x">)</span>
 </code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>false
@@ -658,7 +658,7 @@
 <span class="n">meds_data</span> <span class="o">=</span> <span class="n">vcat</span><span class="x">(</span><span class="n">zeros</span><span class="x">(</span><span class="n">q</span><span class="x">),</span> <span class="n">zeros</span><span class="x">(</span><span class="n">q</span><span class="x">),</span> <span class="n">ones</span><span class="x">(</span><span class="n">q</span><span class="x">),</span> <span class="n">ones</span><span class="x">(</span><span class="n">q</span><span class="x">)</span> <span class="x">)</span>
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="x">(</span><span class="n">nsneeze</span> <span class="o">=</span> <span class="n">nsneeze_data</span><span class="x">,</span> <span class="n">alcohol_taken</span> <span class="o">=</span> <span class="n">alcohol_data</span><span class="x">,</span> <span class="n">nomeds_taken</span> <span class="o">=</span> <span class="n">meds_data</span><span class="x">,</span> <span class="n">product_alcohol_meds</span> <span class="o">=</span> <span class="n">meds_data</span><span class="o">.*</span><span class="n">alcohol_data</span><span class="x">)</span>
-<span class="n">df</span><span class="x">[</span><span class="n">sample</span><span class="x">(</span><span class="mi">1</span><span class="x">:</span><span class="n">nrow</span><span class="x">(</span><span class="n">df</span><span class="x">),</span> <span class="mi">5</span><span class="x">,</span> <span class="n">replace</span> <span class="o">=</span> <span class="n">false</span><span class="x">),</span> <span class="x">:]</span>
+<span class="n">df</span><span class="x">[</span><span class="n">sample</span><span class="x">(</span><span class="mi">1</span><span class="o">:</span><span class="n">nrow</span><span class="x">(</span><span class="n">df</span><span class="x">),</span> <span class="mi">5</span><span class="x">,</span> <span class="n">replace</span> <span class="o">=</span> <span class="nb">false</span><span class="x">),</span> <span class="o">:</span><span class="x">]</span>
 </code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>5×4 DataFrame
@@ -677,11 +677,11 @@
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#Data Plotting</span>
 
-<span class="n">p1</span> <span class="o">=</span> <span class="n">Plots</span><span class="o">.</span><span class="n">histogram</span><span class="x">(</span><span class="n">df</span><span class="x">[(</span><span class="n">df</span><span class="x">[:</span><span class="n">alcohol_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">0</span><span class="x">)</span> <span class="o">.&amp;</span> <span class="x">(</span><span class="n">df</span><span class="x">[:</span><span class="n">nomeds_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">0</span><span class="x">),</span> <span class="mi">1</span><span class="x">],</span> <span class="n">title</span> <span class="o">=</span> <span class="s">"no_alcohol+meds"</span><span class="x">)</span>  
-<span class="n">p2</span> <span class="o">=</span> <span class="n">Plots</span><span class="o">.</span><span class="n">histogram</span><span class="x">((</span><span class="n">df</span><span class="x">[(</span><span class="n">df</span><span class="x">[:</span><span class="n">alcohol_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">1</span><span class="x">)</span> <span class="o">.&amp;</span> <span class="x">(</span><span class="n">df</span><span class="x">[:</span><span class="n">nomeds_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">0</span><span class="x">),</span> <span class="mi">1</span><span class="x">]),</span> <span class="n">title</span> <span class="o">=</span> <span class="s">"alcohol+meds"</span><span class="x">)</span>  
-<span class="n">p3</span> <span class="o">=</span> <span class="n">Plots</span><span class="o">.</span><span class="n">histogram</span><span class="x">((</span><span class="n">df</span><span class="x">[(</span><span class="n">df</span><span class="x">[:</span><span class="n">alcohol_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">0</span><span class="x">)</span> <span class="o">.&amp;</span> <span class="x">(</span><span class="n">df</span><span class="x">[:</span><span class="n">nomeds_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">1</span><span class="x">),</span> <span class="mi">1</span><span class="x">]),</span> <span class="n">title</span> <span class="o">=</span> <span class="s">"no_alcohol+no_meds"</span><span class="x">)</span>  
-<span class="n">p4</span> <span class="o">=</span> <span class="n">Plots</span><span class="o">.</span><span class="n">histogram</span><span class="x">((</span><span class="n">df</span><span class="x">[(</span><span class="n">df</span><span class="x">[:</span><span class="n">alcohol_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">1</span><span class="x">)</span> <span class="o">.&amp;</span> <span class="x">(</span><span class="n">df</span><span class="x">[:</span><span class="n">nomeds_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">1</span><span class="x">),</span> <span class="mi">1</span><span class="x">]),</span> <span class="n">title</span> <span class="o">=</span> <span class="s">"alcohol+no_meds"</span><span class="x">)</span>  
-<span class="n">plot</span><span class="x">(</span><span class="n">p1</span><span class="x">,</span> <span class="n">p2</span><span class="x">,</span> <span class="n">p3</span><span class="x">,</span> <span class="n">p4</span><span class="x">,</span> <span class="n">layout</span> <span class="o">=</span> <span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">legend</span> <span class="o">=</span> <span class="n">false</span><span class="x">)</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">Plots</span><span class="o">.</span><span class="n">histogram</span><span class="x">(</span><span class="n">df</span><span class="x">[(</span><span class="n">df</span><span class="x">[</span><span class="o">:</span><span class="n">alcohol_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">0</span><span class="x">)</span> <span class="o">.&amp;</span> <span class="x">(</span><span class="n">df</span><span class="x">[</span><span class="o">:</span><span class="n">nomeds_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">0</span><span class="x">),</span> <span class="mi">1</span><span class="x">],</span> <span class="n">title</span> <span class="o">=</span> <span class="s">"no_alcohol+meds"</span><span class="x">)</span>  
+<span class="n">p2</span> <span class="o">=</span> <span class="n">Plots</span><span class="o">.</span><span class="n">histogram</span><span class="x">((</span><span class="n">df</span><span class="x">[(</span><span class="n">df</span><span class="x">[</span><span class="o">:</span><span class="n">alcohol_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">1</span><span class="x">)</span> <span class="o">.&amp;</span> <span class="x">(</span><span class="n">df</span><span class="x">[</span><span class="o">:</span><span class="n">nomeds_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">0</span><span class="x">),</span> <span class="mi">1</span><span class="x">]),</span> <span class="n">title</span> <span class="o">=</span> <span class="s">"alcohol+meds"</span><span class="x">)</span>  
+<span class="n">p3</span> <span class="o">=</span> <span class="n">Plots</span><span class="o">.</span><span class="n">histogram</span><span class="x">((</span><span class="n">df</span><span class="x">[(</span><span class="n">df</span><span class="x">[</span><span class="o">:</span><span class="n">alcohol_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">0</span><span class="x">)</span> <span class="o">.&amp;</span> <span class="x">(</span><span class="n">df</span><span class="x">[</span><span class="o">:</span><span class="n">nomeds_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">1</span><span class="x">),</span> <span class="mi">1</span><span class="x">]),</span> <span class="n">title</span> <span class="o">=</span> <span class="s">"no_alcohol+no_meds"</span><span class="x">)</span>  
+<span class="n">p4</span> <span class="o">=</span> <span class="n">Plots</span><span class="o">.</span><span class="n">histogram</span><span class="x">((</span><span class="n">df</span><span class="x">[(</span><span class="n">df</span><span class="x">[</span><span class="o">:</span><span class="n">alcohol_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">1</span><span class="x">)</span> <span class="o">.&amp;</span> <span class="x">(</span><span class="n">df</span><span class="x">[</span><span class="o">:</span><span class="n">nomeds_taken</span><span class="x">]</span> <span class="o">.==</span> <span class="mi">1</span><span class="x">),</span> <span class="mi">1</span><span class="x">]),</span> <span class="n">title</span> <span class="o">=</span> <span class="s">"alcohol+no_meds"</span><span class="x">)</span>  
+<span class="n">plot</span><span class="x">(</span><span class="n">p1</span><span class="x">,</span> <span class="n">p2</span><span class="x">,</span> <span class="n">p3</span><span class="x">,</span> <span class="n">p4</span><span class="x">,</span> <span class="n">layout</span> <span class="o">=</span> <span class="x">(</span><span class="mi">2</span><span class="x">,</span> <span class="mi">2</span><span class="x">),</span> <span class="n">legend</span> <span class="o">=</span> <span class="nb">false</span><span class="x">)</span>
 </code></pre></div></div>
 
 <p><img src="../figures/7_PoissonRegression_3_1.png" alt="" /></p>
@@ -689,8 +689,8 @@
 <p>We must convert our <code class="highlighter-rouge">DataFrame</code> data into the <code class="highlighter-rouge">Matrix</code> form as the manipulations that we are about are designed to work with <code class="highlighter-rouge">Matrix</code> data. We also separate the features from the labels which will be later used by the Turing sampler to generate samples from the posterior.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Convert the DataFrame object to matrices.</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">Matrix</span><span class="x">(</span><span class="n">df</span><span class="x">[[:</span><span class="n">alcohol_taken</span><span class="x">,</span> <span class="x">:</span><span class="n">nomeds_taken</span><span class="x">,</span> <span class="x">:</span><span class="n">product_alcohol_meds</span><span class="x">]])</span>
-<span class="n">data_labels</span> <span class="o">=</span> <span class="n">df</span><span class="x">[:</span><span class="n">nsneeze</span><span class="x">]</span>
+<span class="n">data</span> <span class="o">=</span> <span class="kt">Matrix</span><span class="x">(</span><span class="n">df</span><span class="x">[[</span><span class="o">:</span><span class="n">alcohol_taken</span><span class="x">,</span> <span class="o">:</span><span class="n">nomeds_taken</span><span class="x">,</span> <span class="o">:</span><span class="n">product_alcohol_meds</span><span class="x">]])</span>
+<span class="n">data_labels</span> <span class="o">=</span> <span class="n">df</span><span class="x">[</span><span class="o">:</span><span class="n">nsneeze</span><span class="x">]</span>
 <span class="n">data</span>
 </code></pre></div></div>
 
@@ -769,12 +769,12 @@
 <p>The <code class="highlighter-rouge">for</code> block creates a variable <code class="highlighter-rouge">theta</code> which is the weighted combination of the input features. We have defined the priors on these weights above. We then observe the likelihood of calculating <code class="highlighter-rouge">theta</code> given the actual label, <code class="highlighter-rouge">y[i]</code>.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Bayesian poisson regression (LR)</span>
-<span class="nd">@model</span> <span class="n">poisson_regression</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">,</span> <span class="n">n</span><span class="x">,</span> <span class="n">σ²</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<span class="nd">@model</span> <span class="n">poisson_regression</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">,</span> <span class="n">n</span><span class="x">,</span> <span class="n">σ²</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="n">b0</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">σ²</span><span class="x">)</span>
     <span class="n">b1</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">σ²</span><span class="x">)</span>
     <span class="n">b2</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">σ²</span><span class="x">)</span>
     <span class="n">b3</span>  <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">σ²</span><span class="x">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="x">:</span><span class="n">n</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">:</span><span class="n">n</span>
         <span class="n">theta</span> <span class="o">=</span> <span class="n">b0</span> <span class="o">+</span> <span class="n">b1</span><span class="o">*</span><span class="n">x</span><span class="x">[</span><span class="n">i</span><span class="x">,</span> <span class="mi">1</span><span class="x">]</span> <span class="o">+</span> <span class="n">b2</span><span class="o">*</span><span class="n">x</span><span class="x">[</span><span class="n">i</span><span class="x">,</span><span class="mi">2</span><span class="x">]</span> <span class="o">+</span> <span class="n">b3</span><span class="o">*</span><span class="n">x</span><span class="x">[</span><span class="n">i</span><span class="x">,</span><span class="mi">3</span><span class="x">]</span>
         <span class="n">y</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span> <span class="n">Poisson</span><span class="x">(</span><span class="n">exp</span><span class="x">(</span><span class="n">theta</span><span class="x">))</span>
     <span class="k">end</span>
@@ -785,7 +785,7 @@
 <p>We use the <code class="highlighter-rouge">NUTS</code> sampler to sample values from the posterior. We run multiple chains using the <code class="highlighter-rouge">mapreduce</code> function to nullify the effect of a problematic chain. We then use the Gelman, Rubin, and Brooks Diagnostic to check the convergence of these multiple chains.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># This is temporary while the reverse differentiation backend is being improved.</span>
-<span class="n">Turing</span><span class="o">.</span><span class="n">setadbackend</span><span class="x">(:</span><span class="n">forward_diff</span><span class="x">)</span>
+<span class="n">Turing</span><span class="o">.</span><span class="n">setadbackend</span><span class="x">(</span><span class="o">:</span><span class="n">forward_diff</span><span class="x">)</span>
 
 <span class="c"># Retrieve the number of observations.</span>
 <span class="n">n</span><span class="x">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">size</span><span class="x">(</span><span class="n">data</span><span class="x">)</span>
@@ -793,7 +793,7 @@
 <span class="c"># Sample using NUTS.</span>
 
 <span class="n">num_chains</span> <span class="o">=</span> <span class="mi">4</span>
-<span class="n">chains</span> <span class="o">=</span> <span class="n">mapreduce</span><span class="x">(</span><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">sample</span><span class="x">(</span><span class="n">poisson_regression</span><span class="x">(</span><span class="n">data</span><span class="x">,</span> <span class="n">data_labels</span><span class="x">,</span> <span class="n">n</span><span class="x">,</span> <span class="mi">10</span><span class="x">),</span> <span class="n">NUTS</span><span class="x">(</span><span class="mi">2500</span><span class="x">,</span> <span class="mi">200</span><span class="x">,</span> <span class="mf">0.65</span><span class="x">)</span> <span class="x">),</span> <span class="n">chainscat</span><span class="x">,</span> <span class="mi">1</span><span class="x">:</span><span class="n">num_chains</span><span class="x">);</span>
+<span class="n">chains</span> <span class="o">=</span> <span class="n">mapreduce</span><span class="x">(</span><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">sample</span><span class="x">(</span><span class="n">poisson_regression</span><span class="x">(</span><span class="n">data</span><span class="x">,</span> <span class="n">data_labels</span><span class="x">,</span> <span class="n">n</span><span class="x">,</span> <span class="mi">10</span><span class="x">),</span> <span class="n">NUTS</span><span class="x">(</span><span class="mi">2500</span><span class="x">,</span> <span class="mi">200</span><span class="x">,</span> <span class="mf">0.65</span><span class="x">)</span> <span class="x">),</span> <span class="n">chainscat</span><span class="x">,</span> <span class="mi">1</span><span class="o">:</span><span class="n">num_chains</span><span class="x">);</span>
 </code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[NUTS] Finished with
@@ -843,10 +843,10 @@
 <p>So, we have obtained the posterior distributions of the parameters. We transform the coefficients and recover theta values by taking the exponent of the meaned values of the coefficients <code class="highlighter-rouge">b0</code>, <code class="highlighter-rouge">b1</code>, <code class="highlighter-rouge">b2</code> and <code class="highlighter-rouge">b3</code>. We take the exponent of the means to get a better comparison of the relative values of the coefficients. We then compare this with the intuitive meaning that was described earlier.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Taking the first chain</span>
-<span class="n">chain</span> <span class="o">=</span> <span class="n">chains</span><span class="x">[:,:,</span><span class="mi">1</span><span class="x">]</span>
+<span class="n">chain</span> <span class="o">=</span> <span class="n">chains</span><span class="x">[</span><span class="o">:</span><span class="x">,</span><span class="o">:</span><span class="x">,</span><span class="mi">1</span><span class="x">]</span>
 
 <span class="c"># Calculating the exponentiated means</span>
-<span class="n">b0_exp</span> <span class="o">=</span> <span class="n">exp</span><span class="x">(</span><span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[:</span><span class="n">b0</span><span class="x">]))</span>
+<span class="n">b0_exp</span> <span class="o">=</span> <span class="n">exp</span><span class="x">(</span><span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[</span><span class="o">:</span><span class="n">b0</span><span class="x">]))</span>
 </code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Error: MethodError: no method matching iterate(::Chains{Union{Missing, Floa
@@ -860,7 +860,7 @@ Closest candidates are:
   ...
 </code></pre></div></div>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">b1_exp</span> <span class="o">=</span> <span class="n">exp</span><span class="x">(</span><span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[:</span><span class="n">b1</span><span class="x">]))</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">b1_exp</span> <span class="o">=</span> <span class="n">exp</span><span class="x">(</span><span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[</span><span class="o">:</span><span class="n">b1</span><span class="x">]))</span>
 </code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Error: MethodError: no method matching iterate(::Chains{Union{Missing, Floa
@@ -874,7 +874,7 @@ Closest candidates are:
   ...
 </code></pre></div></div>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">b2_exp</span> <span class="o">=</span> <span class="n">exp</span><span class="x">(</span><span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[:</span><span class="n">b2</span><span class="x">]))</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">b2_exp</span> <span class="o">=</span> <span class="n">exp</span><span class="x">(</span><span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[</span><span class="o">:</span><span class="n">b2</span><span class="x">]))</span>
 </code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Error: MethodError: no method matching iterate(::Chains{Union{Missing, Floa
@@ -888,7 +888,7 @@ Closest candidates are:
   ...
 </code></pre></div></div>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">b3_exp</span> <span class="o">=</span> <span class="n">exp</span><span class="x">(</span><span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[:</span><span class="n">b3</span><span class="x">]))</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">b3_exp</span> <span class="o">=</span> <span class="n">exp</span><span class="x">(</span><span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[</span><span class="o">:</span><span class="n">b3</span><span class="x">]))</span>
 </code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Error: MethodError: no method matching iterate(::Chains{Union{Missing, Floa
@@ -967,7 +967,7 @@ Quantiles
 </code></pre></div></div>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Removing the first 200 values of the chains</span>
-<span class="n">chains_new</span> <span class="o">=</span> <span class="n">chains</span><span class="x">[</span><span class="mi">201</span><span class="x">:</span><span class="mi">2500</span><span class="x">,:,:]</span>
+<span class="n">chains_new</span> <span class="o">=</span> <span class="n">chains</span><span class="x">[</span><span class="mi">201</span><span class="o">:</span><span class="mi">2500</span><span class="x">,</span><span class="o">:</span><span class="x">,</span><span class="o">:</span><span class="x">]</span>
 <span class="n">describe</span><span class="x">(</span><span class="n">chains_new</span><span class="x">)</span>
 </code></pre></div></div>
 

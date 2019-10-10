@@ -616,23 +616,23 @@
 <p>To start, let’s import all the libraries we’ll need.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Import Turing and Distributions.</span>
-<span class="n">using</span> <span class="n">Turing</span><span class="x">,</span> <span class="n">Distributions</span>
+<span class="k">using</span> <span class="n">Turing</span><span class="x">,</span> <span class="n">Distributions</span>
 
 <span class="c"># Import RDatasets.</span>
-<span class="n">using</span> <span class="n">RDatasets</span>
+<span class="k">using</span> <span class="n">RDatasets</span>
 
 <span class="c"># Import MCMCChains, Plots, and StatsPlots for visualizations and diagnostics.</span>
-<span class="n">using</span> <span class="n">MCMCChains</span><span class="x">,</span> <span class="n">Plots</span><span class="x">,</span> <span class="n">StatsPlots</span>
+<span class="k">using</span> <span class="n">MCMCChains</span><span class="x">,</span> <span class="n">Plots</span><span class="x">,</span> <span class="n">StatsPlots</span>
 
 <span class="c"># We need a logistic function, which is provided by StatsFuns.</span>
-<span class="n">using</span> <span class="n">StatsFuns</span><span class="x">:</span> <span class="n">logistic</span>
+<span class="k">using</span> <span class="n">StatsFuns</span><span class="o">:</span> <span class="n">logistic</span>
 
 <span class="c"># Set a seed for reproducibility.</span>
-<span class="n">using</span> <span class="n">Random</span>
+<span class="k">using</span> <span class="n">Random</span>
 <span class="n">Random</span><span class="o">.</span><span class="n">seed!</span><span class="x">(</span><span class="mi">0</span><span class="x">);</span>
 
 <span class="c"># Turn off progress monitor.</span>
-<span class="n">Turing</span><span class="o">.</span><span class="n">turnprogress</span><span class="x">(</span><span class="n">false</span><span class="x">)</span>
+<span class="n">Turing</span><span class="o">.</span><span class="n">turnprogress</span><span class="x">(</span><span class="nb">false</span><span class="x">)</span>
 </code></pre></div></div>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>false
@@ -664,19 +664,19 @@
 <p>Most machine learning processes require some effort to tidy up the data, and this is no different. We need to convert the <code class="highlighter-rouge">Default</code> and <code class="highlighter-rouge">Student</code> columns, which say “Yes” or “No” into 1s and 0s. Afterwards, we’ll get rid of the old words-based columns.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Create new rows, defaulted to zero.</span>
-<span class="n">data</span><span class="x">[:</span><span class="n">DefaultNum</span><span class="x">]</span> <span class="o">=</span> <span class="mf">0.0</span>
-<span class="n">data</span><span class="x">[:</span><span class="n">StudentNum</span><span class="x">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">data</span><span class="x">[</span><span class="o">:</span><span class="n">DefaultNum</span><span class="x">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">data</span><span class="x">[</span><span class="o">:</span><span class="n">StudentNum</span><span class="x">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 
-<span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="x">:</span><span class="n">length</span><span class="x">(</span><span class="n">data</span><span class="o">.</span><span class="n">Default</span><span class="x">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">length</span><span class="x">(</span><span class="n">data</span><span class="o">.</span><span class="n">Default</span><span class="x">)</span>
     <span class="c"># If a row's "Default" or "Student" columns say "Yes",</span>
     <span class="c"># set them to 1 in our new columns.</span>
-    <span class="n">data</span><span class="x">[:</span><span class="n">DefaultNum</span><span class="x">][</span><span class="n">i</span><span class="x">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Default</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">==</span> <span class="s">"Yes"</span> <span class="o">?</span> <span class="mf">1.0</span> <span class="x">:</span> <span class="mf">0.0</span>
-    <span class="n">data</span><span class="x">[:</span><span class="n">StudentNum</span><span class="x">][</span><span class="n">i</span><span class="x">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Student</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">==</span> <span class="s">"Yes"</span> <span class="o">?</span> <span class="mf">1.0</span> <span class="x">:</span> <span class="mf">0.0</span>
+    <span class="n">data</span><span class="x">[</span><span class="o">:</span><span class="n">DefaultNum</span><span class="x">][</span><span class="n">i</span><span class="x">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Default</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">==</span> <span class="s">"Yes"</span> <span class="o">?</span> <span class="mf">1.0</span> <span class="o">:</span> <span class="mf">0.0</span>
+    <span class="n">data</span><span class="x">[</span><span class="o">:</span><span class="n">StudentNum</span><span class="x">][</span><span class="n">i</span><span class="x">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Student</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">==</span> <span class="s">"Yes"</span> <span class="o">?</span> <span class="mf">1.0</span> <span class="o">:</span> <span class="mf">0.0</span>
 <span class="k">end</span>
 
 <span class="c"># Delete the old columns which say "Yes" and "No".</span>
-<span class="n">deletecols!</span><span class="x">(</span><span class="n">data</span><span class="x">,</span> <span class="x">:</span><span class="n">Default</span><span class="x">)</span>
-<span class="n">deletecols!</span><span class="x">(</span><span class="n">data</span><span class="x">,</span> <span class="x">:</span><span class="n">Student</span><span class="x">)</span>
+<span class="n">deletecols!</span><span class="x">(</span><span class="n">data</span><span class="x">,</span> <span class="o">:</span><span class="n">Default</span><span class="x">)</span>
+<span class="n">deletecols!</span><span class="x">(</span><span class="n">data</span><span class="x">,</span> <span class="o">:</span><span class="n">Student</span><span class="x">)</span>
 
 <span class="c"># Show the first six rows of our edited dataset.</span>
 <span class="n">first</span><span class="x">(</span><span class="n">data</span><span class="x">,</span> <span class="mi">6</span><span class="x">)</span>
@@ -700,8 +700,8 @@
 <span class="k">function</span><span class="nf"> split_data</span><span class="x">(</span><span class="n">df</span><span class="x">,</span> <span class="n">at</span> <span class="o">=</span> <span class="mf">0.70</span><span class="x">)</span>
     <span class="x">(</span><span class="n">r</span><span class="x">,</span> <span class="n">_</span><span class="x">)</span> <span class="o">=</span> <span class="n">size</span><span class="x">(</span><span class="n">df</span><span class="x">)</span>
     <span class="n">index</span> <span class="o">=</span> <span class="kt">Int</span><span class="x">(</span><span class="n">round</span><span class="x">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">at</span><span class="x">))</span>
-    <span class="n">train</span> <span class="o">=</span> <span class="n">df</span><span class="x">[</span><span class="mi">1</span><span class="x">:</span><span class="n">index</span><span class="x">,</span> <span class="x">:]</span>
-    <span class="n">test</span>  <span class="o">=</span> <span class="n">df</span><span class="x">[(</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="x">):</span><span class="k">end</span><span class="x">,</span> <span class="x">:]</span>
+    <span class="n">train</span> <span class="o">=</span> <span class="n">df</span><span class="x">[</span><span class="mi">1</span><span class="o">:</span><span class="n">index</span><span class="x">,</span> <span class="o">:</span><span class="x">]</span>
+    <span class="n">test</span>  <span class="o">=</span> <span class="n">df</span><span class="x">[(</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="x">)</span><span class="o">:</span><span class="k">end</span><span class="x">,</span> <span class="o">:</span><span class="x">]</span>
     <span class="k">return</span> <span class="n">train</span><span class="x">,</span> <span class="n">test</span>
 <span class="k">end</span>
 
@@ -709,19 +709,19 @@
 <span class="n">train</span><span class="x">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">split_data</span><span class="x">(</span><span class="n">data</span><span class="x">,</span> <span class="mf">0.05</span><span class="x">);</span>
 
 <span class="c"># Create our labels. These are the values we are trying to predict.</span>
-<span class="n">train_label</span> <span class="o">=</span> <span class="n">train</span><span class="x">[:</span><span class="n">DefaultNum</span><span class="x">]</span>
-<span class="n">test_label</span> <span class="o">=</span> <span class="n">test</span><span class="x">[:</span><span class="n">DefaultNum</span><span class="x">]</span>
+<span class="n">train_label</span> <span class="o">=</span> <span class="n">train</span><span class="x">[</span><span class="o">:</span><span class="n">DefaultNum</span><span class="x">]</span>
+<span class="n">test_label</span> <span class="o">=</span> <span class="n">test</span><span class="x">[</span><span class="o">:</span><span class="n">DefaultNum</span><span class="x">]</span>
 
 <span class="c"># Remove the columns that are not our predictors.</span>
-<span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="x">[[:</span><span class="n">StudentNum</span><span class="x">,</span> <span class="x">:</span><span class="n">Balance</span><span class="x">,</span> <span class="x">:</span><span class="n">Income</span><span class="x">]];</span>
-<span class="n">test</span> <span class="o">=</span> <span class="n">test</span><span class="x">[[:</span><span class="n">StudentNum</span><span class="x">,</span> <span class="x">:</span><span class="n">Balance</span><span class="x">,</span> <span class="x">:</span><span class="n">Income</span><span class="x">]];</span>
+<span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="x">[[</span><span class="o">:</span><span class="n">StudentNum</span><span class="x">,</span> <span class="o">:</span><span class="n">Balance</span><span class="x">,</span> <span class="o">:</span><span class="n">Income</span><span class="x">]];</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">test</span><span class="x">[[</span><span class="o">:</span><span class="n">StudentNum</span><span class="x">,</span> <span class="o">:</span><span class="n">Balance</span><span class="x">,</span> <span class="o">:</span><span class="n">Income</span><span class="x">]];</span>
 </code></pre></div></div>
 
 <p>Our <code class="highlighter-rouge">train</code> and <code class="highlighter-rouge">test</code> matrices are still in the <code class="highlighter-rouge">DataFrame</code> format, which tends not to play too well with the kind of manipulations we’re about to do, so we convert them into <code class="highlighter-rouge">Matrix</code> objects.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Convert the DataFrame objects to matrices.</span>
-<span class="n">train</span> <span class="o">=</span> <span class="n">Matrix</span><span class="x">(</span><span class="n">train</span><span class="x">);</span>
-<span class="n">test</span> <span class="o">=</span> <span class="n">Matrix</span><span class="x">(</span><span class="n">test</span><span class="x">);</span>
+<span class="n">train</span> <span class="o">=</span> <span class="kt">Matrix</span><span class="x">(</span><span class="n">train</span><span class="x">);</span>
+<span class="n">test</span> <span class="o">=</span> <span class="kt">Matrix</span><span class="x">(</span><span class="n">test</span><span class="x">);</span>
 </code></pre></div></div>
 
 <p>This next part is critically important. We must rescale our variables so that they are centered around zero by subtracting each column by the mean and dividing it by the standard deviation. Without this step, Turing’s sampler will have a hard time finding a place to start searching for parameter estimates.</p>
@@ -771,14 +771,14 @@
 <p>The <code class="highlighter-rouge">for</code> block creates a variable <code class="highlighter-rouge">v</code> which is the logistic function. We then observe the liklihood of calculating <code class="highlighter-rouge">v</code> given the actual label, <code class="highlighter-rouge">y[i]</code>.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Bayesian logistic regression (LR)</span>
-<span class="nd">@model</span> <span class="n">logistic_regression</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">,</span> <span class="n">n</span><span class="x">,</span> <span class="n">σ</span><span class="x">)</span> <span class="o">=</span> <span class="n">begin</span>
+<span class="nd">@model</span> <span class="n">logistic_regression</span><span class="x">(</span><span class="n">x</span><span class="x">,</span> <span class="n">y</span><span class="x">,</span> <span class="n">n</span><span class="x">,</span> <span class="n">σ</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
     <span class="n">intercept</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">σ</span><span class="x">)</span>
 
     <span class="n">student</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">σ</span><span class="x">)</span>
     <span class="n">balance</span> <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">σ</span><span class="x">)</span>
     <span class="n">income</span>  <span class="o">~</span> <span class="n">Normal</span><span class="x">(</span><span class="mi">0</span><span class="x">,</span> <span class="n">σ</span><span class="x">)</span>
 
-    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="x">:</span><span class="n">n</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">:</span><span class="n">n</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">logistic</span><span class="x">(</span><span class="n">intercept</span> <span class="o">+</span> <span class="n">student</span><span class="o">*</span><span class="n">x</span><span class="x">[</span><span class="n">i</span><span class="x">,</span> <span class="mi">1</span><span class="x">]</span> <span class="o">+</span> <span class="n">balance</span><span class="o">*</span><span class="n">x</span><span class="x">[</span><span class="n">i</span><span class="x">,</span><span class="mi">2</span><span class="x">]</span> <span class="o">+</span> <span class="n">income</span><span class="o">*</span><span class="n">x</span><span class="x">[</span><span class="n">i</span><span class="x">,</span><span class="mi">3</span><span class="x">])</span>
         <span class="n">y</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">~</span> <span class="n">Bernoulli</span><span class="x">(</span><span class="n">v</span><span class="x">)</span>
     <span class="k">end</span>
@@ -790,7 +790,7 @@
 <p>Now we can run our sampler. This time we’ll use <a href="http://turing.ml/docs/library/#Turing.HMC"><code class="highlighter-rouge">HMC</code></a> to sample from our posterior.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># This is temporary while the reverse differentiation backend is being improved.</span>
-<span class="n">Turing</span><span class="o">.</span><span class="n">setadbackend</span><span class="x">(:</span><span class="n">forward_diff</span><span class="x">)</span>
+<span class="n">Turing</span><span class="o">.</span><span class="n">setadbackend</span><span class="x">(</span><span class="o">:</span><span class="n">forward_diff</span><span class="x">)</span>
 
 <span class="c"># Retrieve the number of observations.</span>
 <span class="n">n</span><span class="x">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">size</span><span class="x">(</span><span class="n">train</span><span class="x">)</span>
@@ -798,7 +798,7 @@
 <span class="c"># Sample using HMC.</span>
 <span class="n">chain</span> <span class="o">=</span> <span class="n">mapreduce</span><span class="x">(</span><span class="n">c</span> <span class="o">-&gt;</span> <span class="n">sample</span><span class="x">(</span><span class="n">logistic_regression</span><span class="x">(</span><span class="n">train</span><span class="x">,</span> <span class="n">train_label</span><span class="x">,</span> <span class="n">n</span><span class="x">,</span> <span class="mi">1</span><span class="x">),</span> <span class="n">HMC</span><span class="x">(</span><span class="mi">1500</span><span class="x">,</span> <span class="mf">0.05</span><span class="x">,</span> <span class="mi">10</span><span class="x">)),</span>
     <span class="n">chainscat</span><span class="x">,</span>
-    <span class="mi">1</span><span class="x">:</span><span class="mi">3</span>
+    <span class="mi">1</span><span class="o">:</span><span class="mi">3</span>
 <span class="x">)</span>
 </code></pre></div></div>
 
@@ -863,7 +863,7 @@ Quantiles
 <p>We can also use the <code class="highlighter-rouge">corner</code> function from MCMCChains to show the distributions of the various parameters of our logistic regression.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># The labels to use.</span>
-<span class="n">l</span> <span class="o">=</span> <span class="x">[:</span><span class="n">student</span><span class="x">,</span> <span class="x">:</span><span class="n">balance</span><span class="x">,</span> <span class="x">:</span><span class="n">income</span><span class="x">]</span>
+<span class="n">l</span> <span class="o">=</span> <span class="x">[</span><span class="o">:</span><span class="n">student</span><span class="x">,</span> <span class="o">:</span><span class="n">balance</span><span class="x">,</span> <span class="o">:</span><span class="n">income</span><span class="x">]</span>
 
 <span class="c"># Use the corner function. Requires StatsPlots and MCMCChain.</span>
 <span class="n">corner</span><span class="x">(</span><span class="n">chain</span><span class="x">,</span> <span class="n">l</span><span class="x">)</span>
@@ -878,21 +878,21 @@ Quantiles
 
 <p>The <code class="highlighter-rouge">prediction</code> function below takes a <code class="highlighter-rouge">Matrix</code> and a <code class="highlighter-rouge">Chain</code> object. It takes the mean of each parameter’s sampled values and re-runs the logistic function using those mean values for every element in the test set.</p>
 
-<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span><span class="nf"> prediction</span><span class="x">(</span><span class="n">x</span><span class="o">::</span><span class="n">Matrix</span><span class="x">,</span> <span class="n">chain</span><span class="x">,</span> <span class="n">threshold</span><span class="x">)</span>
+<div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function</span><span class="nf"> prediction</span><span class="x">(</span><span class="n">x</span><span class="o">::</span><span class="kt">Matrix</span><span class="x">,</span> <span class="n">chain</span><span class="x">,</span> <span class="n">threshold</span><span class="x">)</span>
     <span class="c"># Pull the means from each parameter's sampled values in the chain.</span>
-    <span class="n">intercept</span> <span class="o">=</span> <span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[:</span><span class="n">intercept</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">)</span>
-    <span class="n">student</span> <span class="o">=</span> <span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[:</span><span class="n">student</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">)</span>
-    <span class="n">balance</span> <span class="o">=</span> <span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[:</span><span class="n">balance</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">)</span>
-    <span class="n">income</span> <span class="o">=</span> <span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[:</span><span class="n">income</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">)</span>
+    <span class="n">intercept</span> <span class="o">=</span> <span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[</span><span class="o">:</span><span class="n">intercept</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">)</span>
+    <span class="n">student</span> <span class="o">=</span> <span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[</span><span class="o">:</span><span class="n">student</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">)</span>
+    <span class="n">balance</span> <span class="o">=</span> <span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[</span><span class="o">:</span><span class="n">balance</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">)</span>
+    <span class="n">income</span> <span class="o">=</span> <span class="n">mean</span><span class="x">(</span><span class="n">chain</span><span class="x">[</span><span class="o">:</span><span class="n">income</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="x">)</span>
 
     <span class="c"># Retrieve the number of rows.</span>
     <span class="n">n</span><span class="x">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">size</span><span class="x">(</span><span class="n">x</span><span class="x">)</span>
 
     <span class="c"># Generate a vector to store our predictions.</span>
-    <span class="n">v</span> <span class="o">=</span> <span class="n">Vector</span><span class="x">{</span><span class="kt">Float64</span><span class="x">}(</span><span class="n">undef</span><span class="x">,</span> <span class="n">n</span><span class="x">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="kt">Vector</span><span class="x">{</span><span class="kt">Float64</span><span class="x">}(</span><span class="nb">undef</span><span class="x">,</span> <span class="n">n</span><span class="x">)</span>
 
     <span class="c"># Calculate the logistic function for each element in the test set.</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="x">:</span><span class="n">n</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">n</span>
         <span class="n">num</span> <span class="o">=</span> <span class="n">logistic</span><span class="x">(</span><span class="n">intercept</span> <span class="o">.+</span> <span class="n">student</span> <span class="o">*</span> <span class="n">x</span><span class="x">[</span><span class="n">i</span><span class="x">,</span><span class="mi">1</span><span class="x">]</span> <span class="o">+</span> <span class="n">balance</span> <span class="o">*</span> <span class="n">x</span><span class="x">[</span><span class="n">i</span><span class="x">,</span><span class="mi">2</span><span class="x">]</span> <span class="o">+</span> <span class="n">income</span> <span class="o">*</span> <span class="n">x</span><span class="x">[</span><span class="n">i</span><span class="x">,</span><span class="mi">3</span><span class="x">])</span>
         <span class="k">if</span> <span class="n">num</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
             <span class="n">v</span><span class="x">[</span><span class="n">i</span><span class="x">]</span> <span class="o">=</span> <span class="mi">1</span>
