@@ -651,9 +651,8 @@
 <span class="c"># Start sampling.</span>
 <span class="n">chain</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">coinflip</span><span class="x">(</span><span class="n">data</span><span class="x">),</span> <span class="n">HMC</span><span class="x">(</span><span class="n">ϵ</span><span class="x">,</span> <span class="n">τ</span><span class="x">),</span> <span class="n">iterations</span><span class="x">);</span>
 
-<span class="c"># Construct summary of the sampling process for the parameter p, i.e. the probability of heads in a coin.</span>
-<span class="n">psummary</span> <span class="o">=</span> <span class="n">Chains</span><span class="x">(</span><span class="n">chain</span><span class="x">[</span><span class="o">:</span><span class="n">p</span><span class="x">])</span>
-<span class="n">histogram</span><span class="x">(</span><span class="n">psummary</span><span class="x">)</span>
+<span class="c"># Plot a summary of the sampling process for the parameter p, i.e. the probability of heads in a coin.</span>
+<span class="n">histogram</span><span class="x">(</span><span class="n">chain</span><span class="x">[</span><span class="o">:</span><span class="n">p</span><span class="x">])</span>
 </code></pre></div></div>
 
 
