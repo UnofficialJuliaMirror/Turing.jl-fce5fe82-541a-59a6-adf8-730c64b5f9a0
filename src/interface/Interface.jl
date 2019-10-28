@@ -359,6 +359,60 @@ function step!(
     return step!(rng, ℓ, s, N; kwargs...)
 end
 
+
+"""
+    steps!(
+        rng::AbstractRNG,
+        ℓ::ModelType,
+        s::SamplerType,
+        N::Integer,
+        t::Nothing;
+        debug::Bool=true,
+        kwargs...
+    )
+
+
+"""
+struct Stepper{ModelType<:Sampleable, SamplerType<:AbstractSampler, TransitionType<:AbstractTransition, T}
+    rng::AbstractRNG
+    ℓ::ModelType
+    s::SamplerType
+    t::TransitionType
+    kwargs::T
+end
+
+function Base.iterate(stp::Stepper, state=(stp.t, 0))
+    t, i = state
+    new_t = step!(stp.rng, stp.ℓ, stp.s, 1, t; stp.kwargs...)
+    
+    return t, (new_t, i+1)
+end
+
+function steps!(
+    ℓ::ModelType,
+    s::SamplerType,
+    debug::Bool=true,
+    kwargs...
+) where {ModelType<:Sampleable,
+    SamplerType<:AbstractSampler,
+    TransitionType<:AbstractTransition
+}
+    return steps!(GLOBAL_RNG, ℓ, s; kwargs...)
+end
+
+function steps!(
+    rng::AbstractRNG,
+    ℓ::ModelType,
+    s::SamplerType,
+    debug::Bool=true,
+    kwargs...
+) where {ModelType<:Sampleable,
+    SamplerType<:AbstractSampler,
+    TransitionType<:AbstractTransition
+}
+    iterable = Stepper(rng, ℓ, s, step!(rng, ℓ, s, 1, nothing; kwargs...), kwargs)
+end
+
 """
     transitions_init(
         rng::AbstractRNG,
