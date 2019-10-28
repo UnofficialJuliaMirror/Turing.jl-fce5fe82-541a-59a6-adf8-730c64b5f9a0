@@ -617,13 +617,13 @@
 
 <p>Turing supports two types of automatic differentiation (AD) in the back end during sampling. The current default AD mode is <a href="https://github.com/JuliaDiff/ForwardDiff.jl">ForwardDiff</a>, but Turing also supports <a href="https://github.com/FluxML/Tracker.jl">Tracker</a>-based differentation.</p>
 
-<p>To switch between <code class="highlighter-rouge">ForwardDiff</code> and <code class="highlighter-rouge">Tracker</code>, one can call function <code class="highlighter-rouge">Turing.setadbackend(backend_sym)</code>, where <code class="highlighter-rouge">backend_sym</code> can be <code class="highlighter-rouge">:forward_diff</code> or <code class="highlighter-rouge">:reverse_diff</code>.</p>
+<p>To switch between <code class="language-plaintext highlighter-rouge">ForwardDiff</code> and <code class="language-plaintext highlighter-rouge">Tracker</code>, one can call function <code class="language-plaintext highlighter-rouge">Turing.setadbackend(backend_sym)</code>, where <code class="language-plaintext highlighter-rouge">backend_sym</code> can be <code class="language-plaintext highlighter-rouge">:forward_diff</code> or <code class="language-plaintext highlighter-rouge">:reverse_diff</code>.</p>
 
 <p><a id="Compositional-Sampling-with-Differing-AD-Modes-1"></a></p>
 
 <h2 id="compositional-sampling-with-differing-ad-modes">Compositional Sampling with Differing AD Modes</h2>
 
-<p>Turing supports intermixed automatic differentiation methods for different variable spaces. The snippet below shows using <code class="highlighter-rouge">ForwardDiff</code> to sample the mean (<code class="highlighter-rouge">m</code>) parameter, and using the Tracker-based <code class="highlighter-rouge">TrackerAD</code> autodiff for the variance (<code class="highlighter-rouge">s</code>) parameter:</p>
+<p>Turing supports intermixed automatic differentiation methods for different variable spaces. The snippet below shows using <code class="language-plaintext highlighter-rouge">ForwardDiff</code> to sample the mean (<code class="language-plaintext highlighter-rouge">m</code>) parameter, and using the Tracker-based <code class="language-plaintext highlighter-rouge">TrackerAD</code> autodiff for the variance (<code class="language-plaintext highlighter-rouge">s</code>) parameter:</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">Turing</span>
 
@@ -646,9 +646,9 @@
 <span class="x">)</span>
 </code></pre></div></div>
 
-<p>Generally, <code class="highlighter-rouge">TrackerAD</code> is faster when sampling from variables of high dimensionality (greater than 20) and <code class="highlighter-rouge">ForwardDiffAD</code> is more efficient for lower-dimension variables. This functionality allows those who are performance sensistive to fine tune their automatic differentiation for their specific models.</p>
+<p>Generally, <code class="language-plaintext highlighter-rouge">TrackerAD</code> is faster when sampling from variables of high dimensionality (greater than 20) and <code class="language-plaintext highlighter-rouge">ForwardDiffAD</code> is more efficient for lower-dimension variables. This functionality allows those who are performance sensistive to fine tune their automatic differentiation for their specific models.</p>
 
-<p>If the differentation method is not specified in this way, Turing will default to using whatever the global AD backend is. Currently, this defaults to <code class="highlighter-rouge">ForwardDiff</code>.</p>
+<p>If the differentation method is not specified in this way, Turing will default to using whatever the global AD backend is. Currently, this defaults to <code class="language-plaintext highlighter-rouge">ForwardDiff</code>.</p>
 
 
     <script

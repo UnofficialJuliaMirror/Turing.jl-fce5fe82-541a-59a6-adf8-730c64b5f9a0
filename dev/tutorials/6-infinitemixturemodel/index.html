@@ -665,7 +665,7 @@ x_i &\sim Normal(\mu_{z_i}, \Sigma)
 <span class="k">end</span>
 </code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>two_model (generic function with 2 methods)
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>two_model (generic function with 2 methods)
 </code></pre></div></div>
 
 <h4 id="finite-mixture-model">Finite Mixture Model</h4>
@@ -686,7 +686,7 @@ x &\sim Normal(\mu_z, \Sigma)
 
 <p>The question now arises, is there a generalization of a Dirichlet distribution for which the dimensionality <script type="math/tex">K</script> is infinite, i.e. <script type="math/tex">K = \infty</script>?</p>
 
-<p>But first, to implement an infinite Gaussian mixture model in Turing, we first need to load the <code class="highlighter-rouge">Turing.RandomMeasures</code> module. <code class="highlighter-rouge">RandomMeasures</code> contains a variety of tools useful in nonparametrics.</p>
+<p>But first, to implement an infinite Gaussian mixture model in Turing, we first need to load the <code class="language-plaintext highlighter-rouge">Turing.RandomMeasures</code> module. <code class="language-plaintext highlighter-rouge">RandomMeasures</code> contains a variety of tools useful in nonparametrics.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="n">Turing</span><span class="o">.</span><span class="n">RandomMeasures</span>
 </code></pre></div></div>
@@ -805,7 +805,7 @@ $$</p>
 <span class="k">end</span>
 </code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>infiniteGMM (generic function with 2 methods)
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>infiniteGMM (generic function with 2 methods)
 </code></pre></div></div>
 
 <p>We can now use Turing to infer the assignments of some data points. First, we will create some random data that comes from three clusters, with means of 0, -5, and 10.</p>

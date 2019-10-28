@@ -656,7 +656,7 @@ $$</p>
 
 <p>Simply put, this says that we expect state one to emit values in a Normally distributed manner, where the mean of each state’s emissions is that state’s value. The variance of 0.5 helps the model converge more quickly — consider the case where we have a variance of 1 or 2. In this case, the likelihood of observing a 2 when we are in state 1 is actually quite high, as it is within a standard deviation of the true emission value. Applying the prior that we are likely to be tightly centered around the mean prevents our model from being too confused about the state that is generating our observations.</p>
 
-<p>The priors on our transition matrix are noninformative, using <code class="highlighter-rouge">T[i] ~ Dirichlet(ones(K)/K)</code>. The Dirichlet prior used in this way assumes that the state is likely to change to any other state with equal probability. As we’ll see, this transition matrix prior will be overwritten as we observe data.</p>
+<p>The priors on our transition matrix are noninformative, using <code class="language-plaintext highlighter-rouge">T[i] ~ Dirichlet(ones(K)/K)</code>. The Dirichlet prior used in this way assumes that the state is likely to change to any other state with equal probability. As we’ll see, this transition matrix prior will be overwritten as we observe data.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Turing model definition.</span>
 <span class="nd">@model</span> <span class="n">BayesHmm</span><span class="x">(</span><span class="n">y</span><span class="x">,</span> <span class="n">K</span><span class="x">)</span> <span class="o">=</span> <span class="k">begin</span>
@@ -693,9 +693,9 @@ $$</p>
 
 <p>We will use a combination of two samplers (<a href="http://turing.ml/docs/library/#Turing.HMC">HMC</a> and <a href="http://turing.ml/docs/library/#Turing.PG">Particle Gibbs</a>) by passing them to the <a href="http://turing.ml/docs/library/#Turing.Gibbs">Gibbs</a> sampler. The Gibbs sampler allows for compositional inference, where we can utilize different samplers on different parameters.</p>
 
-<p>In this case, we use HMC for <code class="highlighter-rouge">m</code> and <code class="highlighter-rouge">T</code>, representing the emission and transition matrices respectively. We use the Particle Gibbs sampler for <code class="highlighter-rouge">s</code>, the state sequence. You may wonder why it is that we are not assigning <code class="highlighter-rouge">s</code> to the HMC sampler, and why it is that we need compositional Gibbs sampling at all.</p>
+<p>In this case, we use HMC for <code class="language-plaintext highlighter-rouge">m</code> and <code class="language-plaintext highlighter-rouge">T</code>, representing the emission and transition matrices respectively. We use the Particle Gibbs sampler for <code class="language-plaintext highlighter-rouge">s</code>, the state sequence. You may wonder why it is that we are not assigning <code class="language-plaintext highlighter-rouge">s</code> to the HMC sampler, and why it is that we need compositional Gibbs sampling at all.</p>
 
-<p>The parameter <code class="highlighter-rouge">s</code> is not a continuous variable. It is a vector of <strong>integers</strong>, and thus Hamiltonian methods like HMC and <a href="http://turing.ml/docs/library/#-turingnuts--type">NUTS</a> won’t work correctly. Gibbs allows us to apply the right tools to the best effect. If you are a particularly advanced user interested in higher performance, you may benefit from setting up your Gibbs sampler to use <a href="http://turing.ml/docs/autodiff/#compositional-sampling-with-differing-ad-modes">different automatic differentiation</a> backends for each parameter space.</p>
+<p>The parameter <code class="language-plaintext highlighter-rouge">s</code> is not a continuous variable. It is a vector of <strong>integers</strong>, and thus Hamiltonian methods like HMC and <a href="http://turing.ml/docs/library/#-turingnuts--type">NUTS</a> won’t work correctly. Gibbs allows us to apply the right tools to the best effect. If you are a particularly advanced user interested in higher performance, you may benefit from setting up your Gibbs sampler to use <a href="http://turing.ml/docs/autodiff/#compositional-sampling-with-differing-ad-modes">different automatic differentiation</a> backends for each parameter space.</p>
 
 <p>Time to run our sampler.</p>
 
@@ -703,7 +703,7 @@ $$</p>
 <span class="n">c</span> <span class="o">=</span> <span class="n">sample</span><span class="x">(</span><span class="n">BayesHmm</span><span class="x">(</span><span class="n">y</span><span class="x">,</span> <span class="mi">3</span><span class="x">),</span> <span class="n">g</span><span class="x">);</span>
 </code></pre></div></div>
 
-<p>Let’s see how well our chain performed. Ordinarily, using the <code class="highlighter-rouge">describe</code> function from <a href="https://github.com/TuringLang/MCMCChain.jl">MCMCChain</a> would be a good first step, but we have generated a lot of parameters here (<code class="highlighter-rouge">s[1]</code>, <code class="highlighter-rouge">s[2]</code>, <code class="highlighter-rouge">m[1]</code>, and so on). It’s a bit easier to show how our model performed graphically.</p>
+<p>Let’s see how well our chain performed. Ordinarily, using the <code class="language-plaintext highlighter-rouge">describe</code> function from <a href="https://github.com/TuringLang/MCMCChain.jl">MCMCChain</a> would be a good first step, but we have generated a lot of parameters here (<code class="language-plaintext highlighter-rouge">s[1]</code>, <code class="language-plaintext highlighter-rouge">s[2]</code>, <code class="language-plaintext highlighter-rouge">m[1]</code>, and so on). It’s a bit easier to show how our model performed graphically.</p>
 
 <p>The code below generates an animation showing the graph of the data above, and the data our model generates in each sample.</p>
 
@@ -752,12 +752,12 @@ $$</p>
 
 <p><img src="../figures/4_BayesHmm_6_1.png" alt="" /></p>
 
-<p>A cursory examination of the traceplot above indicates that at least <code class="highlighter-rouge">T[3,3]</code> and possibly <code class="highlighter-rouge">T[2,2]</code> have converged to something resembling stationary. <code class="highlighter-rouge">T[1,1]</code>, on the other hand, has a slight “wobble”, and seems less consistent than the others. We can use the diagnostic functions provided by <a href="https://github.com/TuringLang/MCMCChain.jl">MCMCChain</a> to engage in some formal tests, like the Heidelberg and Welch diagnostic:</p>
+<p>A cursory examination of the traceplot above indicates that at least <code class="language-plaintext highlighter-rouge">T[3,3]</code> and possibly <code class="language-plaintext highlighter-rouge">T[2,2]</code> have converged to something resembling stationary. <code class="language-plaintext highlighter-rouge">T[1,1]</code>, on the other hand, has a slight “wobble”, and seems less consistent than the others. We can use the diagnostic functions provided by <a href="https://github.com/TuringLang/MCMCChain.jl">MCMCChain</a> to engage in some formal tests, like the Heidelberg and Welch diagnostic:</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">heideldiag</span><span class="x">(</span><span class="n">c</span><span class="x">[</span><span class="o">:</span><span class="n">T</span><span class="x">])</span>
 </code></pre></div></div>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Heidelberger and Welch Diagnostic:
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Heidelberger and Welch Diagnostic:
 Target Halfwidth Ratio = 0.1
 Alpha = 0.05
 
@@ -784,12 +784,12 @@ T[3][3]     500            0  0.0176 0.0612    0.0055    1
 <p>In order to create a model that supports this synthetic generating feature, there are several changes to your typical model specification that need to be made. A general guide can be found <a href="http://turing.ml/docs/guide/#generating-vectors-of-quantities">here</a>.</p>
 
 <ol>
-  <li>Any parameter you were interested in learning before (<code class="highlighter-rouge">s</code>, <code class="highlighter-rouge">m</code>, <code class="highlighter-rouge">T</code>) needs to be moved to the argument line of the model.</li>
-  <li>Assign those parameters default values, such as <code class="highlighter-rouge">zeros(Real, 10)</code>, or whatever is appropriate.</li>
-  <li>Make sure you add a <code class="highlighter-rouge">return</code> line at the end of the model containing the variable(s) you want to generate. In our case, this is <code class="highlighter-rouge">y</code>.</li>
+  <li>Any parameter you were interested in learning before (<code class="language-plaintext highlighter-rouge">s</code>, <code class="language-plaintext highlighter-rouge">m</code>, <code class="language-plaintext highlighter-rouge">T</code>) needs to be moved to the argument line of the model.</li>
+  <li>Assign those parameters default values, such as <code class="language-plaintext highlighter-rouge">zeros(Real, 10)</code>, or whatever is appropriate.</li>
+  <li>Make sure you add a <code class="language-plaintext highlighter-rouge">return</code> line at the end of the model containing the variable(s) you want to generate. In our case, this is <code class="language-plaintext highlighter-rouge">y</code>.</li>
 </ol>
 
-<p>And that’s about it! The code below presents the original <code class="highlighter-rouge">BayesHmm</code> model with the necessary changes included.</p>
+<p>And that’s about it! The code below presents the original <code class="language-plaintext highlighter-rouge">BayesHmm</code> model with the necessary changes included.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Generative model.</span>
 <span class="nd">@model</span> <span class="n">BayesHmm</span><span class="x">(</span>
@@ -823,7 +823,7 @@ T[3][3]     500            0  0.0176 0.0612    0.0055    1
 <span class="n">learned_m</span> <span class="o">=</span> <span class="n">collect</span><span class="x">(</span><span class="n">skipmissing</span><span class="x">(</span><span class="n">mean</span><span class="x">(</span><span class="n">c</span><span class="x">[</span><span class="mi">200</span><span class="o">:</span><span class="k">end</span><span class="x">,</span> <span class="o">:</span><span class="n">m</span><span class="x">,</span> <span class="o">:</span><span class="x">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">data</span><span class="x">,</span> <span class="n">dims</span><span class="o">=</span><span class="mi">1</span><span class="x">)));</span>
 </code></pre></div></div>
 
-<p>Finally, we can call our model by passing <code class="highlighter-rouge">nothing</code> into our parameter of interest, and taking a look at it. Note that we call our model using <code class="highlighter-rouge">BayesHmm(nothing, learned_T, learned_m, 3)()</code> with an extra set of parentheses at the end. For more on this behaviour, see <a href="http://turing.ml/docs/guide/#sampling-from-the-prior">this</a> section of the guide focusing on sampling from the prior.</p>
+<p>Finally, we can call our model by passing <code class="language-plaintext highlighter-rouge">nothing</code> into our parameter of interest, and taking a look at it. Note that we call our model using <code class="language-plaintext highlighter-rouge">BayesHmm(nothing, learned_T, learned_m, 3)()</code> with an extra set of parentheses at the end. For more on this behaviour, see <a href="http://turing.ml/docs/guide/#sampling-from-the-prior">this</a> section of the guide focusing on sampling from the prior.</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Generate a single sequence.</span>
 <span class="n">generated_data</span> <span class="o">=</span> <span class="n">BayesHmm</span><span class="x">(</span><span class="nb">nothing</span><span class="x">,</span> <span class="n">learned_T</span><span class="x">,</span> <span class="n">learned_m</span><span class="x">,</span> <span class="mi">3</span><span class="x">)()</span>
