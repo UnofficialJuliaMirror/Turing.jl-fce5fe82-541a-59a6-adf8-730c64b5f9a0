@@ -674,10 +674,10 @@
 <ul>
   <li>SMC: number of particles.</li>
   <li>PG: number of particles, number of iterations.</li>
-  <li>HMC: number of samples, leapfrog step size, leapfrog step numbers.</li>
-  <li>Gibbs: number of samples, component sampler 1, component sampler 2, …</li>
-  <li>HMCDA: number of samples, total leapfrog length, target accept ratio.</li>
-  <li>NUTS: number of samples, target accept ratio.</li>
+  <li>HMC: leapfrog step size, leapfrog step numbers.</li>
+  <li>Gibbs: component sampler 1, component sampler 2, …</li>
+  <li>HMCDA: total leapfrog length, target accept ratio.</li>
+  <li>NUTS: number of adaptation steps (optional), target accept ratio.</li>
 </ul>
 
 <p>For detailed information on the samplers, please review Turing.jl’s <a href="/dev/docs/library">API</a> documentation.</p>
@@ -918,7 +918,7 @@ x_i \sim \text{Normal}(m, \sqrt{s}), \space i = 1\dots10 :$</p>
 <span class="k">end</span>
 </code></pre></div></div>
 
-<p>If we are trying to generate random random values from the <code class="language-plaintext highlighter-rouge">generator</code> model and we call <code class="language-plaintext highlighter-rouge">sample(generator(), HMC(1000, 0.01, 5))</code>, we will receive an error. This is because there is no way to determine <code class="language-plaintext highlighter-rouge">length(x)</code>, whether <code class="language-plaintext highlighter-rouge">x</code> is a vector, and the type of the values in <code class="language-plaintext highlighter-rouge">x</code>.</p>
+<p>If we are trying to generate random random values from the <code class="language-plaintext highlighter-rouge">generator</code> model and we call <code class="language-plaintext highlighter-rouge">sample(generator(), HMC(0.01, 5), 1000)</code>, we will receive an error. This is because there is no way to determine <code class="language-plaintext highlighter-rouge">length(x)</code>, whether <code class="language-plaintext highlighter-rouge">x</code> is a vector, and the type of the values in <code class="language-plaintext highlighter-rouge">x</code>.</p>
 
 <p>A sensible default value might be:</p>
 
