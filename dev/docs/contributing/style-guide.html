@@ -1194,18 +1194,18 @@ A cluster manager which spawns workers.
 <span class="nd">@test</span> <span class="n">value</span> <span class="o">==</span> <span class="mf">0.0</span>
 </code></pre></div></div>
 
-<p>In cases where you are checking the numerical validity of a model’s parameter estimates, please use the <code class="language-plaintext highlighter-rouge">check_numerical</code> function found in <code class="language-plaintext highlighter-rouge">test/test_utils/numerical_tests.jl</code>. This function will evaluate a model’s parameter estimates using a given tolerance level, and test will only be performed if you are running the test suite locally or if Travis is executing the “Numerical” testing stage.</p>
+<p>In cases where you are checking the numerical validity of a model’s parameter estimates, please use the <code class="language-plaintext highlighter-rouge">check_numerical</code> function found in <code class="language-plaintext highlighter-rouge">test/test_utils/numerical_tests.jl</code>. This function will evaluate a model’s parameter estimates using tolerance levels <code class="language-plaintext highlighter-rouge">atol</code> and <code class="language-plaintext highlighter-rouge">rtol</code>. Testing will only be performed if you are running the test suite locally or if Travis is executing the “Numerical” testing stage.</p>
 
 <p>Here is an example of usage:</p>
 
 <div class="language-julia highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Check that m and s are plus or minus one from 1.5 and 2.2, respectively.</span>
-<span class="n">check_numerical</span><span class="x">(</span><span class="n">chain</span><span class="x">,</span> <span class="x">[</span><span class="o">:</span><span class="n">m</span><span class="x">,</span> <span class="o">:</span><span class="n">s</span><span class="x">],</span> <span class="x">[</span><span class="mf">1.5</span><span class="x">,</span> <span class="mf">2.2</span><span class="x">],</span> <span class="n">eps</span> <span class="o">=</span> <span class="mf">1.0</span><span class="x">)</span>
+<span class="n">check_numerical</span><span class="x">(</span><span class="n">chain</span><span class="x">,</span> <span class="x">[</span><span class="o">:</span><span class="n">m</span><span class="x">,</span> <span class="o">:</span><span class="n">s</span><span class="x">],</span> <span class="x">[</span><span class="mf">1.5</span><span class="x">,</span> <span class="mf">2.2</span><span class="x">],</span> <span class="n">atol</span> <span class="o">=</span> <span class="mf">1.0</span><span class="x">)</span>
 
 <span class="c"># Checks the estimates for a default gdemo model using values 1.5 and 2.0.</span>
-<span class="n">check_gdemo</span><span class="x">(</span><span class="n">chain</span><span class="x">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="mf">0.1</span><span class="x">)</span>
+<span class="n">check_gdemo</span><span class="x">(</span><span class="n">chain</span><span class="x">,</span> <span class="n">atol</span> <span class="o">=</span> <span class="mf">0.1</span><span class="x">)</span>
 
 <span class="c"># Checks the estimates for a default MoG model.</span>
-<span class="n">check_MoGtest_default</span><span class="x">(</span><span class="n">chain</span><span class="x">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="mf">0.1</span><span class="x">)</span>
+<span class="n">check_MoGtest_default</span><span class="x">(</span><span class="n">chain</span><span class="x">,</span> <span class="n">atol</span> <span class="o">=</span> <span class="mf">0.1</span><span class="x">)</span>
 </code></pre></div></div>
 
 
